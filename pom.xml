@@ -20,5 +20,6 @@
     <module>parser-url</module>
     <module>javaFX</module>
     <module>dao</module>
+    <module>service</module>
   </modules>
 </project>
