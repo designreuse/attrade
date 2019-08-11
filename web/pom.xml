@@ -10,8 +10,7 @@
   <groupId>by.attrade</groupId>
   <artifactId>web</artifactId>
   <version>1.0</version>
-  <packaging>war</packaging>
-  <name>web Maven Webapp</name>
+  <name>web</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
@@ -21,7 +20,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <finalName>web</finalName>
-  </build>
 </project>
