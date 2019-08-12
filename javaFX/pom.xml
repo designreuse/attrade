@@ -10,7 +10,7 @@
   <groupId>by.attrade</groupId>
   <artifactId>javaFX</artifactId>
   <version>1.0</version>
-  <name>javaFX</name>
+  <packaging>javaFX</packaging>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>

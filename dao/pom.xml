@@ -10,7 +10,7 @@
   <groupId>by.attrade</groupId>
   <artifactId>dao</artifactId>
   <version>1.0</version>
-  <name>dao</name>
+  <packaging>dao</packaging>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>

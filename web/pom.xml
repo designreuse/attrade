@@ -10,7 +10,7 @@
   <groupId>by.attrade</groupId>
   <artifactId>web</artifactId>
   <version>1.0</version>
-  <name>web</name>
+  <packaging>web</packaging>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
@@ -18,6 +18,15 @@
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.16.12</version>
     </dependency>
   </dependencies>
 </project>

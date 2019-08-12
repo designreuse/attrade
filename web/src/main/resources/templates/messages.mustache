@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<div>
+    <form method="post">
+        <input type="text" name="text" placeholder="Enter message">
+        <input type="text" name="tag" placeholder="Enter tag">
+        <button type="submit">ADD</button>
+    </form>
+</div>
+<div>
+    <form method="post" action="filter">
+        <input type="text" name="filter">
+        <button type="SUBMIT">FIND</button>
+    </form>
+</div>
+<div>List of messages</div>
+{{#messages}}
+<div>
+    <b>{{id}}</b>
+    <span>{{text}}</span>
+    <i>{{tag}}</i>
+</div>
+{{/messages}}
+</body>
+</html>

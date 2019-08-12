@@ -10,7 +10,7 @@
   <groupId>by.attrade</groupId>
   <artifactId>service</artifactId>
   <version>1.0</version>
-  <name>service</name>
+  <packaging>service</packaging>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>

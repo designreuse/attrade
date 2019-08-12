@@ -15,16 +15,31 @@
     <version>2.1.3.RELEASE</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
+  <!-- Spring Boot -->
 
+  <properties>
+    <java.version>1.8</java.version>
+    <lombok.version>1.16.12</lombok.version>
+    <junit.version>3.8.1</junit.version>
+  </properties>
+
+  <!-- Spring Boot -->
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
+
+      <!-- more complicated tag library than 'mustache'-->
+    <!--<dependency>-->
+      <!--<groupId>org.springframework.boot</groupId>-->
+      <!--<artifactId>spring-boot-starter-thymeleaf</artifactId>-->
+    <!--</dependency>-->
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+      <artifactId>spring-boot-starter-mustache</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
@@ -32,17 +47,30 @@
     </dependency>
     <!-- Spring Boot -->
 
+    <!-- DB -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-boot-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+    <!-- DB-->
+
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <properties>
-    <java.version>1.8</java.version>
-  </properties>
+  <dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>${lombok.version}</version>
+  </dependency>
 
   <modules>
     <module>parser-url</module>
