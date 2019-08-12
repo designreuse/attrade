@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Map;
 
 @Controller
-public class GreetingController {
+public class MainController {
 
     @Autowired
     public MessageRepo messageRepo;
 
+    @GetMapping("/logout")
+    public String logout() {
+        return "login";
+    }
     @GetMapping("/")
     public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Map<String, Object> model) {
         model.put("name", name);
@@ -24,7 +28,7 @@ public class GreetingController {
 
     @GetMapping("/main")
     public String getMessages(Map<String, Object> model) {
-        return "messages";
+        return "main";
     }
 
     @PostMapping("/main")
@@ -33,7 +37,7 @@ public class GreetingController {
         messageRepo.save(message);
         Iterable<Message> messages = messageRepo.findAll();
         model.put("messages", messages);
-        return "messages";
+        return "main";
     }
 
     @PostMapping("filter")
@@ -45,6 +49,6 @@ public class GreetingController {
             messages = messageRepo.findByTag(filter);
         }
         model.put("messages", messages);
-        return "messages";
+        return "main";
     }
 }
