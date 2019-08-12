@@ -1,8 +1,10 @@
 package by.attrade.templates.controller;
 
 import by.attrade.domain.Message;
+import by.attrade.domain.User;
 import by.attrade.repos.MessageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,13 +29,17 @@ public class MainController {
     }
 
     @GetMapping("/main")
-    public String getMessages(Map<String, Object> model) {
+    public String getMessages() {
         return "main";
     }
 
     @PostMapping("/main")
-    public String addMessages(@RequestParam String text, @RequestParam String tag, Map<String, Object> model) {
-        Message message = new Message(text, tag);
+    public String addMessages(
+            @AuthenticationPrincipal User user,
+            @RequestParam String text,
+            @RequestParam String tag,
+            Map<String, Object> model) {
+        Message message = new Message(text, tag, user);
         messageRepo.save(message);
         Iterable<Message> messages = messageRepo.findAll();
         model.put("messages", messages);
