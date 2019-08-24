@@ -15,7 +15,7 @@
 </div>
 <div>
     <form method="get" action="/main">
-        <input type="text" name="filter" value="${filter}">
+        <input type="text" name="filter" value="${filter?if_exists}">
         <button type="SUBMIT">FIND</button>
     </form>
 </div>
