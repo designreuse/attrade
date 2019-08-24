@@ -1,4 +1,4 @@
-package by.attrade.templates.controller;
+package by.attrade.controller;
 
 import by.attrade.domain.Message;
 import by.attrade.domain.User;
