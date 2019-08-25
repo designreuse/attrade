@@ -45,6 +45,9 @@
       <artifactId>spring-boot-starter-freemarker</artifactId>
     </dependency>
 
+    <!-- Static resource reload(CTRL + SHIFT + F9):
+    1. Setting –> Build, Execution, Deployment –> Compiler and check Build project automatically->true
+    2. SHIFT + CTRL + A -> Registry-> compiler.automake.allow.when.app.running->true-->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
