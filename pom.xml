@@ -94,7 +94,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.flywaydb</groupId>
+      <groupId></groupId>
       <artifactId>flyway-core</artifactId>
     </dependency>
   </dependencies>

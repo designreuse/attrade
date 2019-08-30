@@ -20,6 +20,11 @@
                 <a class="nav-link" href="/user">User list <span class="sr-only">(current)</span></a>
             </li>
         </#if>
+        <#if user??>
+            <li class="nav-item"> <!-- элементы меню -->
+                <a class="nav-link" href="/user/profile">Profile <span class="sr-only">(current)</span></a>
+            </li>
+        </#if>
         </ul>
         <div class="navbar-text mr-3">${name}</div>
     <@l.logout />
