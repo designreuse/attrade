@@ -29,7 +29,11 @@ public class UserService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return userRepo.findByUsername(s);
+        final User user = userRepo.findByUsername(s);
+        if (user == null){
+            throw new UsernameNotFoundException("User is not found.");
+        }
+        return user;
     }
 
     public boolean addUser(User user) {
