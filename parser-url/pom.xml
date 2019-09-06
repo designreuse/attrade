@@ -10,7 +10,7 @@
   <groupId>by.attrade</groupId>
   <artifactId>parser-url</artifactId>
   <version>1.0</version>
-  <packaging>parser-url</packaging>
+  <packaging>jar</packaging>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
