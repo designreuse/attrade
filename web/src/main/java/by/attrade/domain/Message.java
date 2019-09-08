@@ -16,7 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Setter
 @Getter
 @Entity
