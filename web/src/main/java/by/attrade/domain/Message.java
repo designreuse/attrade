@@ -1,6 +1,7 @@
 package by.attrade.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;

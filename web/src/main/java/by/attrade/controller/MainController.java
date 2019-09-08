@@ -20,6 +20,7 @@ import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -103,7 +104,10 @@ public class MainController {
         model.addAttribute("messages", messages);
         model.addAttribute("message", message);
         model.addAttribute("isCurrentUser", currentUser.equals(user));
-
+        model.addAttribute("userChannel", user);
+        model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
+        model.addAttribute("subscribersCount", user.getSubscribers().size());
+        model.addAttribute("isSubscriber", user.getSubscribers().contains(currentUser));
         return "userMessages";
     }
 
@@ -116,15 +120,18 @@ public class MainController {
             @RequestParam("tag") String tag,
             @RequestParam("file") MultipartFile file
     ) throws IOException {
-        if(message.getAuthor().equals(currentUser)){
-            if(!StringUtils.isEmpty(text)){
-                message.setText(text);
+        if (message != null){
+            if(message.getAuthor().equals(currentUser)){
+                if(!StringUtils.isEmpty(text)){
+                    message.setText(text);
+                }
+                if(!StringUtils.isEmpty(tag)){
+                    message.setTag(tag);
+                }
+                saveFile(message,file);
             }
-            if(!StringUtils.isEmpty(tag)){
-                message.setTag(tag);
-            }
-            saveFile(message,file);
         }
         return "redirect:/user/messages/" + user;
     }
+
 }
