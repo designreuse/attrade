@@ -1,7 +1,8 @@
 package by.attrade.domain;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Entity;
@@ -12,11 +13,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 
-@NoArgsConstructor
-@Data
+@RequiredArgsConstructor
+@Setter
+@Getter
 @Entity
-public class Message {
+public class Message implements Serializable {
+    public static final long serialVersionUID = 2L;
     public Message(String text, String tag, User author) {
         this.text = text;
         this.tag = tag;
@@ -35,7 +39,8 @@ public class Message {
     @JoinColumn(name = "user_id")
     private User author;
     private String filename;
-    public String getAuthorName(){
-        return author!=null?author.getUsername():"<none>";
+
+    public String getAuthorName() {
+        return author != null ? author.getUsername() : "<none>";
     }
 }

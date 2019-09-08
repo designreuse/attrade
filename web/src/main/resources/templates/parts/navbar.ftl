@@ -12,9 +12,15 @@
             <li class="nav-item"> <!-- элементы меню -->
                 <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
             </li>
+        <#if user??>
             <li class="nav-item"> <!-- элементы меню -->
                 <a class="nav-link" href="/main">Messages<span class="sr-only">(current)</span></a>
             </li>
+            <li class="nav-item"> <!-- элементы меню -->
+                <a class="nav-link" href="/user/messages/${currentUserId}">My messages<span
+                        class="sr-only">(current)</span></a>
+            </li>
+        </#if>
         <#if isAdmin>
             <li class="nav-item"> <!-- элементы меню -->
                 <a class="nav-link" href="/user">User list <span class="sr-only">(current)</span></a>
