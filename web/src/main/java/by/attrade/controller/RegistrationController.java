@@ -1,37 +1,37 @@
 package by.attrade.controller;
 
+import by.attrade.controller.utils.ControllerUtils;
 import by.attrade.domain.User;
-import by.attrade.domain.dto.CaptchaResponseDTO;
+import by.attrade.domain.dto.RecaptchaResponseDTO;
+import by.attrade.service.RecaptchaService;
 import by.attrade.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
-import java.util.Collections;
 import java.util.Map;
 
 @Controller
 public class RegistrationController {
-    public static final String CAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s";
+    private final UserService userService;
+    private final RecaptchaService recaptchaService;
+
     @Autowired
-    private UserService userService;
-    @Value("${recaptcha.secret}")
-    private String captchaSecret;
-    @Autowired
-    private RestTemplate restTemplate;
+    public RegistrationController(UserService userService, RecaptchaService recaptchaService) {
+        this.userService = userService;
+        this.recaptchaService = recaptchaService;
+    }
 
     @GetMapping("/registration")
     public String registration() {
-
         return "registration";
     }
 
@@ -41,12 +41,11 @@ public class RegistrationController {
                           @Valid User user,
                           BindingResult bindingResult,
                           Model model) {
-        final String url = String.format(CAPTCHA_URL, captchaSecret, captchaResponse);
-        final CaptchaResponseDTO response = restTemplate.postForObject(url, Collections.emptyList(), CaptchaResponseDTO.class);
+        RecaptchaResponseDTO response = recaptchaService.getCaptchaResponseDTO(captchaResponse);
         if (!response.isSuccess()){
             model.addAttribute("captchaError", "Fill captcha.");
         }
-        final boolean isConfirmEmpty = StringUtils.isEmpty(passwordConfirm);
+        boolean isConfirmEmpty = StringUtils.isEmpty(passwordConfirm);
         if(isConfirmEmpty){
             model.addAttribute("password2Error", "Password confirmation cannot be empty.");
         }
@@ -54,7 +53,7 @@ public class RegistrationController {
             model.addAttribute("passwordError", "Passwords are different.");
         }
         if (!response.isSuccess() || isConfirmEmpty || bindingResult.hasErrors()) {
-            final Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
+            Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
             model.mergeAttributes(errors);
             return "registration";
         }
@@ -77,5 +76,4 @@ public class RegistrationController {
         }
         return "login";
     }
-
 }
