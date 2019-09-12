@@ -16,9 +16,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -35,7 +33,9 @@ public class Shop implements Serializable {
     @NotNull
     private String name;
     @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "shop_book", joinColumns = {@JoinColumn(name = "shop_id")},
+    @JoinTable(
+            name = "shop_book",
+            joinColumns = {@JoinColumn(name = "shop_id")},
             inverseJoinColumns = {@JoinColumn(name = "book_id")})
     private Set<Book> books = new HashSet<>();
 }

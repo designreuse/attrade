@@ -19,8 +19,12 @@ import java.util.Map;
 @Controller
 @RequestMapping("/user")
 public class UserController {
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
@@ -98,5 +102,4 @@ public class UserController {
         }
         return "subscriptions";
     }
-
 }

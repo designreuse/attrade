@@ -4,6 +4,7 @@ import by.attrade.domain.Role;
 import by.attrade.domain.User;
 import by.attrade.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,16 +22,23 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
+    private final UserRepo userRepo;
+    private final MailSender mailSender;
+    private final PasswordEncoder passwordEncoder;
+    @Value("${info.logo}")
+    private String logo;
+
     @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private MailSender mailSender;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserService(UserRepo userRepo, MailSender mailSender, PasswordEncoder passwordEncoder) {
+        this.userRepo = userRepo;
+        this.mailSender = mailSender;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        final User user = userRepo.findByUsername(s);
-        if (user == null){
+        User user = userRepo.findByUsername(s);
+        if (user == null) {
             throw new UsernameNotFoundException("User is not found.");
         }
         return user;
@@ -54,7 +62,7 @@ public class UserService implements UserDetailsService {
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format(
                     "Hello, %s! \n" +
-                            "Welcome to Sweater. Please, visit next link: http://localhost:8080/activate/%s",
+                            "Welcome to " + logo + ". Please, visit next link: http://localhost:8080/activate/%s",
                     user.getUsername(),
                     user.getActivationCode()
             );
@@ -78,10 +86,10 @@ public class UserService implements UserDetailsService {
 
     public void saveUser(User user, String username, Map<String, String> form) {
         user.setUsername(username);
-        final Set<String> roles = Arrays.stream(Role.values()).map(Role::name).collect(Collectors.toSet());
+        Set<String> roles = Arrays.stream(Role.values()).map(Role::name).collect(Collectors.toSet());
         user.getRoles().clear();
-        for (String key: form.keySet()){
-            if (roles.contains(key)){
+        for (String key : form.keySet()) {
+            if (roles.contains(key)) {
                 user.getRoles().add(Role.valueOf(key));
             }
         }
@@ -89,19 +97,19 @@ public class UserService implements UserDetailsService {
     }
 
     public void updateProfile(User user, String password, String email) {
-        final String userEmail = user.getEmail();
-        final boolean isEmailChanged = (email != null && !email.equals(userEmail)) || (userEmail != null && !userEmail.equals(email));
-        if(isEmailChanged){
+        String userEmail = user.getEmail();
+        boolean isEmailChanged = (email != null && !email.equals(userEmail)) || (userEmail != null && !userEmail.equals(email));
+        if (isEmailChanged) {
             user.setEmail(email);
-            if(!StringUtils.isEmpty(email)){
+            if (!StringUtils.isEmpty(email)) {
                 user.setActivationCode(UUID.randomUUID().toString());
             }
         }
-        if (!StringUtils.isEmpty(password)){
+        if (!StringUtils.isEmpty(password)) {
             user.setPassword(password);
         }
         userRepo.save(user);
-        if (isEmailChanged){
+        if (isEmailChanged) {
             sendMessage(user);
         }
     }

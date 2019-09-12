@@ -4,11 +4,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -24,6 +26,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -40,8 +44,11 @@ public class User implements UserDetails, Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @NotBlank(message = "Username cannot be empty.")
+//    @Length(min = 3, max = 24, message = "Minimum ${min}, maximum ${max}")
     private String username;
     @NotBlank(message = "Password cannot be empty.")
+//    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$",
+//            message = "Minimum 8 characters, at least one uppercase letter, one lowercase letter and one number.")
     private String password;
     private boolean active;
     @Email(message = "Email is not correct.")
@@ -60,7 +67,6 @@ public class User implements UserDetails, Serializable {
             joinColumns = {@JoinColumn(name = "channel_id")},
             inverseJoinColumns = {@JoinColumn(name = "subscriber_id")})
     private Set<User> subscribers = new HashSet<>();
-
     @ManyToMany
     @JoinTable(
             name = "user_subscribtions",

@@ -1,5 +1,6 @@
 package by.attrade.controller;
 
+import by.attrade.controller.utils.ControllerUtils;
 import by.attrade.domain.Message;
 import by.attrade.domain.User;
 import by.attrade.repos.MessageRepo;
@@ -20,17 +21,20 @@ import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 @Controller
 public class MainController {
+    private final MessageRepo messageRepo;
 
-    @Autowired
-    private MessageRepo messageRepo;
     @Value("${upload.path}")
     private String uploadPath;
+
+    @Autowired
+    public MainController(MessageRepo messageRepo) {
+        this.messageRepo = messageRepo;
+    }
 
     @GetMapping("/logout")
     public String logout() {
@@ -38,7 +42,9 @@ public class MainController {
     }
 
     @GetMapping("/")
-    public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Map<String, Object> model) {
+    public String greeting(
+            @RequestParam(name = "name", required = false, defaultValue = "World") String name,
+            Map<String, Object> model) {
         model.put("name", name);
         return "greeting";
     }
@@ -67,7 +73,7 @@ public class MainController {
             @RequestParam("file") MultipartFile file) throws IOException {
         message.setAuthor(user);
         if (bindingResult.hasErrors()) {
-            final Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
+            Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
             model.mergeAttributes(errors);
             model.addAttribute("message", message);
         } else {
@@ -80,7 +86,9 @@ public class MainController {
         return "main";
     }
 
-    private void saveFile(@Valid Message message, @RequestParam("file") MultipartFile file) throws IOException {
+    private void saveFile(
+            @Valid Message message,
+            @RequestParam("file") MultipartFile file) throws IOException {
         if (file != null && !file.getOriginalFilename().isEmpty()) {
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
@@ -100,7 +108,7 @@ public class MainController {
             @RequestParam(required = false) Message message,
             Model model
     ) {
-        final Set<Message> messages = user.getMessages();
+        Set<Message> messages = user.getMessages();
         model.addAttribute("messages", messages);
         model.addAttribute("message", message);
         model.addAttribute("isCurrentUser", currentUser.equals(user));
@@ -120,18 +128,17 @@ public class MainController {
             @RequestParam("tag") String tag,
             @RequestParam("file") MultipartFile file
     ) throws IOException {
-        if (message != null){
-            if(message.getAuthor().equals(currentUser)){
-                if(!StringUtils.isEmpty(text)){
+        if (message != null) {
+            if (message.getAuthor().equals(currentUser)) {
+                if (!StringUtils.isEmpty(text)) {
                     message.setText(text);
                 }
-                if(!StringUtils.isEmpty(tag)){
+                if (!StringUtils.isEmpty(tag)) {
                     message.setTag(tag);
                 }
-                saveFile(message,file);
+                saveFile(message, file);
             }
         }
         return "redirect:/user/messages/" + user;
     }
-
 }

@@ -1,4 +1,4 @@
-package by.attrade.service;
+package by.attrade.controller.rest;
 
 import by.attrade.domain.Book;
 import by.attrade.domain.Shop;
@@ -11,7 +11,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/shops")
-public class ShopService {
+public class ShopRestController {
     @GetMapping
     public Set<Book> test(
             @RequestParam Shop shop

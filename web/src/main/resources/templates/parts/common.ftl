@@ -25,7 +25,11 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
-<#include "navbar.ftl">
+<!-- reference your copy Font Awesome here (from our CDN or by hosting yourself) -->
+<link href="/static/fontawesome-free-5.10.2-web/css/fontawesome.css" rel="stylesheet">
+<link href="/static/fontawesome-free-5.10.2-web/css/brands.css" rel="stylesheet">
+<link href="/static/fontawesome-free-5.10.2-web/css/solid.css" rel="stylesheet">
+    <#include "navbar.ftl">
 <div class="container mt-5">
     <#nested>
 </div>
