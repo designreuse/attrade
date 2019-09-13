@@ -6,6 +6,7 @@ import by.attrade.domain.dto.RecaptchaResponseDTO;
 import by.attrade.service.RecaptchaService;
 import by.attrade.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -31,7 +32,8 @@ public class RegistrationController {
     }
 
     @GetMapping("/registration")
-    public String registration() {
+    public String registration(Model model) {
+        model.addAttribute("user", new User());
         return "registration";
     }
 
@@ -42,11 +44,11 @@ public class RegistrationController {
                           BindingResult bindingResult,
                           Model model) {
         RecaptchaResponseDTO response = recaptchaService.getCaptchaResponseDTO(captchaResponse);
-        if (!response.isSuccess()){
+        if (!response.isSuccess()) {
             model.addAttribute("captchaError", "Fill captcha.");
         }
         boolean isConfirmEmpty = StringUtils.isEmpty(passwordConfirm);
-        if(isConfirmEmpty){
+        if (isConfirmEmpty) {
             model.addAttribute("password2Error", "Password confirmation cannot be empty.");
         }
         if (user.getPassword() != null && !user.getPassword().equals(passwordConfirm)) {

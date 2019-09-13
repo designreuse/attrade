@@ -43,16 +43,20 @@ public class User implements UserDetails, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @NotBlank(message = "Username cannot be empty.")
-//    @Length(min = 3, max = 24, message = "Minimum ${min}, maximum ${max}")
+    @Length(min = 3, max = 24, message = "{by.attrade.domain.User.username.error}")
     private String username;
-    @NotBlank(message = "Password cannot be empty.")
-//    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$",
-//            message = "Minimum 8 characters, at least one uppercase letter, one lowercase letter and one number.")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$",
+            message = "{by.attrade.domain.User.password.error}")
     private String password;
     private boolean active;
-    @Email(message = "Email is not correct.")
-    @NotBlank(message = "Email cannot be empty.")
+    @Email(regexp = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&" +
+            "'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b" +
+            "\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:" +
+            "[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4]" +
+            "[0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*" +
+            "[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-" +
+            "\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])",
+            message = "{by.attrade.domain.User.email.error}")
     private String email;
     private String activationCode;
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
@@ -80,7 +84,6 @@ public class User implements UserDetails, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
 
         User user = (User) o;
-
         return id.equals(user.id);
     }
 
