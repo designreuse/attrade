@@ -3,16 +3,16 @@ package by.attrade.controller;
 import by.attrade.controller.utils.ControllerUtils;
 import by.attrade.domain.User;
 import by.attrade.domain.dto.RecaptchaResponseDTO;
+import by.attrade.service.MailSenderService;
 import by.attrade.service.RecaptchaService;
 import by.attrade.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,11 +24,15 @@ import java.util.Map;
 public class RegistrationController {
     private final UserService userService;
     private final RecaptchaService recaptchaService;
+    private final MailSenderService mailSenderService;
+    @Value("${info.logo}")
+    private String logo;
 
     @Autowired
-    public RegistrationController(UserService userService, RecaptchaService recaptchaService) {
+    public RegistrationController(UserService userService, RecaptchaService recaptchaService, MailSenderService mailSenderService) {
         this.userService = userService;
         this.recaptchaService = recaptchaService;
+        this.mailSenderService = mailSenderService;
     }
 
     @GetMapping("/registration")
@@ -56,10 +60,23 @@ public class RegistrationController {
             return "registration";
         }
         if (!userService.addUser(user)) {
+            sendMessage(user);
             model.addAttribute("usernameError", "User exists!");
             return "registration";
         }
         return "redirect:/login";
+    }
+
+    private void sendMessage(User user) {
+        if (!StringUtils.isEmpty(user.getEmail())) {
+            String message = String.format(
+                    "Hello, %s! \n" +
+                            "Welcome to " + logo + ". Please, visit next link: http://localhost:8080/activate/%s",
+                    user.getUsername(),
+                    user.getActivationCode()
+            );
+            mailSenderService.send(user.getEmail(), "Activation code", message);
+        }
     }
 
     @GetMapping("/activate/{code}")

@@ -12,7 +12,7 @@
             <li class="nav-item"> <!-- элементы меню -->
                 <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
             </li>
-        <#if user??>
+        <#if principalUser??>
             <li class="nav-item"> <!-- элементы меню -->
                 <a class="nav-link" href="/main">Messages<span class="sr-only">(current)</span></a>
             </li>
@@ -26,13 +26,13 @@
                 <a class="nav-link" href="/user">User list <span class="sr-only">(current)</span></a>
             </li>
         </#if>
-        <#if user??>
+        <#if principalUser??>
             <li class="nav-item"> <!-- элементы меню -->
                 <a class="nav-link" href="/user/profile">Profile <span class="sr-only">(current)</span></a>
             </li>
         </#if>
         </ul>
-        <div class="navbar-text mr-3"><#if user??>${name}<#else>Please, login</#if></div>
+        <div class="navbar-text mr-3"><#if principalUser??>${name}<#else>Please, login</#if></div>
     <@l.logout />
     </div>
 </nav>

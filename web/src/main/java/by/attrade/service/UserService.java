@@ -4,11 +4,9 @@ import by.attrade.domain.Role;
 import by.attrade.domain.User;
 import by.attrade.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -23,16 +21,10 @@ import java.util.stream.Collectors;
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepo userRepo;
-    private final MailSender mailSender;
-    private final PasswordEncoder passwordEncoder;
-    @Value("${info.logo}")
-    private String logo;
 
     @Autowired
-    public UserService(UserRepo userRepo, MailSender mailSender, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepo userRepo) {
         this.userRepo = userRepo;
-        this.mailSender = mailSender;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -52,22 +44,8 @@ public class UserService implements UserDetailsService {
         user.setActive(true);
         user.setRoles(Collections.singleton(Role.USER));
         user.setActivationCode(UUID.randomUUID().toString());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        sendMessage(user);
         userRepo.save(user);
         return true;
-    }
-
-    private void sendMessage(User user) {
-        if (!StringUtils.isEmpty(user.getEmail())) {
-            String message = String.format(
-                    "Hello, %s! \n" +
-                            "Welcome to " + logo + ". Please, visit next link: http://localhost:8080/activate/%s",
-                    user.getUsername(),
-                    user.getActivationCode()
-            );
-            mailSender.send(user.getEmail(), "Activation code", message);
-        }
     }
 
     public boolean activateUser(String code) {
@@ -109,9 +87,6 @@ public class UserService implements UserDetailsService {
             user.setPassword(password);
         }
         userRepo.save(user);
-        if (isEmailChanged) {
-            sendMessage(user);
-        }
     }
 
     public void subscribe(User currentUser, User user) {

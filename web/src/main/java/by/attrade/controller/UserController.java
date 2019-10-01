@@ -2,12 +2,15 @@ package by.attrade.controller;
 
 import by.attrade.domain.Role;
 import by.attrade.domain.User;
+import by.attrade.service.MailSenderService;
 import by.attrade.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,10 +23,14 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final MailSenderService mailSenderService;
+    @Value("${info.logo}")
+    private String logo;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, MailSenderService mailSenderService) {
         this.userService = userService;
+        this.mailSenderService = mailSenderService;
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -65,9 +72,23 @@ public class UserController {
             @RequestParam String password,
             @RequestParam String email) {
         userService.updateProfile(user, password, email);
+        sendMessage(user);
         return "redirect:/user/profile";
 
     }
+
+    private void sendMessage(User user) {
+        if (!StringUtils.isEmpty(user.getEmail())) {
+            String message = String.format(
+                    "Hello, %s! \n" +
+                            "Welcome to " + logo + ". Please, visit next link: http://localhost:8080/activate/%s",
+                    user.getUsername(),
+                    user.getActivationCode()
+            );
+            mailSenderService.send(user.getEmail(), "Activation code", message);
+        }
+    }
+
 
     @GetMapping("/subscribe/{user}")
     public String subscribe(
