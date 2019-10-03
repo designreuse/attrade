@@ -1,0 +1,58 @@
+package by.attrade.domain;
+
+import by.attrade.converter.LocalDateToTimestampConverter;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.Length;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
+@EqualsAndHashCode(callSuper = true)
+@RequiredArgsConstructor
+@Getter
+@Setter
+@Entity
+@PrimaryKeyJoinColumn(name = "person_id")
+public class Employee extends Person implements Serializable {
+    public static final long serialVersionUID = 1L;
+    @Length(max = 20)
+    @NotBlank
+    private String title;
+
+    @CreationTimestamp
+    @Convert(converter = LocalDateToTimestampConverter.class)
+    private LocalDate hireLD;
+
+    @NotNull
+    @Convert(converter = LocalDateToTimestampConverter.class)
+    private LocalDate expireContractLD;
+
+    @CreationTimestamp
+    @Convert(converter = LocalDateToTimestampConverter.class)
+    private LocalDate birthLD;
+
+    @Lob
+    @Column(length = 10240)
+    private byte[] photo;
+    @Min(0)
+    private int salary;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.PERSIST)
+    private Set<CustomerOrder> customerOrders = new HashSet<>();
+}
