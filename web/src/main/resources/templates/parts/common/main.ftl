@@ -29,7 +29,7 @@
 <link href="/static/fontawesome-free-5.10.2-web/css/fontawesome.css" rel="stylesheet">
 <link href="/static/fontawesome-free-5.10.2-web/css/brands.css" rel="stylesheet">
 <link href="/static/fontawesome-free-5.10.2-web/css/solid.css" rel="stylesheet">
-    <#include "navbar.ftl">
+    <#include "../navbar.ftl">
 <div class="container mt-5">
     <#nested>
 </div>
