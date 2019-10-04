@@ -1,5 +1,6 @@
 package by.attrade.config;
 
+import by.attrade.provider.AuthProvider;
 import by.attrade.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserService userService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthProvider authProvider;
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -30,22 +33,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                    .antMatchers("/", "/registration", "/static/**", "/activate/*","/pre-login").permitAll()
-                    .anyRequest().authenticated()
+                .antMatchers("/", "/registration", "/static/**", "/activate/*", "/pre-login").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                    .formLogin()
-                    .loginPage("/login")
-                    .permitAll()
+                .formLogin()
+                .loginPage("/login")
+                .permitAll()
                 .and()
-                    .rememberMe()
+                .rememberMe()
                 .and()
-                    .logout()
-                    .permitAll();
+                .logout()
+                .permitAll()
+                .and()
+                .formLogin()
+                .defaultSuccessUrl("/");
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService)
                 .passwordEncoder(passwordEncoder);
+        auth.authenticationProvider(authProvider);
     }
 }
