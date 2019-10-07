@@ -48,11 +48,11 @@ public class Employee extends Person implements Serializable {
     private LocalDate birthLD;
 
     @Lob
-    @Column(length = 10240)
     private byte[] photo;
+
     @Min(0)
     private int salary;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.PERSIST)
-    private Set<CustomerOrder> customerOrders = new HashSet<>();
+    private Set<Order> orders = new HashSet<>();
 }

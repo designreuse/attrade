@@ -28,6 +28,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
@@ -69,9 +70,6 @@ public class User implements UserDetails, Serializable {
             "\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])",
             message = "{by.attrade.domain.User.email.error}")
     private String email;
-
-    @Column(length = 16)
-    private String activationCode;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))

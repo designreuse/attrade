@@ -1,5 +1,7 @@
 package by.attrade.controller;
 
+import by.attrade.domain.VerificationToken;
+import by.attrade.service.VerificationTokenService;
 import by.attrade.type.Role;
 import by.attrade.domain.User;
 import by.attrade.service.MailSenderService;
@@ -24,13 +26,15 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
     private final MailSenderService mailSenderService;
-    @Value("${info.logo}")
-    private String logo;
+    private final VerificationTokenService verificationTokenService;
+    @Value("${info.mainURL}")
+    private String mainURL;
 
     @Autowired
-    public UserController(UserService userService, MailSenderService mailSenderService) {
+    public UserController(UserService userService, MailSenderService mailSenderService, VerificationTokenService verificationTokenService) {
         this.userService = userService;
         this.mailSenderService = mailSenderService;
+        this.verificationTokenService = verificationTokenService;
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -59,33 +63,18 @@ public class UserController {
         return "redirect:/user";
     }
 
-    @GetMapping("profile")
-    public String getProfile(Model model, @AuthenticationPrincipal User user) {
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("email", user.getEmail());
-        return "profile";
-    }
-
-    @PostMapping("profile")
-    public String updateProfile(
-            @AuthenticationPrincipal User user,
-            @RequestParam String password,
-            @RequestParam String email) {
-        userService.updateProfile(user, password, email);
-        sendMessage(user);
-        return "redirect:/user/profile";
-
-    }
-
-    private void sendMessage(User user) {
+    private void sendVerificationToken(User user) {
+        VerificationToken verificationToken = new VerificationToken(user);
+        verificationTokenService.save(verificationToken);
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format(
-                    "Hello, %s! \n" +
-                            "Welcome to " + logo + ". Please, visit next link: http://localhost:8080/activate/%s",
+                    "Приветствуем Вас, %s! \n" +
+                            "Вы обновили email на " + mainURL + "\n" +
+                            "Код активации:\t %s",
                     user.getUsername(),
-                    user.getActivationCode()
+                    verificationToken.getToken()
             );
-            mailSenderService.send(user.getEmail(), "Activation code", message);
+            mailSenderService.send(user.getEmail(), "Обновление аккаунта", message);
         }
     }
 

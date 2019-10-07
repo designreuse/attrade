@@ -22,6 +22,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -30,7 +31,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-public class CustomerOrder implements Serializable {
+@Table(name = "customer_order")
+public class Order implements Serializable {
     public static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

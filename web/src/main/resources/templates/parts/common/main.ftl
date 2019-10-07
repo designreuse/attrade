@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="/static/style.css">
     <!--Define parameters of viewing on different devices-->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
@@ -12,6 +11,13 @@
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <!-- Recaptcha-->
     <script src="https://www.google.com/recaptcha/api.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Material Design Bootstrap -->
+    <#--<link href="/static/mdb/css/mdb.min.css" rel="stylesheet">-->
+    <link href="/static/css/main.css" rel="stylesheet">
+    <link href="/static/css/sideNavMain.css" rel="stylesheet">
+
 </head>
 <body>
 <!-- Optional JavaScript -->
@@ -25,14 +31,17 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
-<!-- reference your copy Font Awesome here (from our CDN or by hosting yourself) -->
-<link href="/static/fontawesome-free-5.10.2-web/css/fontawesome.css" rel="stylesheet">
-<link href="/static/fontawesome-free-5.10.2-web/css/brands.css" rel="stylesheet">
-<link href="/static/fontawesome-free-5.10.2-web/css/solid.css" rel="stylesheet">
-    <#include "../navbar.ftl">
-<div class="container mt-5">
+<!-- MDB core JavaScript -->
+<#--<script type="text/javascript" src="/static/mdb/js/mdb.min.js"></script>-->
+
+    <#include "../main/navbar.ftl">
+    <#include "../main/navbar1.ftl">
+    <#include "../main/navbar2.ftl">
+
+<div class="container">
     <#nested>
 </div>
+
 </body>
 </html>
 </#macro>

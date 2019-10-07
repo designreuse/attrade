@@ -1,4 +1,4 @@
-<#import "parts/common.ftl" as c>
+<#import "parts/common/main.ftl" as c>
 <@c.page>
 <div class="form-row">
     <div class="form group col-md-6">

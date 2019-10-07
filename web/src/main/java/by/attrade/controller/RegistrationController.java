@@ -2,12 +2,16 @@ package by.attrade.controller;
 
 import by.attrade.controller.utils.ControllerUtils;
 import by.attrade.domain.User;
+import by.attrade.domain.VerificationToken;
 import by.attrade.domain.dto.RecaptchaResponseDTO;
 import by.attrade.service.MailSenderService;
 import by.attrade.service.RecaptchaService;
 import by.attrade.service.UserService;
+import by.attrade.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -19,20 +23,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 public class RegistrationController {
     private final UserService userService;
     private final RecaptchaService recaptchaService;
     private final MailSenderService mailSenderService;
-    @Value("${info.logo}")
-    private String logo;
+    private final VerificationTokenService verificationTokenService;
+    @Value("${info.mainURL}")
+    private String mainURL;
 
     @Autowired
-    public RegistrationController(UserService userService, RecaptchaService recaptchaService, MailSenderService mailSenderService) {
+    public RegistrationController(UserService userService, RecaptchaService recaptchaService, MailSenderService mailSenderService, VerificationTokenService verificationTokenService) {
         this.userService = userService;
         this.recaptchaService = recaptchaService;
         this.mailSenderService = mailSenderService;
+        this.verificationTokenService = verificationTokenService;
     }
 
     @GetMapping("/registration")
@@ -49,10 +56,10 @@ public class RegistrationController {
                           Model model) {
         RecaptchaResponseDTO response = recaptchaService.getCaptchaResponseDTO(captchaResponse);
         if (!response.isSuccess()) {
-            model.addAttribute("captchaError", "Fill captcha.");
+            model.addAttribute("captchaError", "Заполните reCAPTCHA.");
         }
         if (user.getPassword() != null && !user.getPassword().equals(passwordConfirm)) {
-            model.addAttribute("passwordError", "Passwords are different.");
+            model.addAttribute("passwordError", "Пароли не совпадают.");
         }
         if (!response.isSuccess() || bindingResult.hasErrors()) {
             Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
@@ -60,35 +67,53 @@ public class RegistrationController {
             return "registration";
         }
         if (!userService.addUser(user)) {
-            sendMessage(user);
-            model.addAttribute("usernameError", "User exists!");
+            model.addAttribute("usernameError", "Юзер с данным логином уже существует!");
             return "registration";
         }
-        return "redirect:/login";
+        sendVerificationToken(user);
+        return "redirect:/activation";
     }
 
-    private void sendMessage(User user) {
+    private void sendVerificationToken(User user) {
+        VerificationToken verificationToken = new VerificationToken(user);
+        verificationTokenService.save(verificationToken);
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format(
-                    "Hello, %s! \n" +
-                            "Welcome to " + logo + ". Please, visit next link: http://localhost:8080/activate/%s",
+                    "Приветствуем Вас, %s! \n" +
+                            "Вы зарегистрировались на " + mainURL + "\n" +
+                            "Код активации:\t %s",
                     user.getUsername(),
-                    user.getActivationCode()
+                    verificationToken.getToken()
             );
-            mailSenderService.send(user.getEmail(), "Activation code", message);
+            mailSenderService.send(user.getEmail(), "Активация аккаунта", message);
         }
     }
 
-    @GetMapping("/activate/{code}")
-    public String activate(Model model, @PathVariable String code) {
-        boolean isActivated = userService.activateUser(code);
-        if (isActivated) {
-            model.addAttribute("messageType", "success");
-            model.addAttribute("message", "User successfully activated.");
-        } else {
-            model.addAttribute("messageType", "danger");
-            model.addAttribute("message", "Activation code is not found.");
+    @GetMapping("/activation")
+    public String activation() {
+        return "activation";
+    }
+
+    @PostMapping("/activate")
+    public String activate(Model model, @RequestParam String code) {
+        Optional<VerificationToken> opt = verificationTokenService.findById(code);
+        if(opt.isPresent()){
+            VerificationToken token = opt.get();
+            if(token.isExpiredToken()){
+                return "activationExpired";
+            }
+            User user = token.getUser();
+            user.setActive(true);
+            userService.save(user);
+            verificationTokenService.deleteById(code);
+            return "activationSuccess";
         }
-        return "login";
+        model.addAttribute("activationError", "Введен неверный код");
+        return "activation";
+    }
+    @GetMapping("/activationAgain")
+    public String activationAgain(@AuthenticationPrincipal User user){
+        sendVerificationToken(user);
+        return "activation";
     }
 }

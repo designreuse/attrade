@@ -71,11 +71,9 @@ public class Product implements Serializable {
     @Length(max = 20)
     private String madeCountry;
 
-    @Column(length = 512)
     @Lob
     private byte[] icon;
 
-    @Column(length = 2048)
     @Lob
     private byte[] image;
 

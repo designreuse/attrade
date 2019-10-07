@@ -1,4 +1,4 @@
-<#import "parts/common.ftl" as c>
+<#import "parts/common/main.ftl" as c>
 <#import "parts/registration.ftl" as r>
 <@c.page>
 ${message!}

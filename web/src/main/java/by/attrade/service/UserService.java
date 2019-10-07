@@ -35,6 +35,9 @@ public class UserService implements UserDetailsService {
         }
         return user;
     }
+    public User save(User user){
+        return userRepo.save(user);
+    }
 
     public UserDetails loadUserByEmail(String s) throws UsernameNotFoundException {
         User user = userRepo.findByEmail(s);
@@ -51,17 +54,6 @@ public class UserService implements UserDetailsService {
         }
         user.setActive(true);
         user.setRoles(Collections.singleton(Role.USER));
-        user.setActivationCode(UUID.randomUUID().toString());
-        userRepo.save(user);
-        return true;
-    }
-
-    public boolean activateUser(String code) {
-        User user = userRepo.findByActivationCode(code);
-        if (user == null) {
-            return false;
-        }
-        user.setActivationCode(null);
         userRepo.save(user);
         return true;
     }
@@ -87,9 +79,6 @@ public class UserService implements UserDetailsService {
         boolean isEmailChanged = (email != null && !email.equals(userEmail)) || (userEmail != null && !userEmail.equals(email));
         if (isEmailChanged) {
             user.setEmail(email);
-            if (!StringUtils.isEmpty(email)) {
-                user.setActivationCode(UUID.randomUUID().toString());
-            }
         }
         if (!StringUtils.isEmpty(password)) {
             user.setPassword(password);

@@ -4,14 +4,19 @@ known = Session.SPRING_SECURITY_CONTEXT??
 <#if known>
     <#assign
     principalUser=Session.SPRING_SECURITY_CONTEXT.authentication.principal
-    name=principalUser.getUsername()
+    principalName=principalUser.getUsername()
     isAdmin=principalUser.isAdmin()
-    currentUserId=principalUser.getId()
+    principalId=principalUser.getId()
     >
 <#else>
     <#assign
-    name = "unknown"
+    principalName = "unknown"
     isAdmin=false
-    currentUserId=-1
+    principalId=-1
+    >
+</#if>
+<#if Session?? && Session.SPRING_SECURITY_LAST_EXCEPTION??>
+    <#assign
+    securityMessage=Session.SPRING_SECURITY_LAST_EXCEPTION.message
     >
 </#if>
