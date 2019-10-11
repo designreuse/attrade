@@ -1,10 +1,12 @@
 package by.attrade.domain;
 
 import by.attrade.converter.LocalDateToTimestampConverter;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.Singular;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 
@@ -22,7 +24,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-
+@Builder
 @EqualsAndHashCode(callSuper = true)
 @RequiredArgsConstructor
 @Getter
@@ -53,6 +55,7 @@ public class Employee extends Person implements Serializable {
     @Min(0)
     private int salary;
 
+    @Singular
     @OneToMany(mappedBy = "employee", cascade = CascadeType.PERSIST)
     private Set<Order> orders = new HashSet<>();
 }

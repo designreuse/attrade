@@ -3,6 +3,7 @@ package by.attrade.domain;
 import by.attrade.converter.LocalDateTimeToTimestampConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
