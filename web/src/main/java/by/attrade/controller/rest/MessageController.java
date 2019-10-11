@@ -1,7 +1,9 @@
 package by.attrade.controller.rest;
 
 import by.attrade.domain.Message;
+import by.attrade.domain.Views;
 import by.attrade.repos.MessageRepo;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,6 +28,7 @@ public class MessageController {
     }
 
     @GetMapping
+    @JsonView(Views.IdText.class)
     public List<Message> list() {
         return messageRepo.findAll();
     }

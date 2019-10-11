@@ -2,6 +2,7 @@ package by.attrade.domain;
 
 import by.attrade.converter.LocalDateTimeToTimestampConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -40,15 +41,18 @@ public class Message implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(Views.Id.class)
     private Long id;
 
     @Column(length = 2048)
     @NotBlank(message = "Please fill the message.")
     @Length(max = 2048, message = "Message is too long. More than 2kB.")
+    @JsonView(Views.Text.class)
     private String text;
 
     @Column(length = 255)
     @Length(max = 255, message = "Message is too long. More than 255B.")
+    @JsonView(Views.Tag.class)
     private String tag;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -61,5 +65,6 @@ public class Message implements Serializable {
     @CreationTimestamp
     @Convert(converter = LocalDateTimeToTimestampConverter.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd hh.mm.ss")
+    @JsonView(Views.CreationLDT.class)
     private LocalDateTime creationLDT;
 }
