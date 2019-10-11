@@ -19,19 +19,19 @@ import java.util.Map;
 @RequestMapping("message")
 public class MessageController {
     public List<Map<String, String>> messages = new ArrayList<>();
-    private static int count = 0;
+    private static int count = 3;
 
     {
         HashMap<String, String> map1 = new HashMap<>();
-        map1.put("id", "1");
+        map1.put("id", "0");
         map1.put("text", "text1");
         messages.add(map1);
         HashMap<String, String> map2 = new HashMap<>();
-        map2.put("id", "2");
+        map2.put("id", "1");
         map2.put("text", "text2");
         messages.add(map2);
         HashMap<String, String> map3 = new HashMap<>();
-        map3.put("id", "3");
+        map3.put("id", "2");
         map3.put("text", "text3");
         messages.add(map3);
     }
@@ -46,10 +46,10 @@ public class MessageController {
         return getMessage(id);
     }
 
-    private Map<String, String> getMessage(@PathVariable String id) {
+    private Map<String, String> getMessage(String id) {
         return messages
                 .stream()
-                .filter(id::equals).findFirst()
+                .filter(x->x.get("id").equals(id)).findFirst()
                 .orElseThrow(NotFoundException::new);
     }
 
