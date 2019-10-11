@@ -1,0 +1,2 @@
+ALTER TABLE product MODIFY icon VARCHAR (255);
+ALTER TABLE product MODIFY image VARCHAR (255);

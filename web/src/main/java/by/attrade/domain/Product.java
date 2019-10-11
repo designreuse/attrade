@@ -14,7 +14,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -71,11 +70,11 @@ public class Product implements Serializable {
     @Length(max = 20)
     private String madeCountry;
 
-    @Lob
-    private byte[] icon;
+    @Column(length = 255)
+    private String icon;
 
-    @Lob
-    private byte[] image;
+    @Column(length = 255)
+    private String image;
 
     @OneToOne(fetch = FetchType.LAZY)
     private Supplier supplier;
