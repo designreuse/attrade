@@ -1,11 +1,17 @@
 package by.attrade.domain;
 
+import by.attrade.converter.LocalDateTimeToTimestampConverter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,7 +21,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
+@ToString(of = {"id", "text"})
+@EqualsAndHashCode(of = {"id"})
 @RequiredArgsConstructor
 @Setter
 @Getter
@@ -48,4 +57,9 @@ public class Message implements Serializable {
 
     @Column(length = 255)
     private String filename;
+
+    @CreationTimestamp
+    @Convert(converter = LocalDateTimeToTimestampConverter.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd hh.mm.ss")
+    private LocalDateTime creationLDT;
 }
