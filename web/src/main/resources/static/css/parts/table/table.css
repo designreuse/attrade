@@ -1,0 +1,18 @@
+.parts-table-table * {
+    box-sizing: border-box;
+    background-color: #fffafe;
+}
+
+/* Create two equal columns that floats next to each other */
+.parts-table-table .col {
+    float: left;
+    padding: 10px;
+    height: 1000px; /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.parts-table-table .row:after {
+    content: "";
+    display: table;
+    clear: both;
+}

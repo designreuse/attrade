@@ -1,10 +1,10 @@
 <#include "security.ftl">
 <#macro login path>
-<div class="container">
+<div class="parts-login-login">
     <div class="d-flex justify-content-center h-100">
         <div class="card">
             <div class="card-header">
-                <h6>     через соцсети &#8594;</h6>
+                <h6> через соцсети &#8594;</h6>
                 <h3>Вход в аккаунт</h3>
                 <div class="d-flex justify-content-end social_icon">
                     <span><i class="fab fa-facebook-square"></i></span>
@@ -19,7 +19,8 @@
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
                         </div>
                         <input type="text" name="username"
-                               class="form-control ${(securityMessage??)?string('is-invalid','')}" placeholder="логин или email"/>
+                               class="form-control ${(securityMessage??)?string('is-invalid','')}"
+                               placeholder="логин или email"/>
 
                     </div>
                     <div class="input-group form-group">
@@ -27,7 +28,8 @@
                             <span class="input-group-text"><i class="fas fa-key"></i></span>
                         </div>
                         <input type="password" name="password"
-                               class="form-control ${(securityMessage??)?string('is-invalid','')}" placeholder="пароль"/>
+                               class="form-control ${(securityMessage??)?string('is-invalid','')}"
+                               placeholder="пароль"/>
                     </div>
 
                     <div class="form-group">
@@ -51,8 +53,20 @@
 
 <#macro logout>
     <#include "security.ftl">
-<form action="/logout" method="post">
-    <input type="hidden" name="_csrf" value="${_csrf.token}">
-    <button type="submit" class="btn btn-primary btn-md my-sm-0"><#if principalUser??>Выйти<#else>Войти</#if></button>
-</form>
+<input type="hidden" name="_csrf" value="${_csrf.token}">
+    <form action="/logout" method="post">
+        <button type="submit" role="button" class="btn btn-primary">
+            <span class="badge bg-transparent">
+                <#if principalUser??>
+                    <i class="fa fa-lock" aria-hidden="true">
+                        </i>
+                Выйти
+                <#else>
+                    <i class="fa fa-lock-open" aria-hidden="true">
+                    </i>
+                    Войти
+                </#if>
+                </span>
+        </button>
+    </form>
 </#macro>

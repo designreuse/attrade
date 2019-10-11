@@ -22,7 +22,7 @@
                    placeholder="Поиск в каталоге. Например, &#34;лампа led&#34;" aria-label="Search">
         </div>
 
-        <div class="btn-group btn-group-lg" role="group" aria-label="Basic example">
+        <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
         <@r.account/>
         <@l.logout/>
         </div>

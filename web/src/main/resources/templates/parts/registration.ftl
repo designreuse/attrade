@@ -72,12 +72,24 @@
 <#macro account>
     <#include "security.ftl">
     <#if principalUser??>
-    <form action="/cabinet" method="get">
-        <button type="submit" class="btn btn-success btn-md mr-sm-2">${principalName}</button>
+    <form action="/account" method="get">
+        <button type="submit" role="button" class="btn btn-success btn mr-2">
+            <span class="badge bg-transparent">
+                    <i class="fa fa-user" aria-hidden="true">
+                        </i>
+            ${principalName}
+                </span>
+        </button>
     </form>
     <#else>
     <form action="/registration" method="get">
-        <button type="submit" class="btn btn-danger btn-md mr-sm-2">Регистрация</button>
+        <button type="submit" role="button" class="btn btn-danger btn mr-2">
+            <span class="badge bg-transparent">
+                    <i class="fa fa-user" aria-hidden="true">
+                        </i>
+            Регистрация
+                </span>
+        </button>
     </form>
     </#if>
 </#macro>
