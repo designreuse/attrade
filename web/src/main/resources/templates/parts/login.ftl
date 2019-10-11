@@ -14,6 +14,7 @@
             </div>
             <div class="card-body">
                 <form action="${path}" method="post" xmlns="http://www.w3.org/1999/html">
+                    <input type="hidden" name="_csrf" value="${_csrf.token}">
                     <div class="input-group form-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
@@ -33,7 +34,6 @@
                     </div>
 
                     <div class="form-group">
-                        <input type="hidden" name="_csrf" value="${_csrf.token}">
                         <input type="submit" value="Войти" class="btn float-right login_btn">
                     </div>
                 </form>
@@ -53,7 +53,6 @@
 
 <#macro logout>
     <#include "security.ftl">
-<input type="hidden" name="_csrf" value="${_csrf.token}">
     <form action="/logout" method="post">
         <button type="submit" role="button" class="btn btn-primary">
             <span class="badge bg-transparent">
@@ -68,5 +67,6 @@
                 </#if>
                 </span>
         </button>
+        <input type="hidden" name="_csrf" value="${_csrf.token}">
     </form>
 </#macro>

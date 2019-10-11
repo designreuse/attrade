@@ -54,7 +54,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .defaultSuccessUrl("/")
                 .and()
-                .csrf().disable().antMatcher("/message/**");
+                .csrf()
+                .ignoringAntMatchers("/message/**");
     }
 
     @Override
