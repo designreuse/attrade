@@ -1,9 +1,11 @@
 package by.attrade.domain;
 
 import by.attrade.converter.LocalDateToTimestampConverter;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.Singular;
@@ -27,6 +29,7 @@ import java.util.Set;
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity
