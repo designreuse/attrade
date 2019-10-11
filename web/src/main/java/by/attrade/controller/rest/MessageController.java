@@ -1,6 +1,9 @@
 package by.attrade.controller.rest;
 
-import by.attrade.controller.rest.exception.NotFoundException;
+import by.attrade.domain.Message;
+import by.attrade.repos.MessageRepo;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,67 +13,41 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("message")
 public class MessageController {
-    public List<Map<String, String>> messages = new ArrayList<>();
-    private static int count = 3;
+    private final MessageRepo messageRepo;
 
-    {
-        HashMap<String, String> map1 = new HashMap<>();
-        map1.put("id", "0");
-        map1.put("text", "text1");
-        messages.add(map1);
-        HashMap<String, String> map2 = new HashMap<>();
-        map2.put("id", "1");
-        map2.put("text", "text2");
-        messages.add(map2);
-        HashMap<String, String> map3 = new HashMap<>();
-        map3.put("id", "2");
-        map3.put("text", "text3");
-        messages.add(map3);
+    @Autowired
+    public MessageController(MessageRepo messageRepo) {
+        this.messageRepo = messageRepo;
     }
 
     @GetMapping
-    public List<Map<String, String>> list() {
-        return messages;
+    public List<Message> list() {
+        return messageRepo.findAll();
     }
 
     @GetMapping("{id}")
-    public Map<String, String> getOne(@PathVariable String id) {
-        return getMessage(id);
-    }
-
-    private Map<String, String> getMessage(String id) {
-        return messages
-                .stream()
-                .filter(x->x.get("id").equals(id)).findFirst()
-                .orElseThrow(NotFoundException::new);
-    }
-
-    @PostMapping
-    public Map<String, String> create(@RequestBody Map<String, String> message) {
-        message.put("id", String.valueOf(count++));
-        messages.add(message);
+    public Message getOne(@PathVariable("id") Message message) {
         return message;
     }
 
+    @PostMapping
+    public Message create(@RequestBody Message message) {
+        return messageRepo.save(message);
+    }
+
     @PutMapping("{id}")
-    public Map<String, String> update(@RequestBody Map<String, String> message, @PathVariable String id) {
-        Map<String, String> messageFromDB = getMessage(id);
-        messageFromDB.putAll(message);
-        messageFromDB.put("id", id);
-        return messageFromDB;
+    public Message update(@RequestBody Message message, @PathVariable("id") Message messageFromDB) {
+        BeanUtils.copyProperties(message, messageFromDB, "id");
+        return messageRepo.save(messageFromDB);
     }
 
     @DeleteMapping("{id}")
-    public void delete(@PathVariable String id) {
-        Map<String, String> message = getMessage(id);
-        messages.remove(message);
+    public void delete(@PathVariable Long id) {
+        messageRepo.deleteById(id);
     }
 }
