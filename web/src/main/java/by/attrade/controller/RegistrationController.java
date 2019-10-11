@@ -8,6 +8,7 @@ import by.attrade.service.MailSenderService;
 import by.attrade.service.RecaptchaService;
 import by.attrade.service.UserService;
 import by.attrade.service.VerificationTokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Controller
+@Slf4j
 public class RegistrationController {
     private final UserService userService;
     private final RecaptchaService recaptchaService;
@@ -56,6 +58,7 @@ public class RegistrationController {
                           Model model) {
         RecaptchaResponseDTO response = recaptchaService.getCaptchaResponseDTO(captchaResponse);
         if (!response.isSuccess()) {
+            log.debug("Recaptcha error: {}", response);
             model.addAttribute("captchaError", "Заполните reCAPTCHA.");
         }
         if (user.getPassword() != null && !user.getPassword().equals(passwordConfirm)) {
