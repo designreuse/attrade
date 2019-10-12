@@ -1,0 +1,5 @@
+ALTER TABLE usr
+  ADD sub VARCHAR (255);
+
+ALTER TABLE usr
+  ADD lastModifiedLDT TIMESTAMP;
