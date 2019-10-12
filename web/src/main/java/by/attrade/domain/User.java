@@ -1,11 +1,16 @@
 package by.attrade.domain;
 
+import by.attrade.converter.LocalDateTimeToTimestampConverter;
 import by.attrade.converter.PasswordConverter;
 import by.attrade.type.Role;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,12 +38,16 @@ import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+@ToString(of = {"id", "username", "password", "email", "active"})
 @EqualsAndHashCode(of = {"id"})
 @RequiredArgsConstructor
+@AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -54,12 +63,19 @@ public class User implements UserDetails, Serializable {
     @Length(min = 3, max = 24, message = "{by.attrade.domain.User.username.error}")
     private String username;
 
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$",
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z0-9_-]{8,}$",
             message = "{by.attrade.domain.User.password.error}")
     @Convert(converter = PasswordConverter.class)
     private String password;
 
     private boolean active;
+
+    // oAoth2 (google)
+    private String sub;
+
+    @UpdateTimestamp
+    @Convert(converter = LocalDateTimeToTimestampConverter.class)
+    private LocalDateTime lastModifiedLDT;
 
     @Email(regexp = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&" +
             "'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b" +
