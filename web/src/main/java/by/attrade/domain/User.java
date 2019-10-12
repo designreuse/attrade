@@ -59,8 +59,8 @@ public class User implements UserDetails, Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(length = 24)
-    @Length(min = 3, max = 24, message = "{by.attrade.domain.User.username.error}")
+    @Column(length = 100)
+    @Length(min = 3, max = 100, message = "{by.attrade.domain.User.username.error}")
     private String username;
 
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z0-9_-]{8,}$",

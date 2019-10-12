@@ -1,0 +1,1 @@
+ALTER TABLE usr MODIFY username VARCHAR (100);
