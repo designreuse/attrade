@@ -1,8 +1,8 @@
 package by.attrade.service;
 
-import by.attrade.type.Role;
 import by.attrade.domain.User;
 import by.attrade.repos.UserRepo;
+import by.attrade.type.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +44,9 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("User is not found.");
         }
         return user;
+    }
+    public User findBySub(String sub){
+        return userRepo.findBySub(sub);
     }
 
     public boolean addUser(User user) {
