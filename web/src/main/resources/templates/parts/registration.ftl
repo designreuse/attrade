@@ -1,3 +1,4 @@
+<#include "security.ftl">
 <#macro registration path>
 <form action="${path}" method="post">
     <div class="form-group row">
@@ -70,18 +71,25 @@
 </#macro>
 
 <#macro account>
-    <#include "security.ftl">
     <#if principalUser??>
-    <form action="/account" method="get">
-        <button type="submit" role="button" class="btn btn-success btn mr-2">
+    <@account_cabinet/>
+    <#else>
+    <@account_new_modal/>
+    </#if>
+</#macro>
+
+<#macro account_cabinet>
+<form action="/account" method="get">
+    <button type="submit" role="button" class="btn btn-success btn mr-2">
             <span class="badge bg-transparent">
                     <i class="fa fa-user" aria-hidden="true">
                         </i>
             ${principalName}
                 </span>
-        </button>
-    </form>
-    <#else>
+    </button>
+</form>
+</#macro>
+<#macro account_new>
     <form action="/registration" method="get">
         <button type="submit" role="button" class="btn btn-danger btn mr-2">
             <span class="badge bg-transparent">
@@ -91,5 +99,32 @@
                 </span>
         </button>
     </form>
-    </#if>
+</#macro>
+
+<#macro account_new_modal>
+<button type="button" class="btn btn-danger btn mr-2" data-toggle="modal" data-target="#account-new-modal">
+            <span class="badge bg-transparent">
+                    <i class="fa fa-user" aria-hidden="true">
+                        </i>
+            Регистрация
+                </span>
+</button>
+
+<div class="modal fade" id="account-new-modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" type="button"  data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                Modal body ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 </#macro>
