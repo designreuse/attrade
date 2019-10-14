@@ -31,7 +31,7 @@
                 Группа 5</a>
         </li>
         </ul>
-        <ul class="navbar-nav">
+        <ul class="navbar-nav>"
             <li class="nav-item">
                 <a class="btn btn-light btn-lg btn-block border border-primary" role="button" href="#">
                     <img src="/static/image/logo.png" class="btn-img-top" style="width: 200px" alt="..."><br>

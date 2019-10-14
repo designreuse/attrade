@@ -1,7 +1,7 @@
 <#import "../login.ftl" as l>
 <#import "../registration.ftl" as r>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light navbar-static-top">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar1"
             aria-controls="navbar1" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -21,10 +21,9 @@
             <input class="form-control my-0 py-1 mr-5" type="text"
                    placeholder="Поиск в каталоге. Например, &#34;лампа led&#34;" aria-label="Search">
         </div>
-
-        <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-        <@r.account/>
+    </div>
+    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+    <@r.account/>
         <@l.logout/>
-        </div>
     </div>
 </nav>

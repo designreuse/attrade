@@ -1,22 +1,14 @@
-<div class="parts-table-table-product">
-    <div class="d-flex flex-row">
-    <#list 1..4 as i>
-        <div class="col-xs-3 d-flex align-items-stretch">
-            <div class="card" style="width: 12rem;">
-                <img src="/static/image/logo.png" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">Card title</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                        card's content.</p>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Cras justo odo</li>
-                    <li class="list-group-item">Dapibus ac facilisis in</li>
-                    <li class="list-group-item">Vestibulum at eros</li>
-                </ul>
-                <div class="card-body">
-                    <a href="#" class="card-link">Card link</a>
-                    <a href="#" class="card-link">Another link</a>
+<#--<div class="parts-table-table-product">-->
+<div class="container">
+    <div class="row">
+    <#list 1..20 as i>
+        <div class="col-xs-2 col-lg-3 my-2">
+            <div class="thumbnail">
+                <a href="#"><img src="http://placehold.it/200x180" alt=""></a>
+                <div class="caption">
+                    <h5><a href="#">Name of product</a></h5>
+                    <p>Description of product</p>
+                    <a href="#" class="btn btn-success" style="background: green">Купить</a>
                 </div>
             </div>
         </div>
@@ -36,3 +28,5 @@
         </ul>
     </nav>
 </div>
+
+<#--</div>-->
