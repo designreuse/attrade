@@ -14,12 +14,12 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <!-- Material Design Bootstrap -->
-    <#--<link href="/static/mdb/css/mdb.min.css" rel="stylesheet">-->
+<#--<link href="/static/mdb/css/mdb.min.css" rel="stylesheet">-->
 
     <!-- версия для разработки, отображает полезные предупреждения в консоли -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
-    <link href="/static/css/all.css" rel="stylesheet">
+    <link href="/static/css/common/main.css" rel="stylesheet">
 
 </head>
 <body>
@@ -42,11 +42,7 @@
     <#include "../navbar/navbar2.ftl">
     <#include "../navbar/navbar3.ftl">
 
-
-
-<div class="container">
     <#nested>
-</div>
 
 </body>
 </html>
