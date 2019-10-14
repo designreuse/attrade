@@ -52,7 +52,6 @@
 </#macro>
 
 <#macro logout>
-    <#include "security.ftl">
     <form action="/logout" method="post">
         <button type="submit" role="button" class="btn btn-primary">
             <span class="badge bg-transparent">
