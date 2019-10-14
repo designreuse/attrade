@@ -1,7 +1,7 @@
 <#import "../login.ftl" as l>
 <#import "../registration.ftl" as r>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light navbar-static-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-light navbar-static-top pb-3">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar1"
             aria-controls="navbar1" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>

@@ -72,9 +72,9 @@
 
 <#macro account>
     <#if principalUser??>
-    <@account_cabinet/>
+        <@account_cabinet/>
     <#else>
-    <@account_new_modal/>
+        <@account_new_modal/>
     </#if>
 </#macro>
 
@@ -90,31 +90,33 @@
 </form>
 </#macro>
 <#macro account_new>
-    <form action="/registration" method="get">
-        <button type="submit" role="button" class="btn btn-danger btn mr-2">
+<form action="/registration" method="get">
+    <button type="submit" role="button" class="btn btn-danger btn mr-2">
             <span class="badge bg-transparent">
                     <i class="fa fa-user" aria-hidden="true">
                         </i>
             Регистрация
                 </span>
-        </button>
-    </form>
+    </button>
+</form>
 </#macro>
 
 <#macro account_new_modal>
-<button type="button" class="btn btn-danger btn mr-2" data-toggle="modal" data-target="#account-new-modal">
+<form>
+    <button type="button" class="btn btn-danger btn mr-2" data-toggle="modal" data-target="#account-new-modal">
             <span class="badge bg-transparent">
                     <i class="fa fa-user" aria-hidden="true">
                         </i>
             Регистрация
                 </span>
-</button>
+    </button>
+</form>
 
 <div class="modal fade" id="account-new-modal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <button class="close" type="button"  data-dismiss="modal">&times;</button>
+                <button class="close" type="button" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Modal title</h4>
             </div>
             <div class="modal-body">
