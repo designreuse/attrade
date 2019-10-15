@@ -108,9 +108,6 @@ public class RegistrationController {
                     "Приветствуем Вас, {0}! \n" +
                             "Вы зарегистрировались на " + url + "\n" +
                             "\n"+
-                            "Ссылка ниже действительна в течение " +
-                            DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale)
-                                    .format(LocalTime.of(0,0).plus(registrationTokenExpirationDTConfig.getExpirationDT())) +"\n"+
                             "Перейдите по ссылке для подтверждения регистрации:\n " +
                             "http://"+ url + "/registration/activate/{1}",
                     user.getUsername(),
@@ -128,9 +125,6 @@ public class RegistrationController {
     @GetMapping("/activate/{token}")
     public String activate(Model model, @PathVariable VerificationToken token) {
         if(token != null){
-            if(token.isExpiredToken()){
-                return "activationExpired";
-            }
             User user = token.getUser();
             user.setActive(true);
             userService.save(user);
