@@ -31,17 +31,17 @@ public class AuthProvider implements AuthenticationProvider {
         String password = (String) authentication.getCredentials();
         User user;
         if (GenericValidator.isEmail(username)) {
-            user = (User) userService.loadUserByEmail(username);
+            user = userService.loadUserByEmail(username);
         } else {
-            user = (User) userService.loadUserByUsername(username);
+            user = userService.loadUserByUsername(username);
         }
         if (user != null) {
-            if (!passwordEncoder.matches(password, user.getPassword())) {
-                throw new BadCredentialsException("Wrong password");
+            if (!passwordEncoder.matches(passwordEncoder.encode(password), user.getPassword())) {
+                throw new BadCredentialsException("Wrong password!");
             }
             Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
             return new UsernamePasswordAuthenticationToken(user, password, authorities);
-        } else throw new BadCredentialsException("Username not found");
+        } else throw new BadCredentialsException("Username not found!");
     }
 
     public boolean supports(Class<?> arg) {

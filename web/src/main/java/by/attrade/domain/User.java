@@ -1,7 +1,6 @@
 package by.attrade.domain;
 
 import by.attrade.converter.LocalDateTimeToTimestampConverter;
-import by.attrade.converter.PasswordConverter;
 import by.attrade.type.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,10 +32,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -60,12 +57,8 @@ public class User implements UserDetails, Serializable {
     private Long id;
 
     @Column(length = 100)
-    @Length(min = 3, max = 100, message = "{by.attrade.domain.User.username.error}")
     private String username;
 
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z0-9_-]{8,}$",
-            message = "{by.attrade.domain.User.password.error}")
-    @Convert(converter = PasswordConverter.class)
     private String password;
 
     private boolean active;
@@ -77,6 +70,8 @@ public class User implements UserDetails, Serializable {
     @Convert(converter = LocalDateTimeToTimestampConverter.class)
     private LocalDateTime lastModifiedLDT;
 
+    @Column(length = 100)
+    @Length(max = 100, message = "{by.attrade.domain.User.email.length.error}")
     @Email(regexp = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&" +
             "'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b" +
             "\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:" +

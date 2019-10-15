@@ -2,11 +2,14 @@ package by.attrade.service;
 
 import by.attrade.domain.User;
 import by.attrade.repos.UserRepo;
+import by.attrade.service.exception.UserAlreadyExistsException;
+import by.attrade.service.exception.UserPasswordValidationException;
+import by.attrade.service.validation.UserPasswordValidationService;
 import by.attrade.type.Role;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -20,6 +23,10 @@ import java.util.stream.Collectors;
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepo userRepo;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserPasswordValidationService userPasswordValidationService;
 
     @Autowired
     public UserService(UserRepo userRepo) {
@@ -27,7 +34,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+    public User loadUserByUsername(String s) throws UsernameNotFoundException {
         User user = userRepo.findByUsername(s);
         if (user == null) {
             throw new UsernameNotFoundException("User is not found.");
@@ -38,7 +45,7 @@ public class UserService implements UserDetailsService {
         return userRepo.save(user);
     }
 
-    public UserDetails loadUserByEmail(String s) throws UsernameNotFoundException {
+    public User loadUserByEmail(String s) throws UsernameNotFoundException {
         User user = userRepo.findByEmail(s);
         if (user == null) {
             throw new UsernameNotFoundException("User is not found.");
@@ -49,12 +56,13 @@ public class UserService implements UserDetailsService {
         return userRepo.findBySub(sub);
     }
 
-    public boolean addUser(User user) {
+    public boolean register(User user) throws UserAlreadyExistsException, UserPasswordValidationException {
         User userFromDB = userRepo.findByUsername(user.getUsername());
         if (userFromDB != null) {
-            return false;
+            throw new UserAlreadyExistsException();
         }
-        user.setActive(true);
+        userPasswordValidationService.validate(user.getPassword());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Collections.singleton(Role.USER));
         userRepo.save(user);
         return true;
