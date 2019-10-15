@@ -1,21 +1,6 @@
 <#include "security.ftl">
 <#macro registration path>
 <form action="${path}" method="post">
-    <div class="form-group row">
-        <!--поле 'User Name' размером в 2 клонки, поле как label-->
-        <label class="col-sm-2 col-form-label"> Логин: </label>
-        <span class="input-group-text"> <i class="fas fa-user"></i> </span>
-        <div class="col-sm-6">
-            <input type="text" name="username" value="<#if user.username??>${user.username}<#else></#if>"
-                   class="form-control ${(usernameError??)?string('is-invalid','')}" placeholder="Логин"/>
-            <!--поле ввода как 'form-control'-->
-            <#if usernameError??>
-                <div class="invalid-feedback">
-                ${usernameError}
-                </div>
-            </#if>
-        </div>
-    </div>
 
     <div class="form-group row">
         <label class="col-sm-2 col-form-label"> Email:</label>
@@ -26,6 +11,11 @@
             <#if emailError??>
                 <div class="invalid-feedback">
                 ${emailError}
+                </div>
+            </#if>
+            <#if usernameError??>
+                <div class="invalid-feedback">
+                ${usernameError}
                 </div>
             </#if>
         </div>
@@ -74,7 +64,7 @@
     <#if principalUser??>
         <@account_cabinet/>
     <#else>
-        <@account_new_modal/>
+        <@account_new/>
     </#if>
 </#macro>
 

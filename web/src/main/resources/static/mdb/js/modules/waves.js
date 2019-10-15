@@ -105,7 +105,7 @@
 
   var Effect = {
 
-    // Effect duration
+    // Effect expirationDT
     duration: 750,
 
     // Effect delay (check for scroll before showing effect)

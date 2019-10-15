@@ -35,7 +35,7 @@
  *
 */
 
-// t: current time, b: begInnIng value, c: change In value, d: duration
+// t: current time, b: begInnIng value, c: change In value, d: expirationDT
 jQuery.easing['jswing'] = jQuery.easing['swing'];
 
 jQuery.extend( jQuery.easing,

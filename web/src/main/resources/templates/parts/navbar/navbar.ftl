@@ -1,6 +1,7 @@
 <#include "../security.ftl">
 <div class="parts-navbar-navbar">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-static-top">     <!-- размер и цветовая схема-->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-static-top pb-2 pt-2">
+        <!-- размер и цветовая схема-->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar"
                 aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -8,11 +9,33 @@
         <div class="collapse navbar-collapse" id="navbar">  <!--указываем, что меню сворачивается-->
             <ul class="navbar-nav mr-auto"> <!-- ul - список; mr-auto - автоматически генерируемое меню-->
                 <li class="nav-item"> <!-- элементы меню -->
-                    <div class="btn-group btn-group-md" role="group" aria-label="Basic example">
-                        <button type="submit" role="button" href="/product" class="btn btn-secondary">Каталог
+                    <div class="btn-group btn-group-md btn-group-justified ml-2" role="group"
+                         aria-label="Basic example">
+                        <button type="submit" role="button" href="/product" class="btn btn-primary">Каталог
                         </button>
                     </div>
-
+                </li>
+                <li class="nav-item">
+                    <div class="btn-group btn-group-sm btn-group-justified  ml-2">
+                        <a class="btn btn-secondary btn-sm rounded-0 mr-1" href="tel:+375445867823">
+                            <img src="/static/image/icon/velcom.png">
+                            <span class="glyphicon glyphicon-earphone"></span>
+                            <small>+375(44)</small>
+                            <b>586-78-23</b>
+                        </a>
+                        <a class="btn btn-secondary btn-sm rounded-0  mr-1" href="tel:+375292612505">
+                            <span class="glyphicon glyphicon-earphone"></span>
+                            <img src="/static/image/icon/mts.png">
+                            <small>+375(29)</small>
+                            <b>261-25-05</b>
+                        </a>
+                        <a class="btn btn-secondary btn-sm rounded-0 " href="tel:+375173884060">
+                            <span class="glyphicon glyphicon-earphone"></span>
+                            <img src="/static/image/icon/phone_wipe.png">
+                            <small>+375(17)</small>
+                            <b>388-40-60</b>
+                        </a>
+                    </div>
                 </li>
             <#if isAdmin>
                 <li class="nav-item"> <!-- элементы меню -->

@@ -10,18 +10,8 @@
             Активируйте аккаунт - это поволит Вам совершать покупки без ограничений.
         </h5>
         <p class="card-text">
-            На Ваш почтовый ящик отплавлено письмо с кодом активации.</br>
+            На Ваш почтовый ящик отплавлено письмо со ссылкой на активацию аккаунта.</br>
         </p>
-        <#--<form class="form-inline" action="/activation/activate" method="post">-->
-            <#--<div class="form-group mx-sm-3 mb-2">-->
-                <#--<input type="text" name="code" class="form-control" id="code" placeholder="код активации">-->
-            <#--</div>-->
-            <#--<button type="submit" class="btn btn-primary mb-2">Активировать</button>-->
-        <#--</form>-->
-        <form action="/activate" method="post">
-            <input type="hidden" name="_csrf" value="${_csrf.token}">
-            <input type="text" name="code" placeholder="код активации">
-        </form>
         <#if activationError??>
             <div class="alert alert-danger" role="alert">
             ${activationError}

@@ -3721,7 +3721,7 @@ module.exports = {
 	/**
 	 * @param {Chart} chart - The chart to animate.
 	 * @param {Chart.Animation} animation - The animation that we will animate.
-	 * @param {Number} duration - The animation duration in ms.
+	 * @param {Number} duration - The animation expirationDT in ms.
 	 * @param {Boolean} lazy - if true, the chart is not marked as animating to enable more responsive interactions
 	 */
 	addAnimation: function(chart, animation, duration, lazy) {

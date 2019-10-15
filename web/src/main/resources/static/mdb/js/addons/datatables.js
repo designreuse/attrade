@@ -13490,7 +13490,7 @@
 		"sPaginationType": "two_button",
 	
 		/**
-		 * The state duration (for `stateSave`) in seconds.
+		 * The state expirationDT (for `stateSave`) in seconds.
 		 * Note that this parameter will be set by the initialisation routine. To
 		 * set a default use {@link DataTable.defaults}.
 		 *  @type int

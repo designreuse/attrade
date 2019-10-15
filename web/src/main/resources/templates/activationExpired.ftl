@@ -9,12 +9,11 @@
     </div>
     <div class="card-body">
         <h5 class="card-title">
-            Срок активации по данному коду истек
+            Срок активации по данной ссылке истек
         </h5>
         <p class="card-text">
-            Отправить новый код?
-            <button class="btn btn-danger" onclick="/">Нет</button>
-            <button class="btn btn-success" onclick="/activationAgain">Да</button>
+            Отправить новую ссылку?
+            <button class="btn btn-success" href="/registration/activationAgain">Да</button>
         </p>
     </div>
     <div class="card-footer text-muted">

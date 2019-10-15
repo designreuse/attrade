@@ -51,7 +51,7 @@ var WOW;
                   'animation-name': animationName[index]
                 });
 
-                var removeTime = $(this).css('animation-duration').slice(0, -1) * 1000;
+                var removeTime = $(this).css('animation-expirationDT').slice(0, -1) * 1000;
 
                 if ($(this).attr('data-wow-delay')) {
 
@@ -74,7 +74,7 @@ var WOW;
                   'animation-name': animationName[index]
                 });
 
-                var removeTime = $(this).css('animation-duration').slice(0, -1) * 1000;
+                var removeTime = $(this).css('animation-expirationDT').slice(0, -1) * 1000;
 
                 var self = this;
 
@@ -142,7 +142,7 @@ var WOW;
               });
             } else {
 
-              var removeTime = $(this).css('animation-duration').slice(0, -1) * 1000;
+              var removeTime = $(this).css('animation-expirationDT').slice(0, -1) * 1000;
 
               if ($(this).attr('data-wow-delay')) {
 

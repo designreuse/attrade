@@ -77,7 +77,7 @@
  *
 */
 
-// t: current time, b: begInnIng value, c: change In value, d: duration
+// t: current time, b: begInnIng value, c: change In value, d: expirationDT
 jQuery.easing['jswing'] = jQuery.easing['swing'];
 
 jQuery.extend( jQuery.easing,
@@ -3974,7 +3974,7 @@ module.exports = {
 	/**
 	 * @param {Chart} chart - The chart to animate.
 	 * @param {Chart.Animation} animation - The animation that we will animate.
-	 * @param {Number} duration - The animation duration in ms.
+	 * @param {Number} duration - The animation expirationDT in ms.
 	 * @param {Boolean} lazy - if true, the chart is not marked as animating to enable more responsive interactions
 	 */
 	addAnimation: function(chart, animation, duration, lazy) {
@@ -14761,7 +14761,7 @@ var WOW;
                   'animation-name': animationName[index]
                 });
 
-                var removeTime = $(this).css('animation-duration').slice(0, -1) * 1000;
+                var removeTime = $(this).css('animation-expirationDT').slice(0, -1) * 1000;
 
                 if ($(this).attr('data-wow-delay')) {
 
@@ -14784,7 +14784,7 @@ var WOW;
                   'animation-name': animationName[index]
                 });
 
-                var removeTime = $(this).css('animation-duration').slice(0, -1) * 1000;
+                var removeTime = $(this).css('animation-expirationDT').slice(0, -1) * 1000;
 
                 var self = this;
 
@@ -14852,7 +14852,7 @@ var WOW;
               });
             } else {
 
-              var removeTime = $(this).css('animation-duration').slice(0, -1) * 1000;
+              var removeTime = $(this).css('animation-expirationDT').slice(0, -1) * 1000;
 
               if ($(this).attr('data-wow-delay')) {
 
@@ -15040,7 +15040,7 @@ var WOW;
 
   var Effect = {
 
-    // Effect duration
+    // Effect expirationDT
     duration: 750,
 
     // Effect delay (check for scroll before showing effect)
