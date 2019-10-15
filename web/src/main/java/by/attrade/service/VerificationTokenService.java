@@ -27,4 +27,8 @@ public class VerificationTokenService {
     public void deleteById(String id) {
         verificationTokenRepo.deleteById(id);
     }
+    public void delete(VerificationToken token) {
+        verificationTokenRepo.delete(token);
+    }
+
 }

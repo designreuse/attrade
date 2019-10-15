@@ -1,5 +1,6 @@
 package by.attrade.controller;
 
+import by.attrade.config.RegistrationTokenExpirationDTConfig;
 import by.attrade.controller.utils.ControllerUtils;
 import by.attrade.domain.User;
 import by.attrade.domain.VerificationToken;
@@ -8,10 +9,11 @@ import by.attrade.service.MailSenderService;
 import by.attrade.service.RecaptchaService;
 import by.attrade.service.UserService;
 import by.attrade.service.VerificationTokenService;
+import by.attrade.service.exception.UserAlreadyExistsException;
+import by.attrade.service.exception.UserPasswordValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,23 +22,34 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 
 
 @Controller
 @Slf4j
+@RequestMapping("registration")
 public class RegistrationController {
     private final UserService userService;
     private final RecaptchaService recaptchaService;
     private final MailSenderService mailSenderService;
     private final VerificationTokenService verificationTokenService;
-    @Value("${info.mainURL}")
-    private String mainURL;
+    @Value("${info.url}")
+    private String url;
+    @Value("${registration.validation.password.regex.message}")
+    private String passwordError;
 
+    @Autowired
+    private RegistrationTokenExpirationDTConfig registrationTokenExpirationDTConfig;
     @Autowired
     public RegistrationController(UserService userService, RecaptchaService recaptchaService, MailSenderService mailSenderService, VerificationTokenService verificationTokenService) {
         this.userService = userService;
@@ -45,16 +58,17 @@ public class RegistrationController {
         this.verificationTokenService = verificationTokenService;
     }
 
-    @GetMapping("/registration")
+    @GetMapping
     public String registration(Model model) {
         model.addAttribute("user", new User());
         return "registration";
     }
 
-    @PostMapping("/registration")
+    @PostMapping
     public String addUser(@RequestParam String passwordConfirm,
                           @RequestParam("g-recaptcha-response") String captchaResponse,
                           @Valid User user,
+                          Locale locale,
                           BindingResult bindingResult,
                           Model model) {
         RecaptchaResponseDTO response = recaptchaService.getCaptchaResponseDTO(captchaResponse);
@@ -70,22 +84,35 @@ public class RegistrationController {
             model.mergeAttributes(errors);
             return "registration";
         }
-        if (!userService.addUser(user)) {
-            model.addAttribute("usernameError", "Юзер с данным логином уже существует!");
+        user.setUsername(user.getEmail());
+        try {
+            userService.register(user);
+        } catch (UserAlreadyExistsException e) {
+            model.addAttribute("usernameError", "Аккаунт с данным email уже существует!");
+            return "registration";
+        } catch (UserPasswordValidationException e) {
+            model.addAttribute("passwordError", passwordError);
             return "registration";
         }
-        sendVerificationToken(user);
-        return "redirect:/activation";
+        sendVerificationToken(user,locale);
+        return "redirect:/registration/activation";
     }
 
-    private void sendVerificationToken(User user) {
-        VerificationToken verificationToken = new VerificationToken(user);
+    private void sendVerificationToken(User user, Locale locale) {
+        VerificationToken verificationToken = new VerificationToken();
+        verificationToken.setUser(user);
+        verificationToken.setExpiryDate(LocalDateTime.now().plus(registrationTokenExpirationDTConfig.getExpirationDT()));
         verificationTokenService.save(verificationToken);
         if (!StringUtils.isEmpty(user.getEmail())) {
-            String message = String.format(
-                    "Приветствуем Вас, %s! \n" +
-                            "Вы зарегистрировались на " + mainURL + "\n" +
-                            "Код активации:\t %s",
+            String message = MessageFormat.format(
+                    "Приветствуем Вас, {0}! \n" +
+                            "Вы зарегистрировались на " + url + "\n" +
+                            "\n"+
+                            "Ссылка ниже действительна в течение " +
+                            DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale)
+                                    .format(LocalTime.of(0,0).plus(registrationTokenExpirationDTConfig.getExpirationDT())) +"\n"+
+                            "Перейдите по ссылке для подтверждения регистрации:\n " +
+                            "http://"+ url + "/registration/activate/{1}",
                     user.getUsername(),
                     verificationToken.getToken()
             );
@@ -98,26 +125,28 @@ public class RegistrationController {
         return "activation";
     }
 
-    @PostMapping("/activate")
-    public String activate(Model model, @RequestParam String code) {
-        Optional<VerificationToken> opt = verificationTokenService.findById(code);
-        if(opt.isPresent()){
-            VerificationToken token = opt.get();
+    @GetMapping("/activate/{token}")
+    public String activate(Model model, @PathVariable VerificationToken token) {
+        if(token != null){
             if(token.isExpiredToken()){
                 return "activationExpired";
             }
             User user = token.getUser();
             user.setActive(true);
             userService.save(user);
-            verificationTokenService.deleteById(code);
-            return "activationSuccess";
+            verificationTokenService.delete(token);
+            return "redirect:/registration/activationSuccess";
         }
-        model.addAttribute("activationError", "Введен неверный код");
+        model.addAttribute("activationError", "Введен неверный код!");
         return "activation";
     }
     @GetMapping("/activationAgain")
-    public String activationAgain(@AuthenticationPrincipal User user){
-        sendVerificationToken(user);
-        return "activation";
+    public String activationAgain(@AuthenticationPrincipal User user, Locale locale){
+        if(user!=null){
+            sendVerificationToken(user, locale);
+            return "activation";
+        }else {
+            return "login";
+        }
     }
 }

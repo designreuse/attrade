@@ -27,8 +27,8 @@ public class UserController {
     private final UserService userService;
     private final MailSenderService mailSenderService;
     private final VerificationTokenService verificationTokenService;
-    @Value("${info.mainURL}")
-    private String mainURL;
+    @Value("${info.url}")
+    private String url;
 
     @Autowired
     public UserController(UserService userService, MailSenderService mailSenderService, VerificationTokenService verificationTokenService) {
@@ -64,12 +64,13 @@ public class UserController {
     }
 
     private void sendVerificationToken(User user) {
-        VerificationToken verificationToken = new VerificationToken(user);
+        VerificationToken verificationToken = new VerificationToken();
+        verificationToken.setUser(user);
         verificationTokenService.save(verificationToken);
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format(
                     "Приветствуем Вас, %s! \n" +
-                            "Вы обновили email на " + mainURL + "\n" +
+                            "Вы обновили email на " + url + "\n" +
                             "Код активации:\t %s",
                     user.getUsername(),
                     verificationToken.getToken()
