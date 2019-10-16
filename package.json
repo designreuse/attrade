@@ -3,5 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "author": "mgsviryd <mgsviryd@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "vue": "^2.6.10",
+    "vue-resource": "^1.5.1"
+  }
 }
