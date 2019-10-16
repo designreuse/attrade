@@ -14,14 +14,9 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <!-- Material Design Bootstrap -->
 <#--<link href="/static/mdb/css/mdb.min.css" rel="stylesheet">-->
-
-    <!-- Vue.js: версия для разработки, отображает полезные предупреждения в консоли -->
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-
-    <!--Test Vue.js: предоставляет vue resource - объект, позволяющий нам без лишнего кода делать простые запросы-->
-    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
-    <#--<link href="/static/css/all.css" rel="stylesheet">-->
-
+    <script type="text/javascript">
+        var messages = [<#list messages as message>${message},</#list>];
+    </script>
 </head>
 <body>
 <!-- Optional JavaScript -->
@@ -41,6 +36,6 @@
 
 </div>
 
-<script src="/static/js/index.js"></script>
+<script src="<#if isDevMode??>http://localhost:8000/main.js<#else>/static/js/main.js</#if>"></script>
 </body>
 </html>
