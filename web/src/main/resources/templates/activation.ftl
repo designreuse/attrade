@@ -2,15 +2,15 @@
 <#include "parts/security.ftl">
 <@c.page>
 <div class="card text-center">
-    <div class="card-header">
-        Активация
+    <div class="card-header bg-warning">
+        <b>АККАУНТ НЕ АКТИВИРОВАН</b>
     </div>
     <div class="card-body">
         <h5 class="card-title">
-            Активируйте аккаунт - это поволит Вам совершать покупки без ограничений.
+            На Ваш почтовый ящик <#if email??><b>${email}</b></#if> отплавлено письмо со ссылкой на активацию аккаунта.
         </h5>
         <p class="card-text">
-            На Ваш почтовый ящик отплавлено письмо со ссылкой на активацию аккаунта.</br>
+            Активируйте аккаунт - это поволит Вам совершать покупки без ограничений.
         </p>
         <#if activationError??>
             <div class="alert alert-danger" role="alert">
@@ -18,8 +18,8 @@
             </div>
         </#if>
     </div>
-    <div class="card-footer text-muted">
-        Активация
+    <div class="card-footer text-muted bg-warning">
+        АККАУНТ НЕ АКТИВИРОВАН
     </div>
 </div>
 </@c.page>

@@ -95,7 +95,7 @@ public class RegistrationController {
             return "registration";
         }
         sendVerificationToken(user,locale);
-        return "redirect:/registration/activation";
+        return "redirect:/registration/activation" + "?email="+ user.getEmail();
     }
 
     private void sendVerificationToken(User user, Locale locale) {
