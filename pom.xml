@@ -125,6 +125,12 @@
             <version>1.6</version>
         </dependency>
 
+        <!-- Access to updated data without reloading page / synchronized data -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
