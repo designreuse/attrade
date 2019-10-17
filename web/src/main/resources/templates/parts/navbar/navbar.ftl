@@ -11,7 +11,7 @@
                 <li class="nav-item"> <!-- элементы меню -->
                     <div class="btn-group btn-group-md btn-group-justified ml-2" role="group"
                          aria-label="Basic example">
-                        <button type="submit" role="button" href="/product" class="btn btn-primary">Каталог
+                        <button type="submit" role="button" href="/product" class="btn btn-secondary">Каталог
                         </button>
                     </div>
                 </li>
