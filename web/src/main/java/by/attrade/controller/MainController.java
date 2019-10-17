@@ -6,6 +6,10 @@ import by.attrade.domain.User;
 import by.attrade.repos.MessageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -51,14 +55,16 @@ public class MainController {
     @GetMapping(value = "/main")
     public String main(
             @RequestParam(required = false, defaultValue = "") String filter,
+            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
             Model model) {
-        Iterable<Message> messages;
+        Page<Message> page;
         if (filter == null || filter.isEmpty()) {
-            messages = messageRepo.findAll();
+            page = messageRepo.findAll(pageable);
         } else {
-            messages = messageRepo.findByTag(filter);
+            page = messageRepo.findByTag(filter, pageable);
         }
-        model.addAttribute("messages", messages);
+        model.addAttribute("page", page);
+        model.addAttribute("url", "/main");
         model.addAttribute("filter", filter);
         return "main";
     }
