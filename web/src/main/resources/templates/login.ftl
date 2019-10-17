@@ -53,7 +53,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
                         </div>
-                        <input type="text" name="username"
+                        <input type="text" name="username" autofocus="autofocus"
                                class="form-control ${(securityMessage??)?string('is-invalid','')}"
                                placeholder="email"/>
 

@@ -1,7 +1,14 @@
 <#include "security.ftl">
 <#import "pager/pager.ftl" as p/>
+<#import "pager/navigation.ftl" as n/>
+<#import "pager/sizer.ftl" as s/>
 
-<@p.pager url page/>
+<#--обернуть как группу кнопок-->
+<div class="row">
+<@s.dropdown url page/>
+</div>
+<#--обернуть как группу кнопок-->
+
 <div class="card-columns">
 <#list page.content as message>
     <div class="card my-3">
@@ -25,3 +32,7 @@
     No message
 </#list>
 </div>
+<@n.toggle url page/>
+<@p.pager url page/>
+
+
