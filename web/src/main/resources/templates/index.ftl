@@ -14,9 +14,9 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <!-- Material Design Bootstrap -->
 <#--<link href="/static/mdb/css/mdb.min.css" rel="stylesheet">-->
-    <script type="text/javascript">
-        var messagesData = [<#list messagesData as message>${message},</#list>];
-    </script>
+    <#--<script type="text/javascript">-->
+        <#--var messagesData = [<#list messagesData as message>${message},</#list>];-->
+    <#--</script>-->
 </head>
 <body>
 <!-- Optional JavaScript -->

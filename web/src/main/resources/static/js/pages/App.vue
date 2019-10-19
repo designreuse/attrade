@@ -25,10 +25,15 @@
         data() {
             logout: mdiExitToApp
             return {
-                messages: messagesData
+                messages: null
             }
         },
         created() {
+            this.$resource('/message').get().then(result => {
+                if(result.ok){
+                    this.messages = result.data
+                }
+            })
             addHandler(data => {
                 let index = getIndex(this.messages, data.id)
                 if (index > -1)
