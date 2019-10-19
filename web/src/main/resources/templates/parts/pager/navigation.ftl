@@ -5,12 +5,12 @@
 <ul class="pagination justify-content-center">
     <li class="page-item <#if !page.hasPrevious()>disabled</#if>">
         <a class="page-link" href="${url}?page=${page.getNumber()-1}&size=${page.getSize()}" aria-label="Previous">
-            <span aria-hidden="true">&laquo; Пред.</span>
+            <span aria-hidden="true">&laquo; Назад</span>
         </a>
     </li>
     <li class="page-item disabled">
         <button id="btnMinusDrop" type="button"
-                class="btn btn-primary dropdown-toggle <#if !page.hasPrevious()>disabled</#if>" data-toggle="dropdown"
+                class="btn btn-primary rounded-0 dropdown-toggle <#if !page.hasPrevious()>disabled</#if>" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-minus"></i>
         </button>
@@ -24,20 +24,20 @@
     </li>
     <li class="page-item disabled">
         <button id="btnPlusDrop" type="button"
-                class="btn btn-primary dropdown-toggle <#if !page.hasNext()>disabled</#if>" data-toggle="dropdown"
+                class="btn btn-primary rounded-0 dropdown-toggle <#if !page.hasNext()>disabled</#if>" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-plus"></i>
         </button>
         <div class="dropdown-menu" aria-labelledby="btnPlusDrop">
             <#list steps as step>
                 <a class="dropdown-item"
-                   href="${url}?page=${((page.getNumber()-1+step)>page.getTotalPages())?then(page.getTotalPages()-1,page.getNumber()+step)}&size=${page.getSize()}">${step}</a>
+                   href="${url}?page=${((page.getNumber()+step)>=page.getTotalPages())?then(page.getTotalPages()-1,page.getNumber()+step)}&size=${page.getSize()}">${step}</a>
             </#list>
         </div>
     </li>
     <li class="page-item <#if !page.hasNext()>disabled</#if>">
         <a class="page-link" href="${url}?page=${page.getNumber()+1}&size=${page.getSize()}" aria-label="Next">
-            <span aria-hidden="true">След. &raquo;</span>
+            <span aria-hidden="true">Вперед &raquo;</span>
         </a>
     </li>
 </ul>

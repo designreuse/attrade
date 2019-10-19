@@ -15,7 +15,7 @@
     <!-- Material Design Bootstrap -->
 <#--<link href="/static/mdb/css/mdb.min.css" rel="stylesheet">-->
     <script type="text/javascript">
-        var messages = [<#list messages as message>${message},</#list>];
+        var messagesData = [<#list messagesData as message>${message},</#list>];
     </script>
 </head>
 <body>
