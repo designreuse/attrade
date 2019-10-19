@@ -14,9 +14,8 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <!-- Material Design Bootstrap -->
 <#--<link href="/static/mdb/css/mdb.min.css" rel="stylesheet">-->
-    <#--<script type="text/javascript">-->
-        <#--var messagesData = [<#list messagesData as message>${message},</#list>];-->
-    <#--</script>-->
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
 </head>
 <body>
 <!-- Optional JavaScript -->

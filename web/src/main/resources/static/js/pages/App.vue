@@ -1,20 +1,10 @@
 <template>
-    <v-app>
-        <v-app-bar>
-            <v-toolbar-title>Sarafan</v-toolbar-title>
-            <v-spacer></v-spacer>
-            </v-toolbar>
-            <v-content>
-                <v-container>
-                    <messages-list :messages="messages"/>
-                </v-container>
-            </v-content>
-        </v-app-bar>
-    </v-app>
+    <div>
+        <messages-list :messages="messages"/>
+    </div>
 </template>
 
 <script>
-    import {mdiExitToApp} from '@mdi/js'
     import MessagesList from 'components/messages/MessageList.vue'
     import {addHandler} from 'util/ws'
     import {getIndex} from 'util/collections'
@@ -23,7 +13,6 @@
             MessagesList
         },
         data() {
-            logout: mdiExitToApp
             return {
                 messages: null
             }
