@@ -41,9 +41,13 @@ public class Category implements Serializable {
     @NotBlank
     private String name;
 
-    @Column(length = 512)
-    @Lob
-    private byte[] icon;
+    @Column(length = 255)
+    @NotBlank
+    private String icon;
+
+    @Column(length = 255)
+    @NotBlank
+    private String image;
 
     @OneToMany(mappedBy = "category")
     Set<Product> products = new HashSet<>();

@@ -1,0 +1,1 @@
+ALTER TABLE category MODIFY icon VARCHAR (255);

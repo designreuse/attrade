@@ -1,0 +1,1 @@
+ALTER TABLE product CHANGE `product_id` `id` BIGINT(20);

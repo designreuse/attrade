@@ -1,18 +1,17 @@
 package by.attrade.controller;
 
+import by.attrade.config.UploadPathConfig;
 import by.attrade.controller.utils.ControllerUtils;
 import by.attrade.domain.Message;
 import by.attrade.domain.User;
 import by.attrade.repos.MessageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -34,8 +33,8 @@ import java.util.UUID;
 public class MainController {
     private final MessageRepo messageRepo;
 
-    @Value("${upload.path}")
-    private String uploadPath;
+    @Autowired
+    private UploadPathConfig uploadPathConfig;
 
     @Autowired
     public MainController(MessageRepo messageRepo) {
@@ -55,7 +54,7 @@ public class MainController {
     @GetMapping(value = "/main")
     public String main(
             @RequestParam(required = false, defaultValue = "") String filter,
-            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
+            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC, size=32) Pageable pageable,
             Model model) {
         Page<Message> page;
         if (filter == null || filter.isEmpty()) {
@@ -95,14 +94,10 @@ public class MainController {
             @Valid Message message,
             @RequestParam("file") MultipartFile file) throws IOException {
         if (file != null && !file.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs();
-            }
             String uuid = UUID.randomUUID().toString();
             String resultFileName = uuid + "." + file.getOriginalFilename();
             message.setFilename(resultFileName);
-            file.transferTo(new File(uploadPath + "/" + resultFileName));
+            file.transferTo(new File(uploadPathConfig.getPath() + "/" + resultFileName));
         }
     }
 
@@ -111,10 +106,12 @@ public class MainController {
             @AuthenticationPrincipal User currentUser,
             @PathVariable User user,
             @RequestParam(required = false) Message message,
-            Model model
-    ) {
-        Set<Message> messages = user.getMessages();
-        model.addAttribute("messages", messages);
+            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC, size=32) Pageable pageable,
+            Model model) {
+        Page<Message> page;
+            page = messageRepo.findAll(pageable);
+        model.addAttribute("page", page);
+        model.addAttribute("url", "/user/messages/"+currentUser.getId());
         model.addAttribute("message", message);
         model.addAttribute("isCurrentUser", currentUser.equals(user));
         model.addAttribute("userChannel", user);

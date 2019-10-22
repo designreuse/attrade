@@ -1,0 +1,1 @@
+ALTER TABLE category ADD image VARCHAR(255);

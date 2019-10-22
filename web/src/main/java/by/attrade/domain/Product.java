@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.validator.constraints.Length;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -31,7 +32,6 @@ public class Product implements Serializable {
     public static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "PRODUCT_ID")
     private Long id;
 
     @Column(length = 100)
@@ -55,7 +55,9 @@ public class Product implements Serializable {
     private String vendor;
 
     private int quantityInStock;
+    @Basic(fetch = FetchType.LAZY)
     private int quantityReserved;
+    @Basic(fetch = FetchType.LAZY)
     private int quantityFuture;
 
     private double price;
@@ -63,6 +65,7 @@ public class Product implements Serializable {
     @Column(length = 20)
     @ColumnDefault("''")
     @Length(max = 20)
+    @Basic(fetch = FetchType.LAZY)
     private String deliveryCountry;
 
     @Column(length = 20)
@@ -75,6 +78,12 @@ public class Product implements Serializable {
 
     @Column(length = 255)
     private String image;
+
+    @OneToMany(mappedBy = "productGallery")
+    Set<Picture> gallery = new HashSet<>();
+
+    @OneToMany(mappedBy = "productHistoryGallery")
+    Set<Picture> historyGallery = new HashSet<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     private Supplier supplier;
