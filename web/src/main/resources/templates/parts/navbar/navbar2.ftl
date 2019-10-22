@@ -1,1 +1,1 @@
-<#include "../carousel/productMain.ftl"/>
+<#include "../carousel/categoryMain.ftl"/>

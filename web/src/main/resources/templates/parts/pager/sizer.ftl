@@ -1,5 +1,5 @@
 <#macro dropdown url page>
-    <#assign sizeList=[5,10,25,50]/>
+    <#assign sizeList=[4,16,32,64]/>
 <div class="btn-group">
     <button type="button" class="btn btn-light">по:</button>
     <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"
@@ -27,7 +27,7 @@
 </#macro>
 
 <#macro inline url page>
-    <#assign sizeList=[5,10,25,50]/>
+    <#assign sizeList=[4,16,32,64]/>
 <ul class="pagination">
     <li class="page-item disabled">
         <a class="page-link" href="#" tabindex="-1">по:</a>

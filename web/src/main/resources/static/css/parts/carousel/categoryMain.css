@@ -1,4 +1,4 @@
-.parts-carousel-productMain .carousel-indicators li {
+.parts-carousel-categoryMain .carousel-indicators li {
     height: 15px;
     width: 15px;
     border: 5px solid white;
@@ -7,48 +7,56 @@
     margin-left: 10px;
     margin-right: 10px;
 }
-.parts-carousel-productMain .carousel-indicators .active {
+
+.parts-carousel-categoryMain .carousel-indicators .active {
     border: 5px solid white;
     background-color: grey;
     margin-bottom: -5px;
     margin-left: 10px;
     margin-right: 10px;
 }
-.parts-carousel-productMain .carousel-control-prev {
+
+.parts-carousel-categoryMain .carousel-control-prev {
     display: flex;
     height: 81%;
     width: 4%;
 }
-.parts-carousel-productMain .carousel-control-next{
+
+.parts-carousel-categoryMain .carousel-control-next {
     display: flex;
     height: 81%;
     width: 4%;
 }
-.parts-carousel-productMain .fa-chevron-circle-right{
+
+.parts-carousel-categoryMain .fa-chevron-circle-right {
     color: grey;
 }
-.parts-carousel-productMain .fa-chevron-circle-left{
+
+.parts-carousel-categoryMain .fa-chevron-circle-left {
     color: grey;
 }
 @media (max-width: 576px){
-    .parts-carousel-productMain .carousel-indicators li {
+    .parts-carousel-categoryMain .carousel-indicators li {
         border: 2px solid white;
         background-color: grey;
         margin-left: 10px;
         margin-right: 10px;
     }
-    .parts-carousel-productMain .carousel-indicators .active {
+
+    .parts-carousel-categoryMain .carousel-indicators .active {
         border: 2px solid white;
         background-color: grey;
         margin-left: 10px;
         margin-right: 10px;
     }
-    .parts-carousel-productMain .carousel-control-prev {
+
+    .parts-carousel-categoryMain .carousel-control-prev {
         display: flex;
         height: 100%;
         width: 5%;
     }
-    .parts-carousel-productMain .carousel-control-next{
+
+    .parts-carousel-categoryMain .carousel-control-next {
         display: flex;
         height: 100%;
         width: 5%;

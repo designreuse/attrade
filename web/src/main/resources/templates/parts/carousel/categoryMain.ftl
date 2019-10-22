@@ -1,4 +1,4 @@
-<div class="parts-carousel-productMain">
+<div class="parts-carousel-categoryMain">
     <div id="carouselProductMainIndicators"
          class="carousel slide carousel-fade "
          data-ride="carousel"
@@ -11,13 +11,13 @@
         </ol>
         <div class="carousel-inner">
             <div class="carousel-item active">
-            <#include "../group/productMainLeft.ftl"/>
+            <#include "../group/categoryMainLeft.ftl"/>
             </div>
             <div class="carousel-item">
-                <#include "../group/productMainCentre.ftl"/>
+            <#include "../group/categoryMainCentre.ftl"/>
             </div>
             <div class="carousel-item">
-            <#include "../group/productMainRight.ftl"/>
+            <#include "../group/categoryMainRight.ftl"/>
             </div>
         </div>
 
