@@ -1,6 +1,7 @@
 package by.attrade.config;
 
 import by.attrade.util.RedirectInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,8 +13,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
-    @Value("${upload.path}")
-    private String uploadPath;
+    @Autowired
+    private UploadPathConfig uploadPathConfig;
+
     @Bean
     public RestTemplate getRestTemplate(){
         return new RestTemplate();
@@ -30,7 +32,7 @@ public class MvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/img/**")
-                .addResourceLocations("file:/" + uploadPath + "/");
+                .addResourceLocations("file:/" + uploadPathConfig.getPath() + "/");
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("classpath:/static/");
     }
