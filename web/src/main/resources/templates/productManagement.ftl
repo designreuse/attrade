@@ -1,5 +1,5 @@
 <#import "main.ftl" as c>
 <#include "parts/security.ftl">
 <@c.page>
-    <#include "parts/table/tableProductManagement.ftl">
+    <#include "parts/productManagement.ftl">
 </@c.page>

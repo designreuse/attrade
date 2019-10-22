@@ -3,7 +3,7 @@
     <#list 1..4 as i>
         <div class="col-xs-3 d-flex align-items-stretch">
             <div class="card" style="width: 12rem;">
-                <img src="/static/image/logo.png" class="card-img-top" alt="...">
+                <img src="/static/image/logo/logo.png" class="card-img-top" alt="...">
                 <div class="card-body">
                     <h5 class="card-title">Card title</h5>
                     <p class="card-text">Some quick example text to build on the card title and make up the bulk of the

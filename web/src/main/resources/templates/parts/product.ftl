@@ -1,0 +1,2 @@
+
+<#include "table/product.ftl"/>

@@ -1,69 +1,205 @@
-
-<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <!--Define parameters of viewing on different devices-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <!-- Recaptcha-->
-    <script src="https://www.google.com/recaptcha/api.js"></script>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-    <!-- Material Design Bootstrap -->
-<#--<link href="/static/mdb/css/mdb.min.css" rel="stylesheet">-->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <link rel="icon" type="image/png" href="ico/favicon-32.png"/>
+    <!-- Icon For iOS 2.0+ and Android 2.1+ -->
+    <link rel="apple-touch-icon-precomposed" href="ico/favicon-152.png">
+    <!-- Icon For IE10 Metro -->
+    <meta name="msapplication-TileColor" content="#fff">
+    <meta name="msapplication-TileImage" content="ico/favicon-144.png">
 
-    <!-- версия для разработки, отображает полезные предупреждения в консоли -->
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <title>Bootstrap Template</title>
 
-    <#--<link href="/static/css/common/main.css" rel="stylesheet">-->
+    <!-- Bootstrap Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <!-- Font-Awesome -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link href="../../static/css/hover.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 
+    <![endif]-->
 </head>
 <body>
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
-<!-- MDB core JavaScript -->
-<#--<script type="text/javascript" src="/static/mdb/js/mdb.min.js"></script>-->
 
-<ul class="nav nav-tabs" id="myTab" role="tablist">
-    <li class="nav-item">
-        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="messages-tab" data-toggle="tab" href="#messages" role="tab" aria-controls="messages" aria-selected="false">Messages</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="settings-tab" data-toggle="tab" href="#settings" role="tab" aria-controls="settings" aria-selected="false">Settings</a>
-    </li>
-</ul>
+<!--Carousel Wrapper-->
+<div id="multi-item-example" class="carousel slide carousel-multi-item" data-ride="carousel">
 
-<div class="tab-content">
-    <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab">.1.</div>
-    <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">.2.</div>
-    <div class="tab-pane" id="messages" role="tabpanel" aria-labelledby="messages-tab">.3.</div>
-    <div class="tab-pane" id="settings" role="tabpanel" aria-labelledby="settings-tab">.4.</div>
+    <!--Controls-->
+    <div class="controls-top">
+        <a class="btn-floating" href="#multi-item-example" data-slide="prev"><i class="fas fa-chevron-left"></i></a>
+        <a class="btn-floating" href="#multi-item-example" data-slide="next"><i
+                class="fas fa-chevron-right"></i></a>
+    </div>
+    <!--/.Controls-->
+
+    <!--Indicators-->
+    <ol class="carousel-indicators">
+        <li data-target="#multi-item-example" data-slide-to="0" class="active"></li>
+        <li data-target="#multi-item-example" data-slide-to="1"></li>
+        <li data-target="#multi-item-example" data-slide-to="2"></li>
+    </ol>
+    <!--/.Indicators-->
+
+    <!--Slides-->
+    <div class="carousel-inner" role="listbox">
+
+        <!--First slide-->
+        <div class="carousel-item active">
+
+            <div class="col-md-4">
+                <div class="card mb-2">
+                    <img class="card-img-top"
+                         src="https://mdbootstrap.com/img/Photos/Horizontal/Nature/4-col/img%20(34).jpg"
+                         alt="Card image cap">
+                    <div class="card-body">
+                        <h4 class="card-title">Card title</h4>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                            card's content.</p>
+                        <a class="btn btn-primary">Button</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-2">
+                    <img class="card-img-top"
+                         src="https://mdbootstrap.com/img/Photos/Horizontal/Nature/4-col/img%20(18).jpg"
+                         alt="Card image cap">
+                    <div class="card-body">
+                        <h4 class="card-title">Card title</h4>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                            card's content.</p>
+                        <a class="btn btn-primary">Button</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-2">
+                    <img class="card-img-top"
+                         src="https://mdbootstrap.com/img/Photos/Horizontal/Nature/4-col/img%20(35).jpg"
+                         alt="Card image cap">
+                    <div class="card-body">
+                        <h4 class="card-title">Card title</h4>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                            card's content.</p>
+                        <a class="btn btn-primary">Button</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--/.First slide-->
+
+        <!--Second slide-->
+        <div class="carousel-item">
+
+            <div class="col-md-4">
+                <div class="card mb-2">
+                    <img class="card-img-top"
+                         src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
+                    <div class="card-body">
+                        <h4 class="card-title">Card title</h4>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                            card's content.</p>
+                        <a class="btn btn-primary">Button</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-2">
+                    <img class="card-img-top"
+                         src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(47).jpg" alt="Card image cap">
+                    <div class="card-body">
+                        <h4 class="card-title">Card title</h4>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                            card's content.</p>
+                        <a class="btn btn-primary">Button</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-2">
+                    <img class="card-img-top"
+                         src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(48).jpg" alt="Card image cap">
+                    <div class="card-body">
+                        <h4 class="card-title">Card title</h4>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                            card's content.</p>
+                        <a class="btn btn-primary">Button</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--/.Second slide-->
+
+        <!--Third slide-->
+        <div class="carousel-item">
+
+            <div class="col-md-4">
+                <div class="card mb-2">
+                    <img class="card-img-top"
+                         src="https://mdbootstrap.com/img/Photos/Horizontal/Food/4-col/img%20(53).jpg" alt="Card image cap">
+                    <div class="card-body">
+                        <h4 class="card-title">Card title</h4>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                            card's content.</p>
+                        <a class="btn btn-primary">Button</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-2">
+                    <img class="card-img-top"
+                         src="https://mdbootstrap.com/img/Photos/Horizontal/Food/4-col/img%20(45).jpg" alt="Card image cap">
+                    <div class="card-body">
+                        <h4 class="card-title">Card title</h4>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                            card's content.</p>
+                        <a class="btn btn-primary">Button</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-2">
+                    <img class="card-img-top"
+                         src="https://mdbootstrap.com/img/Photos/Horizontal/Food/4-col/img%20(51).jpg" alt="Card image cap">
+                    <div class="card-body">
+                        <h4 class="card-title">Card title</h4>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                            card's content.</p>
+                        <a class="btn btn-primary">Button</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--/.Third slide-->
+
+    </div>
+    <!--/.Slides-->
+
 </div>
+<!--/.Carousel Wrapper-->
 
-<script>
-    $(function () {
-        $('#myTab li:last-child a').tab('show')
-    })
-</script>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 </body>
 </html>

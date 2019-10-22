@@ -1,0 +1,62 @@
+.parts-carousel-productMain .carousel-indicators li {
+    height: 15px;
+    width: 15px;
+    border: 5px solid white;
+    background-color: grey;
+    margin-bottom: -5px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.parts-carousel-productMain .carousel-indicators .active {
+    border: 5px solid white;
+    background-color: grey;
+    margin-bottom: -5px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.parts-carousel-productMain .carousel-control-prev {
+    display: flex;
+    height: 81%;
+    width: 4%;
+}
+.parts-carousel-productMain .carousel-control-next{
+    display: flex;
+    height: 81%;
+    width: 4%;
+}
+.parts-carousel-productMain .fa-chevron-circle-right{
+    color: grey;
+}
+.parts-carousel-productMain .fa-chevron-circle-left{
+    color: grey;
+}
+@media (max-width: 576px){
+    .parts-carousel-productMain .carousel-indicators li {
+        border: 2px solid white;
+        background-color: grey;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+    .parts-carousel-productMain .carousel-indicators .active {
+        border: 2px solid white;
+        background-color: grey;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+    .parts-carousel-productMain .carousel-control-prev {
+        display: flex;
+        height: 100%;
+        width: 5%;
+    }
+    .parts-carousel-productMain .carousel-control-next{
+        display: flex;
+        height: 100%;
+        width: 5%;
+    }
+    .fa-chevron-circle-right {
+        margin-right: 40px;
+    }
+    .fa-chevron-circle-left{
+        margin-left: 40px;
+    }
+}

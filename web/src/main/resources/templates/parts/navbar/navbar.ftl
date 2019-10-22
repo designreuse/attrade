@@ -1,6 +1,6 @@
 <#include "../security.ftl">
 <div class="parts-navbar-navbar">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-static-top pb-2 pt-2">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-fixed-top py-2 shadow" style="position:fixed; z-index: 10000; width:100%;">
         <!-- размер и цветовая схема-->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar"
                 aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -9,7 +9,7 @@
         <div class="collapse navbar-collapse" id="navbar">  <!--указываем, что меню сворачивается-->
             <ul class="navbar-nav mr-auto"> <!-- ul - список; mr-auto - автоматически генерируемое меню-->
                 <li class="nav-item"> <!-- элементы меню -->
-                    <div class="btn-group btn-group-md btn-group-justified ml-2" role="group"
+                    <div class="btn-group btn-group-md btn-group-justified ml-2 mr-3" role="group"
                          aria-label="Basic example">
                         <button type="submit" role="button" href="/product" class="btn btn-secondary">Каталог
                         </button>
