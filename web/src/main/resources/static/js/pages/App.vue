@@ -1,10 +1,11 @@
 <template>
     <div>
-        <messages-list :messages="messages"/>
+        <messages-list/>
     </div>
 </template>
 
 <script>
+    import { mapState, mapMutations } from 'vuex'
     import MessagesList from 'components/messages/MessageList.vue'
     import {addHandler} from 'util/ws'
     import messagesApi from 'api/messages'
@@ -13,31 +14,20 @@
         components: {
             MessagesList
         },
-        data() {
-            return {
-                messages: null
-            }
-        },
+        computed: mapState(['profile']),
+        methods: mapMutations(['addMessageMutation', 'updateMessageMutation', 'removeMessageMutation']),
         created() {
-            messagesApi.get().then(result => {
-                if (result.ok) {
-                    this.messages = result.data
-                }
-            })
             addHandler(data => {
                 if (data.objectType === 'MESSAGE') {
-                    const index = this.messages.findIndex(item => item.id === data.body.id)
                     switch (data.eventType) {
                         case 'CREATE':
+                            this.addMessageMutation(data.body)
+                            break
                         case 'UPDATE':
-                            if (index > -1) {
-                                this.messages.splice(index, 1, data.body)
-                            } else {
-                                this.messages.push(data.body)
-                            }
+                            this.updateMessageMutation(data.body)
                             break;
                         case 'REMOVE':
-                            this.messages.splice(index, 1)
+                            this.removeMessageMutation(data.body)
                             break
                         default:
                             console.error('Looks like EventType is unknown "${data.eventType}".')
