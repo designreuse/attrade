@@ -3,6 +3,9 @@ package by.attrade.controller.rest;
 import by.attrade.domain.Message;
 import by.attrade.domain.Views;
 import by.attrade.repos.MessageRepo;
+import by.attrade.type.EventType;
+import by.attrade.type.ObjectType;
+import by.attrade.util.WsSender;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +21,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
 @RestController
 @RequestMapping("message")
-public class MessageController {
+public class MessageRestController {
     private final MessageRepo messageRepo;
+    private BiConsumer<EventType, Message> wsSender;
 
     @Autowired
-    public MessageController(MessageRepo messageRepo) {
+    public MessageRestController(MessageRepo messageRepo, WsSender wsSender) {
         this.messageRepo = messageRepo;
+        this.wsSender = wsSender.getSender(ObjectType.MESSAGE, Views.IdText.class);
     }
 
     @GetMapping
@@ -42,23 +48,22 @@ public class MessageController {
 
     @PostMapping
     public Message create(@RequestBody Message message) {
-        return messageRepo.save(message);
+        Message saved = messageRepo.save(message);
+        wsSender.accept(EventType.CREATE, message);
+        return saved;
     }
 
     @PutMapping("{id}")
     public Message update(@RequestBody Message message, @PathVariable("id") Message messageFromDB) {
         BeanUtils.copyProperties(message, messageFromDB, "id");
-        return messageRepo.save(messageFromDB);
+        Message saved = messageRepo.save(messageFromDB);
+        wsSender.accept(EventType.UPDATE, saved);
+        return saved;
     }
 
     @DeleteMapping("{id}")
-    public void delete(@PathVariable Long id) {
-        messageRepo.deleteById(id);
-    }
-
-    @MessageMapping("/changeMessage")
-    @SendTo("/topic/activity")
-    public Message message(Message message) {
-        return messageRepo.save(message);
+    public void delete(@PathVariable("id") Message message) {
+        messageRepo.delete(message);
+        wsSender.accept(EventType.REMOVE, message);
     }
 }
