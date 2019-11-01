@@ -2,6 +2,7 @@ package by.attrade.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
@@ -11,7 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
@@ -33,18 +35,20 @@ public class Filter implements Serializable {
     @Column(length = 40)
     @Length(max = 40)
     @NotBlank
+    @NonNull
     private String name;
 
     @Column(length = 255)
     @Length(max = 255)
-    @NotBlank
     private String description;
 
-    private boolean necessary;
+    private boolean visible;
+    private boolean supplement;
 
-    @ManyToMany(mappedBy = "filters")
-    private Set<Category> categories = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @OneToMany(mappedBy = "product")
-    public Set<ProductFilter> productFilters = new HashSet<>();
+    public Set<ProductProperty> productProperties = new HashSet<>();
 }

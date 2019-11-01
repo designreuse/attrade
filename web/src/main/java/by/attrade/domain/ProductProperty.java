@@ -1,6 +1,10 @@
 package by.attrade.domain;
 
-import org.hibernate.annotations.ColumnDefault;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
@@ -15,10 +19,13 @@ import java.io.Serializable;
 /*
 https://stackoverflow.com/questions/23837561/jpa-2-0-many-to-many-with-extra-column
  */
+@EqualsAndHashCode(of = {"id"})
+@RequiredArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "product_filter")
-public class ProductFilter implements Serializable {
-
+public class ProductProperty implements Serializable {
     @EmbeddedId
     private ProductFilterId id;
 
@@ -33,8 +40,14 @@ public class ProductFilter implements Serializable {
     private Filter filter;
 
     @Column(length = 40)
-    @ColumnDefault("''")
     @Length(max = 40)
     private String data;
+
+    private double doubleData;
+    private int integerData;
+    private boolean booleanData;
+
+    private boolean visible;
+    private boolean supplement;
 }
 
