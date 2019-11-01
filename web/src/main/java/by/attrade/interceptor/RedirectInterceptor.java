@@ -1,4 +1,4 @@
-package by.attrade.util;
+package by.attrade.interceptor;
 
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.ModelAndView;

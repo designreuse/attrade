@@ -1,9 +1,9 @@
 package by.attrade.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
@@ -14,28 +14,33 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 @EqualsAndHashCode(of = {"id"})
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity
-public class Filter implements Serializable {
+@Table(uniqueConstraints = @UniqueConstraint(columnNames={"category_id", "name"}))
+public class Property implements Serializable {
     public static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "FILTER_ID")
     private Long id;
 
-    @Column(length = 40)
-    @Length(max = 40)
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @Column(length = 100)
+    @Length(max = 100)
     @NotBlank
-    @NonNull
     private String name;
 
     @Column(length = 255)
@@ -45,10 +50,7 @@ public class Filter implements Serializable {
     private boolean visible;
     private boolean supplement;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
-
-    @OneToMany(mappedBy = "product")
-    public Set<ProductProperty> productProperties = new HashSet<>();
+    public Property(@Length(max = 40) @NotBlank String name) {
+        this.name = name;
+    }
 }

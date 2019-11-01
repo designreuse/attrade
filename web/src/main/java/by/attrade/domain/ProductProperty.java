@@ -1,9 +1,9 @@
 package by.attrade.domain;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
@@ -20,14 +20,16 @@ import java.io.Serializable;
 https://stackoverflow.com/questions/23837561/jpa-2-0-many-to-many-with-extra-column
  */
 @EqualsAndHashCode(of = {"id"})
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity
 @Table(name = "product_filter")
 public class ProductProperty implements Serializable {
+    public static final long serialVersionUID = 1L;
     @EmbeddedId
-    private ProductFilterId id;
+    private ProductPropertyId id = new ProductPropertyId();
 
     @ManyToOne
     @MapsId("productId")
@@ -35,16 +37,16 @@ public class ProductProperty implements Serializable {
     private Product product;
 
     @ManyToOne
-    @MapsId("filterId")
-    @JoinColumn(name = "filter_id")
-    private Filter filter;
+    @MapsId("propertyId")
+    @JoinColumn(name = "property_id")
+    private Property property;
 
-    @Column(length = 40)
-    @Length(max = 40)
+    @Column(length = 255)
+    @Length(max = 255)
     private String data;
 
-    private double doubleData;
-    private int integerData;
+    private Double doubleData;
+    private Integer integerData;
     private boolean booleanData;
 
     private boolean visible;

@@ -1,9 +1,10 @@
 package by.attrade.domain;
 
 import by.attrade.converter.LocalDateTimeToTimestampConverter;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
@@ -19,7 +20,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @EqualsAndHashCode(of = {"user"})
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity

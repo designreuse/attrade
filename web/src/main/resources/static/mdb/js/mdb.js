@@ -9901,7 +9901,7 @@ var exports = module.exports = {
 	},
 
 	/**
-	 * Creates a "path" for a rectangle with rounded corners at position (x, y) with a
+	 * Creates a "absolutePath" for a rectangle with rounded corners at position (x, y) with a
 	 * given size (width, height) and the same `radius` for all corners.
 	 * @param {CanvasRenderingContext2D} ctx - The canvas 2D Context.
 	 * @param {Number} x - The x axis of the coordinate for the rectangle starting point.

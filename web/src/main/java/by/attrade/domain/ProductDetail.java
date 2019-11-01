@@ -1,8 +1,10 @@
 package by.attrade.domain;
 
 import by.attrade.type.OrderStatus;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -20,7 +22,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @EqualsAndHashCode(of = {"id"})
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity

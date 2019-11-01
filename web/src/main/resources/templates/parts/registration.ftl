@@ -1,5 +1,5 @@
 <#include "security.ftl">
-<#macro registration path>
+<#macro registration absolutePath>
 <form action="${path}" method="post">
 
     <div class="form-group row">

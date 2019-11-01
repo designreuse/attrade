@@ -24,5 +24,6 @@ public class IndexController {
     @GetMapping()
     public String index(Model model){
        model.addAttribute("isDevMode", "dev".equals(profile));
-        return "index";}
+        return "index";
+    }
 }

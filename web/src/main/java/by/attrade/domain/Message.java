@@ -3,9 +3,11 @@ package by.attrade.domain;
 import by.attrade.converter.LocalDateTimeToTimestampConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,7 +29,8 @@ import java.time.LocalDateTime;
 
 @ToString(of = {"id", "text"})
 @EqualsAndHashCode(of = {"id"})
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Setter
 @Getter
 @Entity

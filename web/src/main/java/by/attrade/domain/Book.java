@@ -1,8 +1,10 @@
 package by.attrade.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -16,13 +18,14 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+@EqualsAndHashCode(of = "id")
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@RequiredArgsConstructor
 @Entity
-@EqualsAndHashCode(of = "id")
 @JsonIgnoreProperties(value = "shops")
-public class Book implements Serializable{
+public class Book implements Serializable {
     public static final long serialVersionUID = 7L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

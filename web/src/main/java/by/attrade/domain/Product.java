@@ -1,14 +1,16 @@
 package by.attrade.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -20,11 +22,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @EqualsAndHashCode(of = {"id"})
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -34,8 +39,12 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(length = 100)
-    @Length(max = 100)
+    @Column(length = 255)
+    @Length(max = 255)
+    private String url;
+
+    @Column(length = 255)
+    @Length(max = 255)
     @NotBlank
     private String name;
 
@@ -46,12 +55,10 @@ public class Product implements Serializable {
 
     @Column(length = 1000)
     @Length(max = 1000)
-    @NotBlank
     private String description;
 
     @Column(length = 20)
     @Length(max = 20)
-    @NotBlank
     private String vendor;
 
     private int quantityInStock;
@@ -62,39 +69,41 @@ public class Product implements Serializable {
 
     private double price;
 
+    @Embedded
+    private Dimension dimension;
+
+    private double weight; // gram
+
     @Column(length = 20)
-    @ColumnDefault("''")
     @Length(max = 20)
     @Basic(fetch = FetchType.LAZY)
     private String deliveryCountry;
 
     @Column(length = 20)
-    @ColumnDefault("''")
     @Length(max = 20)
     private String madeCountry;
 
-    @Column(length = 255)
-    private String icon;
+    @OneToOne
+    private Picture icon;
 
-    @Column(length = 255)
-    private String image;
+    @OneToOne
+    private Picture picture;
 
-    @OneToMany(mappedBy = "productGallery")
-    Set<Picture> gallery = new HashSet<>();
+    @OneToMany(mappedBy = "productPicture")
+    List<Picture> pictures = new ArrayList<>();
 
-    @OneToMany(mappedBy = "productHistoryGallery")
-    Set<Picture> historyGallery = new HashSet<>();
+    @OneToMany(mappedBy = "productIcon")
+    List<Picture> icons = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     private Supplier supplier;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    @OneToOne
     private Category category;
 
     @OneToMany(mappedBy = "product")
     private Set<ProductDetail> productDetails = new HashSet<>();
 
-    @OneToMany(mappedBy = "filter")
-    private Set<ProductFilter> productFilters = new HashSet<>();
+    @OneToMany(mappedBy = "property")
+    private Set<ProductProperty> productProperties = new HashSet<>();
 }

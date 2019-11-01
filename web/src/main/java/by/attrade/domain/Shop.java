@@ -1,8 +1,10 @@
 package by.attrade.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
@@ -21,11 +23,12 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+@EqualsAndHashCode(of = "id")
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@RequiredArgsConstructor
 @Entity
-@EqualsAndHashCode(of = "id")
 @JsonIgnoreProperties(value = "books")
 public class Shop implements Serializable {
     public static final long serialVersionUID = 4L;

@@ -1,6 +1,6 @@
 package by.attrade.controller;
 
-import by.attrade.config.UploadPathConfig;
+import by.attrade.config.ServerPathConfig;
 import by.attrade.controller.utils.ControllerUtils;
 import by.attrade.domain.Message;
 import by.attrade.domain.User;
@@ -26,7 +26,6 @@ import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 @Controller
@@ -34,7 +33,7 @@ public class MainController {
     private final MessageRepo messageRepo;
 
     @Autowired
-    private UploadPathConfig uploadPathConfig;
+    private ServerPathConfig serverPathConfig;
 
     @Autowired
     public MainController(MessageRepo messageRepo) {
@@ -54,7 +53,7 @@ public class MainController {
     @GetMapping(value = "/main")
     public String main(
             @RequestParam(required = false, defaultValue = "") String filter,
-            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC, size=32) Pageable pageable,
+            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC, size = 32) Pageable pageable,
             Model model) {
         Page<Message> page;
         if (filter == null || filter.isEmpty()) {
@@ -97,7 +96,7 @@ public class MainController {
             String uuid = UUID.randomUUID().toString();
             String resultFileName = uuid + "." + file.getOriginalFilename();
             message.setFilename(resultFileName);
-            file.transferTo(new File(uploadPathConfig.getPath() + "/" + resultFileName));
+            file.transferTo(new File(serverPathConfig.getAbsolute() + serverPathConfig.getUpload() + "/" + resultFileName));
         }
     }
 
@@ -106,12 +105,12 @@ public class MainController {
             @AuthenticationPrincipal User currentUser,
             @PathVariable User user,
             @RequestParam(required = false) Message message,
-            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC, size=32) Pageable pageable,
+            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC, size = 32) Pageable pageable,
             Model model) {
         Page<Message> page;
-            page = messageRepo.findAll(pageable);
+        page = messageRepo.findAll(pageable);
         model.addAttribute("page", page);
-        model.addAttribute("url", "/user/messages/"+currentUser.getId());
+        model.addAttribute("url", "/user/messages/" + currentUser.getId());
         model.addAttribute("message", message);
         model.addAttribute("isCurrentUser", currentUser.equals(user));
         model.addAttribute("userChannel", user);

@@ -1,12 +1,13 @@
-<#macro picture path alt class style>
+<#macro picture absolutePath alt class style>
 <#assign
     root = "/static/image"
-    path320 = "/320"<#--@media (min-width:320px)  { /* smartphones, iPhone, portrait 480x320 phones */ }-->
-    path481 = "/481"<#--@media (min-width:481px)  { /* portrait e-readers (Nook/Kindle), smaller tablets @ 600 or @ 640 wide. */ }-->
-    path641 = "/641"<#--@media (min-width:641px)  { /* portrait tablets, portrait iPad, landscape e-readers, landscape 800x480 or 854x480 phones */ }-->
-    path961 = "/961"<#--@media (min-width:961px)  { /* tablet, landscape iPad, lo-res laptops ands desktops */ }-->
-    path1025 = "/1025"<#--@media (min-width:1025px) { /* big landscape tablets, laptops, and desktops */ }-->
-    path1281 = "/1281"<#--@media (min-width:1281px) { /* hi-res laptops and desktops */ }-->
+<#--Classification-->
+    <#--path320 = "/320"&lt;#&ndash;@media (min-width:320px)  { /* smartphones, iPhone, portrait 480x320 phones */ }&ndash;&gt;-->
+    <#--path481 = "/481"&lt;#&ndash;@media (min-width:481px)  { /* portrait e-readers (Nook/Kindle), smaller tablets @ 600 or @ 640 wide. */ }&ndash;&gt;-->
+    <#--path641 = "/641"&lt;#&ndash;@media (min-width:641px)  { /* portrait tablets, portrait iPad, landscape e-readers, landscape 800x480 or 854x480 phones */ }&ndash;&gt;-->
+    <#--path961 = "/961"&lt;#&ndash;@media (min-width:961px)  { /* tablet, landscape iPad, lo-res laptops ands desktops */ }&ndash;&gt;-->
+    <#--path1025 = "/1025"&lt;#&ndash;@media (min-width:1025px) { /* big landscape tablets, laptops, and desktops */ }&ndash;&gt;-->
+    <#--path1281 = "/1281"&lt;#&ndash;@media (min-width:1281px) { /* hi-res laptops and desktops */ }&ndash;&gt;-->
 
 <#--Bootstrap grid sm md lg xl-->
     path540 = "/540"

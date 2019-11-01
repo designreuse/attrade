@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('absolutePath');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {

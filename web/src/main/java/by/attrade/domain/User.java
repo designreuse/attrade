@@ -3,10 +3,9 @@ package by.attrade.domain;
 import by.attrade.converter.LocalDateTimeToTimestampConverter;
 import by.attrade.type.Role;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -42,9 +41,8 @@ import java.util.Set;
 
 @ToString(of = {"id", "username", "password", "email", "active"})
 @EqualsAndHashCode(of = {"id"})
-@RequiredArgsConstructor
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
 @Getter
 @Setter
 @Entity

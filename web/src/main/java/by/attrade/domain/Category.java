@@ -1,7 +1,10 @@
 package by.attrade.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
@@ -17,14 +20,17 @@ import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @EqualsAndHashCode(of = {"id"})
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -33,28 +39,28 @@ public class Category implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     @Min(0)
     private Long parent;
 
-    @Column(length = 30)
-    @Length(max = 30)
+    @Column(length = 100)
+    @Length(max = 100)
     @NotBlank
+    @NonNull
     private String name;
 
-    @Column(length = 255)
-    @NotBlank
-    private String icon;
+    @OneToOne
+    private Picture icon;
 
-    @Column(length = 255)
-    @NotBlank
-    private String image;
+    @OneToOne
+    private Picture image;
 
     @OneToMany(mappedBy = "category")
-    Set<Product> products = new HashSet<>();
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(
-            name = "category_filter",
-            joinColumns = {@JoinColumn(name = "category_id")},
-            inverseJoinColumns = {@JoinColumn(name = "filter_id")})
-    private Set<Filter> filters = new HashSet<>();
+    private Set<Product> products = new HashSet<>();
+    @OneToMany(mappedBy = "category")
+    private Set<Property> properties = new HashSet<>();
+
+    public Category(@Length(max = 30) @NotBlank String name) {
+        this.name = name;
+    }
 }

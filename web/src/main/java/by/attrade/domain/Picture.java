@@ -1,8 +1,9 @@
 package by.attrade.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
@@ -16,16 +17,27 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @EqualsAndHashCode(of = {"id"})
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity
 public class Picture {
+    public Picture(@NotEmpty String root, @NotEmpty String path, @NotNull Integer priority) {
+        this.root = root;
+        this.path = path;
+        this.priority = priority;
+    }
+
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private Long id;
 
     @Column(length = 255)
+    @NotEmpty
+    private String root;
+
+    @Column(length = 50)
     @NotEmpty
     private String path;
 
@@ -33,10 +45,10 @@ public class Picture {
     private Integer priority;
 
     @ManyToOne
-    @JoinColumn(name = "product_gallery_id")
-    private Product productGallery;
+    @JoinColumn(name = "product_picture_id")
+    private Product productPicture;
 
     @ManyToOne
-    @JoinColumn(name = "product_history_gallery_id")
-    private Product productHistoryGallery;
+    @JoinColumn(name = "product_icon_id")
+    private Product productIcon;
 }
