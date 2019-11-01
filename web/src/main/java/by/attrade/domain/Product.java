@@ -48,7 +48,7 @@ public class Product implements Serializable {
     @NotBlank
     private String name;
 
-    @Column(length = 60)
+    @Column(length = 60, unique = true)
     @Length(max = 60)
     @NotBlank
     private String code;

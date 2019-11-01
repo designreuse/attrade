@@ -41,8 +41,8 @@ public class ProductProperty implements Serializable {
     @JoinColumn(name = "property_id")
     private Property property;
 
-    @Column(length = 255)
-    @Length(max = 255)
+    @Column(length = 500)
+    @Length(max = 500)
     private String data;
 
     private Double doubleData;

@@ -47,13 +47,12 @@ public class PictureSqueezeService {
     private int squeezeVertical(int diffH, SeamCarverPictureSqueezer squeezer) {
         int[] verticalSeam = squeezer.findVerticalSeam();
         squeezer.removeVerticalSeam(verticalSeam);
-        diffH--;
-        return diffH;
+        return --diffH;
     }
 
     private int squeezeHorizontal(int diffW, SeamCarverPictureSqueezer squeezer) {
         int[] horizontalSeam = squeezer.findHorizontalSeam();
         squeezer.removeHorizontalSeam(horizontalSeam);
-        return diffW--;
+        return --diffW;
     }
 }

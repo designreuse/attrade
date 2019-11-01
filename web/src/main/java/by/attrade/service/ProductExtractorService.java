@@ -49,18 +49,27 @@ public class ProductExtractorService {
     private JsoupDocService jsoupDocService;
 
 
-    public void saveProducts(IProductExtractor extractor, List<String> urls) {
+    public void saveProductsIfNotExistsByCode(IProductExtractor extractor, List<String> urls) {
         for (String url : urls) {
             try {
-                saveProduct(extractor, url);
+                saveProductIfNotExistsByCode(extractor, url);
             } catch (Exception e) {
                 log.error(url, e);
             }
         }
     }
 
-    public void saveProduct(IProductExtractor extractor, String url) throws IOException {
+    public void saveProductIfNotExistsByCode(IProductExtractor extractor, String url) throws IOException {
         Document doc = jsoupDocService.getJsoupDoc(url);
+        Product product = extractor.getProduct(doc);
+        if (productService.existsByCode(product)){
+            return;
+        }
+        saveProduct(extractor, doc, url);
+
+    }
+    private void saveProduct(IProductExtractor extractor, Document doc, String url) throws IOException {
+        Product product = extractor.getProduct(doc);
         List<Category> categories = extractor.getCategories(doc);
         Category category = categoryService.saveShaneOfCategory(categories);
         String relPath = serverPathConfig.getUpload() + serverPathConfig.getProduct();
@@ -74,7 +83,7 @@ public class ProductExtractorService {
             pictures.add(new Picture(relPath, name, priority++));
         }
         pictures = pictureService.saveAll(pictures);
-        Product product = extractor.getProduct(doc);
+
         product.setCategory(category);
         product.setUrl(url);
         product.setPictures(pictures);

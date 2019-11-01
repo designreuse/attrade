@@ -17,7 +17,8 @@ import java.util.List;
 public class ProductExtractorServiceTest {
     private String url = "http://www.s3.ru/ru/catalogue/fotohimiya/6802102-kodak-c-41-40-l-proyavitel-6800932-60_49.html";
     private int iRowStart = 0;
-    private int iRowEnd = 11353;
+//    private int iRowEnd = 11353;
+    private int iRowEnd = 100;
     private int iColumn = 2;
     private String path = "d:\\attrade\\catalogue_s3.ru.xls";
     @Autowired
@@ -36,12 +37,12 @@ public class ProductExtractorServiceTest {
 
     @Test
     public void saveProducts() throws Exception {
-        service.saveProducts(extractor, urls);
+        service.saveProductsIfNotExistsByCode(extractor, urls);
     }
 
     @Test
     public void saveProduct() throws Exception {
-        service.saveProduct(extractor, url);
+        service.saveProductIfNotExistsByCode(extractor, url);
     }
 
 }

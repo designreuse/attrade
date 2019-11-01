@@ -5,6 +5,8 @@ import by.attrade.repos.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ProductService {
     @Autowired
@@ -12,5 +14,8 @@ public class ProductService {
 
     public Product save(Product product) {
         return productRepo.save(product);
+    }
+    public boolean existsByCode(Product product){
+        return productRepo.existsByCode(product.getCode());
     }
 }
