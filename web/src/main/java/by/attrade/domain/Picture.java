@@ -29,7 +29,7 @@ public class Picture {
         this.priority = priority;
     }
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 

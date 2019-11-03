@@ -24,6 +24,7 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class ProductExtractorService {
+    private static final String DESCRIPTION = "описание";
     @Autowired
     private CategoryService categoryService;
 
@@ -69,7 +70,6 @@ public class ProductExtractorService {
 
     }
     private void saveProduct(IProductExtractor extractor, Document doc, String url) throws IOException {
-        Product product = extractor.getProduct(doc);
         List<Category> categories = extractor.getCategories(doc);
         Category category = categoryService.saveShaneOfCategory(categories);
         String relPath = serverPathConfig.getUpload() + serverPathConfig.getProduct();
@@ -78,22 +78,27 @@ public class ProductExtractorService {
         int priority = 0;
         for (String imageUrl : imagesUrl) {
             String extension = FilenameUtils.getExtension(imageUrl);
-            String name = File.separator + UUID.randomUUID().toString() + "." + extension;
-            imageDownloader.download(imageUrl, serverPathConfig.getAbsolute() + relPath + name);
+            String name = UUID.randomUUID().toString() + "." + extension;
+            String pathName = serverPathConfig.getAbsolute() + relPath + File.separator + name;
+            imageDownloader.download(imageUrl, pathName);
             pictures.add(new Picture(relPath, name, priority++));
         }
         pictures = pictureService.saveAll(pictures);
 
+        List<Property> properties = extractor.getProperties(doc);
+        List<String> values = extractor.getPropertiesValue(doc);
+        String description = getAndRemoveDescription(properties, values);
+        properties = propertyService.saveAll(properties, category);
+
+        Product product = extractor.getProduct(doc);
+        product.setDescription(description);
         product.setCategory(category);
         product.setUrl(url);
         product.setPictures(pictures);
         product.setPicture(pictures.get(0));
         productService.save(product);
 
-        List<Property> properties = extractor.getProperties(doc);
-        properties = propertyService.saveAll(properties, category);
 
-        List<String> values = extractor.getPropertiesValue(doc);
         int size = properties.size();
         List<ProductProperty> productProperties = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
@@ -104,5 +109,18 @@ public class ProductExtractorService {
             productProperties.add(productProperty);
         }
         productPropertyService.saveAll(productProperties);
+    }
+
+    private String getAndRemoveDescription(List<Property> properties, List<String> values) {
+        String description = null;
+        for (int i = 0; i < properties.size(); i++) {
+            Property p = properties.get(i);
+            if (p.getName().equalsIgnoreCase(DESCRIPTION)){
+                description = values.get(i);
+                properties.remove(i);
+                values.remove(i);
+            }
+        }
+        return description;
     }
 }

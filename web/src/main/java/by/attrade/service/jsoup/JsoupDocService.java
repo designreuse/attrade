@@ -22,7 +22,7 @@ public class JsoupDocService {
                     .referrer(jsoupConfig.getReferrer())
                     .get();
         } catch (Exception e) {
-            log.error(url, e);
+            log.error(e.getMessage(),url);
             throw e;
         }
     }

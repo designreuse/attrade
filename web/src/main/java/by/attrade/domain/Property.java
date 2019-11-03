@@ -31,7 +31,7 @@ public class Property implements Serializable {
     public static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -47,7 +47,7 @@ public class Property implements Serializable {
     @Length(max = 255)
     private String description;
 
-    private boolean visible;
+    private boolean invisible;
     private boolean supplement;
 
     public Property(@Length(max = 40) @NotBlank String name) {

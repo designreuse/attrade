@@ -4,8 +4,26 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
+import org.apache.lucene.analysis.core.StopFilterFactory;
+import org.apache.lucene.analysis.ngram.NGramFilterFactory;
+import org.apache.lucene.analysis.standard.StandardFilterFactory;
+import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.NumericField;
+import org.hibernate.search.annotations.Parameter;
+import org.hibernate.search.annotations.Store;
+import org.hibernate.search.annotations.TokenFilterDef;
+import org.hibernate.search.annotations.TokenizerDef;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Basic;
@@ -16,8 +34,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotBlank;
@@ -27,16 +43,32 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@ToString(of = {"id","name", "code"})
 @EqualsAndHashCode(of = {"id"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Entity
+@AnalyzerDef(name = "ngram",
+        tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class ),
+        filters = {
+                @TokenFilterDef(factory = StandardFilterFactory.class),
+                @TokenFilterDef(factory = LowerCaseFilterFactory.class),
+                @TokenFilterDef(factory = StopFilterFactory.class),
+                @TokenFilterDef(factory = NGramFilterFactory.class,
+                        params = {
+                                @Parameter(name = "minGramSize", value = "3"),
+                                @Parameter(name = "maxGramSize", value = "5")
+                })
+        }
+)
+@Indexed
 public class Product implements Serializable {
     public static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @DocumentId
     private Long id;
 
     @Column(length = 255)
@@ -46,20 +78,18 @@ public class Product implements Serializable {
     @Column(length = 255)
     @Length(max = 255)
     @NotBlank
+    @Field(index= Index.YES, analyze= Analyze.YES, store = Store.NO, analyzer = @Analyzer(definition = "ngram"))
     private String name;
 
     @Column(length = 60, unique = true)
     @Length(max = 60)
     @NotBlank
+    @Field(index= Index.YES, analyze= Analyze.YES, store = Store.NO, analyzer = @Analyzer(definition = "ngram"))
     private String code;
 
     @Column(length = 1000)
     @Length(max = 1000)
     private String description;
-
-    @Column(length = 20)
-    @Length(max = 20)
-    private String vendor;
 
     private int quantityInStock;
     @Basic(fetch = FetchType.LAZY)
@@ -67,12 +97,12 @@ public class Product implements Serializable {
     @Basic(fetch = FetchType.LAZY)
     private int quantityFuture;
 
-    private double price;
+    private Double price;
 
     @Embedded
     private Dimension dimension;
 
-    private double weight; // gram
+    private Double weight; // gram
 
     @Column(length = 20)
     @Length(max = 20)
@@ -89,6 +119,10 @@ public class Product implements Serializable {
     @OneToOne
     private Picture picture;
 
+    private Integer visitors;
+
+    private boolean invisible;
+
     @OneToMany(mappedBy = "productPicture")
     List<Picture> pictures = new ArrayList<>();
 
@@ -99,6 +133,7 @@ public class Product implements Serializable {
     private Supplier supplier;
 
     @OneToOne
+    @IndexedEmbedded(includePaths = {"name"})
     private Category category;
 
     @OneToMany(mappedBy = "product")

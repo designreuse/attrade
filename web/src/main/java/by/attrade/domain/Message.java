@@ -44,7 +44,7 @@ public class Message implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Id.class)
     private Long id;
 

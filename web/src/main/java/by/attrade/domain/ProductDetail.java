@@ -33,7 +33,7 @@ public class ProductDetail implements Serializable {
     private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_DOWN;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private BigDecimal price;
