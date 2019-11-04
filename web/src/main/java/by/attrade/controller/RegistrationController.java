@@ -45,8 +45,6 @@ public class RegistrationController {
     private final VerificationTokenService verificationTokenService;
     @Value("${info.url}")
     private String url;
-    @Value("${registration.validation.password.regex.message}")
-    private String passwordError;
 
     @Autowired
     private RegistrationTokenExpirationDTConfig registrationTokenExpirationDTConfig;
@@ -91,7 +89,7 @@ public class RegistrationController {
             model.addAttribute("usernameError", "Аккаунт с данным email уже существует!");
             return "registration";
         } catch (UserPasswordValidationException e) {
-            model.addAttribute("passwordError", passwordError);
+            model.addAttribute("passwordError", e.getMessage());
             return "registration";
         }
         sendVerificationToken(user,locale);

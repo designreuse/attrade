@@ -8,9 +8,12 @@ import org.springframework.stereotype.Service;
 public class UserPasswordValidationService {
     @Value("${registration.validation.password.regex}")
     private String regex;
+    @Value("${registration.validation.password.message}")
+    private String message;
+
     public void validate(String password) throws UserPasswordValidationException {
         if (!password.matches(regex)) {
-            throw new UserPasswordValidationException();
+            throw new UserPasswordValidationException(message);
         }
     }
 }
