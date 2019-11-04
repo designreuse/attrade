@@ -2,6 +2,8 @@ package by.attrade.service.search;
 
 import by.attrade.domain.Product;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,10 @@ public class ProductSearchService {
                 .createQuery();
         FullTextQuery jpaQuery
                 = searchService.createFullTextQuery(query, Product.class);
+        Sort sort = new Sort(
+                SortField.FIELD_SCORE,
+                new SortField("visitors", SortField.Type.INT, true));
+        jpaQuery.setSort(sort);
         return jpaQuery.getResultList();
     }
 

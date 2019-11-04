@@ -20,8 +20,8 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.NumericField;
 import org.hibernate.search.annotations.Parameter;
+import org.hibernate.search.annotations.SortableField;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.search.annotations.TokenFilterDef;
 import org.hibernate.search.annotations.TokenizerDef;
@@ -44,7 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@ToString(of = {"id","name", "code"})
+@ToString(of = {"id", "name", "code"})
 @EqualsAndHashCode(of = {"id"})
 @NoArgsConstructor
 @AllArgsConstructor
@@ -52,7 +52,7 @@ import java.util.Set;
 @Setter
 @Entity
 @AnalyzerDef(name = "ngram",
-        tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class ),
+        tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
         filters = {
                 @TokenFilterDef(factory = StandardFilterFactory.class),
                 @TokenFilterDef(factory = LowerCaseFilterFactory.class),
@@ -61,7 +61,7 @@ import java.util.Set;
                         params = {
                                 @Parameter(name = "minGramSize", value = "3"),
                                 @Parameter(name = "maxGramSize", value = "5")
-                })
+                        })
         }
 )
 @Indexed(interceptor = ProductIndexingInterceptor.class)
@@ -79,13 +79,13 @@ public class Product implements Serializable {
     @Column(length = 255)
     @Length(max = 255)
     @NotBlank
-    @Field(index= Index.YES, analyze= Analyze.YES, store = Store.NO, analyzer = @Analyzer(definition = "ngram"))
+    @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO, analyzer = @Analyzer(definition = "ngram"))
     private String name;
 
     @Column(length = 60, unique = true)
     @Length(max = 60)
     @NotBlank
-    @Field(index= Index.YES, analyze= Analyze.YES, store = Store.NO, analyzer = @Analyzer(definition = "ngram"))
+    @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO, analyzer = @Analyzer(definition = "ngram"))
     private String code;
 
     @Column(length = 1000)
@@ -120,6 +120,8 @@ public class Product implements Serializable {
     @OneToOne
     private Picture picture;
 
+    @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
+    @SortableField
     private Integer visitors;
 
     private boolean invisible;
