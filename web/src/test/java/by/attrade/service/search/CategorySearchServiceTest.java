@@ -20,16 +20,16 @@ public class CategorySearchServiceTest {
     private String textTo3 = "вет";
 
     @Test
-    public void searchCategoryByMoreThan3Char() throws Exception {
+    public void searchCategoryExcessMinGramSize() throws Exception {
         LocalTime start = LocalTime.now();
-        List<Category> category = service.searchCategoryByMoreThan3Char(textMore3);
+        List<Category> category = service.searchCategoryExcessMinGramSize(textMore3);
         System.out.println("Duration: " + Duration.between(start, LocalTime.now()));
         category.forEach(System.out::println);
     }
     @Test
-    public void searchCategoryBy3CharIncl() throws Exception {
+    public void searchCategoryInsideMinGramSize() throws Exception {
         LocalTime start = LocalTime.now();
-        List<Category> category = service.searchCategoryByLessThan3CharIncl(textTo3);
+        List<Category> category = service.searchCategoryInsideMinGramSize(textTo3);
         System.out.println("Duration: " + Duration.between(start, LocalTime.now()));
         category.forEach(System.out::println);
     }

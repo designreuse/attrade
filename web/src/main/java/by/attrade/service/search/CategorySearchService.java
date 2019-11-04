@@ -2,8 +2,6 @@ package by.attrade.service.search;
 
 import by.attrade.domain.Category;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +11,14 @@ import java.util.Collections;
 import java.util.List;
 
 import static by.attrade.service.search.HibernateSearchService.ANY_CHAR;
+import static by.attrade.service.search.HibernateSearchService.MIN_GRAM_SIZE;
 
 @Service
 public class CategorySearchService {
     @Autowired
     private HibernateSearchService searchService;
 
-    public List<Category> searchCategoryByMoreThan3Char(String text) {
+    public List<Category> searchCategoryExcessMinGramSize(String text) {
         QueryBuilder queryBuilder = searchService.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Category.class)
@@ -38,7 +37,7 @@ public class CategorySearchService {
         return jpaQuery.getResultList();
     }
 
-    public List<Category> searchCategoryByLessThan3CharIncl(String text) {
+    public List<Category> searchCategoryInsideMinGramSize(String text) {
         QueryBuilder queryBuilder = searchService.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Category.class)
@@ -58,13 +57,13 @@ public class CategorySearchService {
         return jpaQuery.getResultList();
     }
 
-    public List<Category> searchProduct(String text) {
+    public List<Category> searchCategory(String text) {
         text = text.trim();
         if (text.length() == 0) return Collections.emptyList();
-        if (text.length() > 3) {
-            return searchCategoryByMoreThan3Char(text);
+        if (text.length() > MIN_GRAM_SIZE) {
+            return searchCategoryExcessMinGramSize(text);
         } else {
-            return searchCategoryByLessThan3CharIncl(text);
+            return searchCategoryInsideMinGramSize(text);
         }
     }
 }

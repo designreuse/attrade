@@ -14,7 +14,7 @@ import javax.persistence.EntityManagerFactory;
 
 @Service
 public class HibernateSearchService {
-    static final int THRESHOLD = 3;
+    static final int MIN_GRAM_SIZE = 3;
     static final  String ANY_CHAR = "**";
     private final EntityManager entityManager;
     private FullTextEntityManager fullTextEntityManager;

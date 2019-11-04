@@ -14,13 +14,14 @@ import java.util.Collections;
 import java.util.List;
 
 import static by.attrade.service.search.HibernateSearchService.ANY_CHAR;
+import static by.attrade.service.search.HibernateSearchService.MIN_GRAM_SIZE;
 
 @Service
 public class ProductSearchService {
     @Autowired
     private HibernateSearchService searchService;
 
-    public List<Product> searchProductByMoreThan3Char(String text, Pageable pageable) {
+    public List<Product> searchProductExcessMinGramSize(String text, Pageable pageable) {
         QueryBuilder queryBuilder = searchService.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Product.class)
@@ -40,12 +41,12 @@ public class ProductSearchService {
                 SortField.FIELD_SCORE,
                 new SortField("visitors", SortField.Type.INT, true));
         jpaQuery.setSort(sort);
-        jpaQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        jpaQuery.setFirstResult((pageable.getPageNumber()-1) * pageable.getPageSize());
         jpaQuery.setMaxResults(pageable.getPageSize());
         return jpaQuery.getResultList();
     }
 
-    public List<Product> searchProductByLessThan3CharIncl(String next, Pageable pageable) {
+    public List<Product> searchProductInsideMinGramSize(String next, Pageable pageable) {
         QueryBuilder queryBuilder = searchService.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Product.class)
@@ -66,7 +67,7 @@ public class ProductSearchService {
                 SortField.FIELD_SCORE,
                 new SortField("visitors", SortField.Type.INT, true));
         jpaQuery.setSort(sort);
-        jpaQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        jpaQuery.setFirstResult((pageable.getPageNumber()-1) * pageable.getPageSize());
         jpaQuery.setMaxResults(pageable.getPageSize());
         return jpaQuery.getResultList();
     }
@@ -74,10 +75,10 @@ public class ProductSearchService {
     public List<Product> searchProduct(String text, Pageable pageable) {
         text = text.trim();
         if (text.length() == 0) return Collections.emptyList();
-        if (text.length() > 3) {
-            return searchProductByMoreThan3Char(text, pageable);
+        if (text.length() > MIN_GRAM_SIZE) {
+            return searchProductExcessMinGramSize(text, pageable);
         } else {
-            return searchProductByLessThan3CharIncl(text, pageable);
+            return searchProductInsideMinGramSize(text, pageable);
         }
     }
 }

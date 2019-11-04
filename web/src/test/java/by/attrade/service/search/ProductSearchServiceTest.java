@@ -23,17 +23,17 @@ public class ProductSearchServiceTest {
     private String textTo3 = "вет";
 
     @Test
-    public void searchProductByMoreThan3Char() throws Exception {
+    public void searchProductExcessMinGramSize() throws Exception {
         LocalTime start = LocalTime.now();
-        List<Product> products = service.searchProductByMoreThan3Char(textMore3, pageable);
+        List<Product> products = service.searchProductExcessMinGramSize(textMore3, pageable);
         System.out.println("Duration: " + Duration.between(start, LocalTime.now()));
         products.forEach(System.out::println);
 
     }
     @Test
-    public void searchProductBy3CharIncl(){
+    public void searchProductInsideMinGramSize(){
         LocalTime start = LocalTime.now();
-        List<Product> products = service.searchProductByLessThan3CharIncl(textTo3, pageable);
+        List<Product> products = service.searchProductInsideMinGramSize(textTo3, pageable);
         System.out.println("Duration: " + Duration.between(start, LocalTime.now()));
         products.forEach(System.out::println);
     }
