@@ -7,6 +7,7 @@ import org.apache.lucene.search.SortField;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -19,7 +20,7 @@ public class ProductSearchService {
     @Autowired
     private HibernateSearchService searchService;
 
-    public List<Product> searchProductByMoreThan3Char(String text) {
+    public List<Product> searchProductByMoreThan3Char(String text, Pageable pageable) {
         QueryBuilder queryBuilder = searchService.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Product.class)
@@ -29,16 +30,23 @@ public class ProductSearchService {
                 .onFields(
                         "name",
                         "code",
+//                        "visitors",
                         "category.name"
                 )
                 .matching(text)
                 .createQuery();
         FullTextQuery jpaQuery
                 = searchService.createFullTextQuery(query, Product.class);
+        Sort sort = new Sort(
+                SortField.FIELD_SCORE,
+                new SortField("visitors", SortField.Type.INT, true));
+        jpaQuery.setSort(sort);
+        jpaQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        jpaQuery.setMaxResults(pageable.getPageSize());
         return jpaQuery.getResultList();
     }
 
-    public List<Product> searchProductByLessThan3CharIncl(String next) {
+    public List<Product> searchProductByLessThan3CharIncl(String next, Pageable pageable) {
         QueryBuilder queryBuilder = searchService.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Product.class)
@@ -59,16 +67,18 @@ public class ProductSearchService {
                 SortField.FIELD_SCORE,
                 new SortField("visitors", SortField.Type.INT, true));
         jpaQuery.setSort(sort);
+        jpaQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        jpaQuery.setMaxResults(pageable.getPageSize());
         return jpaQuery.getResultList();
     }
 
-    public List<Product> searchProduct(String text) {
+    public List<Product> searchProduct(String text, Pageable pageable) {
         text = text.trim();
         if (text.length() == 0) return Collections.emptyList();
         if (text.length() > 3) {
-            return searchProductByMoreThan3Char(text);
+            return searchProductByMoreThan3Char(text, pageable);
         } else {
-            return searchProductByLessThan3CharIncl(text);
+            return searchProductByLessThan3CharIncl(text, pageable);
         }
     }
 }

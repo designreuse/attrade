@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Duration;
@@ -16,13 +18,14 @@ import java.util.List;
 public class ProductSearchServiceTest {
     @Autowired
     private ProductSearchService service;
+    private Pageable pageable = PageRequest.of(1, 50);
     private String textMore3 = "вето свет";
     private String textTo3 = "вет";
 
     @Test
     public void searchProductByMoreThan3Char() throws Exception {
         LocalTime start = LocalTime.now();
-        List<Product> products = service.searchProductByMoreThan3Char(textMore3);
+        List<Product> products = service.searchProductByMoreThan3Char(textMore3, pageable);
         System.out.println("Duration: " + Duration.between(start, LocalTime.now()));
         products.forEach(System.out::println);
 
@@ -30,7 +33,7 @@ public class ProductSearchServiceTest {
     @Test
     public void searchProductBy3CharIncl(){
         LocalTime start = LocalTime.now();
-        List<Product> products = service.searchProductByLessThan3CharIncl(textTo3);
+        List<Product> products = service.searchProductByLessThan3CharIncl(textTo3, pageable);
         System.out.println("Duration: " + Duration.between(start, LocalTime.now()));
         products.forEach(System.out::println);
     }
