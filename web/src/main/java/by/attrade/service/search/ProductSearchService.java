@@ -30,7 +30,6 @@ public class ProductSearchService {
                 .onFields(
                         "name",
                         "code",
-//                        "visitors",
                         "category.name"
                 )
                 .matching(text)
