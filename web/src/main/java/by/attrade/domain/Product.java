@@ -1,5 +1,6 @@
 package by.attrade.domain;
 
+import by.attrade.interceptor.ProductIndexingInterceptor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -63,7 +64,7 @@ import java.util.Set;
                 })
         }
 )
-@Indexed
+@Indexed(interceptor = ProductIndexingInterceptor.class)
 public class Product implements Serializable {
     public static final long serialVersionUID = 1L;
     @Id

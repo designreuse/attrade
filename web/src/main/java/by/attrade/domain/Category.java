@@ -1,5 +1,6 @@
 package by.attrade.domain;
 
+import by.attrade.interceptor.CategoryIndexingInterceptor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -53,7 +54,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Indexed
+@Indexed(interceptor = CategoryIndexingInterceptor.class)
 public class Category implements Serializable {
     public static final long serialVersionUID = 1L;
     @Id
