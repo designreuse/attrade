@@ -12,3 +12,6 @@ target
 
 ### UPLOAD ###
 upload
+
+### HIBERNATE INDEX ###
+web/by.*
