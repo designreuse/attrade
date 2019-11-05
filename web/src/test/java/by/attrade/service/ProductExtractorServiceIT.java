@@ -1,5 +1,6 @@
 package by.attrade.service;
 
+import by.attrade.domain.ExtractorError;
 import by.attrade.excel.ExcelCellReader;
 import by.attrade.service.jsoup.extractor.ProductJsoupS3RuExtractor;
 import org.junit.Before;
@@ -37,7 +38,8 @@ public class ProductExtractorServiceIT {
 
     @Test
     public void saveProducts() throws Exception {
-        service.saveProductsIfNotExistsByCode(extractor, urls);
+        ExtractorError extractorError = service.saveProductsIfNotExistsByCode(extractor, urls);
+        extractorError.getUrls().forEach(System.out::println);
     }
 
     @Test

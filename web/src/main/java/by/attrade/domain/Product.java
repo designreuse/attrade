@@ -56,6 +56,7 @@ import java.util.Set;
         filters = {
                 @TokenFilterDef(factory = StandardFilterFactory.class),
                 @TokenFilterDef(factory = LowerCaseFilterFactory.class),
+//                @TokenFilterDef(factory = SnowballPorterFilterFactory.class),
                 @TokenFilterDef(factory = StopFilterFactory.class),
                 @TokenFilterDef(factory = NGramFilterFactory.class,
                         params = {
@@ -66,8 +67,8 @@ import java.util.Set;
 )
 @Indexed(interceptor = ProductIndexingInterceptor.class)
 public class Product implements Serializable {
-    public static final long serialVersionUID = 1L;
-    @OneToMany(mappedBy = "product")
+    private static final long serialVersionUID = 1L;
+    @OneToMany(mappedBy = "productPicture")
     List<Picture> pictures = new ArrayList<>();
     @OneToMany(mappedBy = "productIcon")
     List<Picture> icons = new ArrayList<>();
@@ -117,7 +118,6 @@ public class Product implements Serializable {
     private boolean invisible;
     @OneToOne(fetch = FetchType.LAZY)
     private Supplier supplier;
-
     @OneToOne
     @IndexedEmbedded(includePaths = {"name"})
     private Category category;

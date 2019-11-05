@@ -2,6 +2,8 @@ package by.attrade.service;
 
 import by.attrade.config.ServerPathConfig;
 import by.attrade.domain.Category;
+import by.attrade.domain.ExtractorError;
+import by.attrade.domain.ExtractorErrorUrl;
 import by.attrade.domain.Picture;
 import by.attrade.domain.Product;
 import by.attrade.domain.ProductProperty;
@@ -9,8 +11,11 @@ import by.attrade.domain.Property;
 import by.attrade.io.ImageDownloader;
 import by.attrade.service.jsoup.IProductExtractor;
 import by.attrade.service.jsoup.JsoupDocService;
+import by.attrade.service.jsoup.extractor.ExtractorErrorService;
+import by.attrade.service.jsoup.extractor.ExtractorErrorUrlService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,15 +55,28 @@ public class ProductExtractorService {
     @Autowired
     private JsoupDocService jsoupDocService;
 
+    @Autowired
+    private ExtractorErrorService errorService;
 
-    public void saveProductsIfNotExistsByCode(IProductExtractor extractor, List<String> urls) {
+    @Autowired
+    private ExtractorErrorUrlService urlService;
+
+
+    public ExtractorError saveProductsIfNotExistsByCode(IProductExtractor extractor, List<String> urls) {
+        List<ExtractorErrorUrl> errorUrls = new LinkedList<>();
         for (String url : urls) {
             try {
                 saveProductIfNotExistsByCode(extractor, url);
+            } catch (HttpStatusException e) {
+                errorUrls.add(new ExtractorErrorUrl(url));
             } catch (Exception e) {
-                log.error(url, e);
+                log.info(e.getMessage(), url);
             }
         }
+        List<ExtractorErrorUrl> saveErrorUrls = urlService.saveAll(errorUrls);
+        ExtractorError extractorError = new ExtractorError();
+        extractorError.setUrls(saveErrorUrls);
+        return errorService.save(extractorError);
     }
 
     public void saveProductIfNotExistsByCode(IProductExtractor extractor, String url) throws IOException {
