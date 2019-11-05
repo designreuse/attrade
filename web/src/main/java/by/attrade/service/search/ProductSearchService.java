@@ -39,7 +39,7 @@ public class ProductSearchService {
                 = searchService.createFullTextQuery(query, Product.class);
         Sort sort = new Sort(
                 SortField.FIELD_SCORE,
-                new SortField("popular", SortField.Type.INT, true));
+                new SortField("popular", SortField.Type.STRING, true));
         jpaQuery.setSort(sort);
         jpaQuery.setFirstResult((pageable.getPageNumber()-1) * pageable.getPageSize());
         jpaQuery.setMaxResults(pageable.getPageSize());
@@ -65,7 +65,7 @@ public class ProductSearchService {
                 = searchService.createFullTextQuery(query, Product.class);
         Sort sort = new Sort(
                 SortField.FIELD_SCORE,
-                new SortField("popular", SortField.Type.INT, true));
+                new SortField("popular", SortField.Type.STRING, true));
         jpaQuery.setSort(sort);
         jpaQuery.setFirstResult((pageable.getPageNumber()-1) * pageable.getPageSize());
         jpaQuery.setMaxResults(pageable.getPageSize());
