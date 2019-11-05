@@ -13,7 +13,7 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class CategorySearchServiceTest {
+public class CategorySearchServiceIT {
     @Autowired
     private CategorySearchService service;
     private String textMore3 = "вето свет";

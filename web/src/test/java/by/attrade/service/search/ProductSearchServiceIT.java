@@ -15,7 +15,7 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ProductSearchServiceTest {
+public class ProductSearchServiceIT {
     @Autowired
     private ProductSearchService service;
     private Pageable pageable = PageRequest.of(1, 50);

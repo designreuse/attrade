@@ -14,7 +14,7 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ProductExtractorServiceTest {
+public class ProductExtractorServiceIT {
     private String url = "http://www.s3.ru/ru/catalogue/fotohimiya/6802102-kodak-c-41-40-l-proyavitel-6800932-60_49.html";
     private int iRowStart = 0;
     private int iRowEnd = 11353;
