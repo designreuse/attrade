@@ -18,13 +18,13 @@ import java.nio.file.Paths;
 public class ServerPathConfig {
     private String absolute;
     private String upload;
-    private String product;
+    private String picture;
 
     @PostConstruct
     public void init() throws IOException {
         createDirectories(absolute);
         createDirectories(absolute + upload);
-        createDirectories(absolute + upload + product);
+        createDirectories(absolute + picture);
     }
 
     private void createDirectories(String pathName) throws IOException {

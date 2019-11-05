@@ -8,7 +8,7 @@ spring:
   jpa:
     generate-ddl: false
     show-sql: false
-    hibernate.ddl-auto: validate
+    hibernate.ddl-auto: create
 # for new resolver (doesn't need for thymeleaf)
   freemarker:
     expose-request-attributes: true
@@ -41,7 +41,8 @@ server:
   path:
     absolute: d:\\java\\projects\\attrade-core
     upload: \\upload
-    product: \\product
+    picture: \\upload\\picture
+
 
 mail:
   debug: true

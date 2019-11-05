@@ -126,7 +126,7 @@ public class Product implements Serializable {
 
     private boolean invisible;
 
-    @OneToMany(mappedBy = "productPicture")
+    @OneToMany(mappedBy = "product")
     List<Picture> pictures = new ArrayList<>();
 
     @OneToMany(mappedBy = "productIcon")

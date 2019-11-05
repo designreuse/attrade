@@ -72,16 +72,15 @@ public class ProductExtractorService {
     private void saveProduct(IProductExtractor extractor, Document doc, String url) throws IOException {
         List<Category> categories = extractor.getCategories(doc);
         Category category = categoryService.saveShaneOfCategory(categories);
-        String relPath = serverPathConfig.getUpload() + serverPathConfig.getProduct();
         List<String> imagesUrl = extractor.getImagesUrl(doc);
         List<Picture> pictures = new ArrayList<>();
         int priority = 0;
         for (String imageUrl : imagesUrl) {
             String extension = FilenameUtils.getExtension(imageUrl);
             String name = UUID.randomUUID().toString() + "." + extension;
-            String pathName = serverPathConfig.getAbsolute() + relPath + File.separator + name;
+            String pathName = serverPathConfig.getAbsolute() + serverPathConfig.getPicture() + File.separator + name;
             imageDownloader.download(imageUrl, pathName);
-            pictures.add(new Picture(relPath, name, priority++));
+            pictures.add(new Picture(name, priority++));
         }
         pictures = pictureService.saveAll(pictures);
 

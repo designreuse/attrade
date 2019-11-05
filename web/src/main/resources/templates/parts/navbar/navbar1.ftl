@@ -9,7 +9,7 @@
 
     <div class="collapse navbar-collapse" id="navbar1">
         <a class="navbar-brand" href="/">
-            <img src="/static/image/logo/logo.png" alt="..">
+            <img src="/static/picture/logo/logo.png" alt="..">
         </a>
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         </ul>

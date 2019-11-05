@@ -18,20 +18,20 @@
                 <li class="nav-item">
                     <div class="btn-group btn-group-sm btn-group-justified  ml-2">
                         <a class="btn btn-secondary btn-sm rounded-0 mr-1" href="tel:+375445867823">
-                            <img src="/static/image/icon/velcom.png">
+                            <img src="/static/picture/icon/velcom.png">
                             <span class="glyphicon glyphicon-earphone"></span>
                             <small>+375(44)</small>
                             <b>586-78-23</b>
                         </a>
                         <a class="btn btn-secondary btn-sm rounded-0  mr-1" href="tel:+375292612505">
                             <span class="glyphicon glyphicon-earphone"></span>
-                            <img src="/static/image/icon/mts.png">
+                            <img src="/static/picture/icon/mts.png">
                             <small>+375(29)</small>
                             <b>261-25-05</b>
                         </a>
                         <a class="btn btn-secondary btn-sm rounded-0 " href="tel:+375173884060">
                             <span class="glyphicon glyphicon-earphone"></span>
-                            <img src="/static/image/icon/phone_wipe.png">
+                            <img src="/static/picture/icon/phone_wipe.png">
                             <small>+375(17)</small>
                             <b>388-40-60</b>
                         </a>

@@ -10,19 +10,19 @@
         </ol>
         <div class="carousel-inner">
             <div class="carousel-item active" data-interval="6000">
-            <@p.picture path="/banner/banner-maz.jpg" alt="..." class="d-block w-100 active" style=""/>
+            <@p.static path="/banner/banner-maz.jpg" alt="..." class="d-block w-100 active" style=""/>
             </div>
             <div class="carousel-item" data-interval="4000">
-            <@p.picture path="/banner/banner-dostavka.jpg" alt="..." class="d-block w-100" style=""/>
+            <@p.static path="/banner/banner-dostavka.jpg" alt="..." class="d-block w-100" style=""/>
             </div>
             <div class="carousel-item" data-interval="4000">
-            <@p.picture path="/banner/banner-lp-eco.jpg" alt="..." class="d-block w-100" style=""/>
+            <@p.static path="/banner/banner-lp-eco.jpg" alt="..." class="d-block w-100" style=""/>
             </div>
             <div class="carousel-item" data-interval="4000">
-            <@p.picture path="/banner/banner-rexenergo5.jpg" alt="..." class="d-block w-100" style=""/>
+            <@p.static path="/banner/banner-rexenergo5.jpg" alt="..." class="d-block w-100" style=""/>
             </div>
             <div class="carousel-item" data-interval="4000">
-            <@p.picture path="/banner/banner-sklad-era-tex.jpg" alt="..." class="d-block w-100" style=""/>
+            <@p.static path="/banner/banner-sklad-era-tex.jpg" alt="..." class="d-block w-100" style=""/>
             </div>
         </div>
 

@@ -3,7 +3,7 @@
     <#list 1..20 as i>
         <div class="col-6 col-lg-3 my-2">
             <div class="thumbnail hover-zoomin">
-                <a href="#"><img src="/static/image/category/izmerit.jpg" alt=""></a>
+                <a href="#"><img src="/static/picture/category/izmerit.jpg" alt=""></a>
 
                 <div class="caption">
                     <h5><a href="#">Name of product</a></h5>

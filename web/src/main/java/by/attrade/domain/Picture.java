@@ -23,8 +23,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @Entity
 public class Picture {
-    public Picture(@NotEmpty String root, @NotEmpty String path, @NotNull Integer priority) {
-        this.root = root;
+    public Picture(@NotEmpty String path, @NotNull Integer priority) {
         this.path = path;
         this.priority = priority;
     }
@@ -32,10 +31,6 @@ public class Picture {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
-
-    @Column(length = 255)
-    @NotEmpty
-    private String root;
 
     @Column(length = 50)
     @NotEmpty
@@ -46,7 +41,7 @@ public class Picture {
 
     @ManyToOne
     @JoinColumn(name = "product_picture_id")
-    private Product productPicture;
+    private Product product;
 
     @ManyToOne
     @JoinColumn(name = "product_icon_id")
