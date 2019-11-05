@@ -1,0 +1,5 @@
+#You can attach configuration using code below:
+#@Configuration
+#@PropertySource(value = "classpath:custom.yml", factory = YamlPropertyLoaderFactory.class)
+#@ConfigurationProperties(prefix = "product")
+
