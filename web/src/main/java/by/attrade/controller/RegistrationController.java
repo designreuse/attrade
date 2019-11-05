@@ -28,9 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.validation.Valid;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.Map;
 
@@ -48,6 +45,7 @@ public class RegistrationController {
 
     @Autowired
     private RegistrationTokenExpirationDTConfig registrationTokenExpirationDTConfig;
+
     @Autowired
     public RegistrationController(UserService userService, RecaptchaService recaptchaService, MailSenderService mailSenderService, VerificationTokenService verificationTokenService) {
         this.userService = userService;
@@ -86,14 +84,14 @@ public class RegistrationController {
         try {
             userService.register(user);
         } catch (UserAlreadyExistsException e) {
-            model.addAttribute("usernameError", "Аккаунт с данным email уже существует!");
+            model.addAttribute("usernameError", e.getMessage());
             return "registration";
         } catch (UserPasswordValidationException e) {
             model.addAttribute("passwordError", e.getMessage());
             return "registration";
         }
-        sendVerificationToken(user,locale);
-        return "redirect:/registration/activation" + "?email="+ user.getEmail();
+        sendVerificationToken(user, locale);
+        return "redirect:/registration/activation" + "?email=" + user.getEmail();
     }
 
     private void sendVerificationToken(User user, Locale locale) {
@@ -105,9 +103,9 @@ public class RegistrationController {
             String message = MessageFormat.format(
                     "Приветствуем Вас, {0}! \n" +
                             "Вы зарегистрировались на " + url + "\n" +
-                            "\n"+
+                            "\n" +
                             "Перейдите по ссылке для подтверждения регистрации:\n " +
-                            "http://"+ url + "/registration/activate/{1}",
+                            "http://" + url + "/registration/activate/{1}",
                     user.getUsername(),
                     verificationToken.getToken()
             );
@@ -122,7 +120,7 @@ public class RegistrationController {
 
     @GetMapping("/activate/{token}")
     public String activate(Model model, @PathVariable VerificationToken token) {
-        if(token != null){
+        if (token != null) {
             User user = token.getUser();
             user.setActive(true);
             userService.save(user);
@@ -132,12 +130,13 @@ public class RegistrationController {
         model.addAttribute("activationError", "Введен неверный код!");
         return "activation";
     }
+
     @GetMapping("/activationAgain")
-    public String activationAgain(@AuthenticationPrincipal User user, Locale locale){
-        if(user!=null){
+    public String activationAgain(@AuthenticationPrincipal User user, Locale locale) {
+        if (user != null) {
             sendVerificationToken(user, locale);
             return "activation";
-        }else {
+        } else {
             return "login";
         }
     }

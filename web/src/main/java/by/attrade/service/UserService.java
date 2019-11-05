@@ -41,7 +41,8 @@ public class UserService implements UserDetailsService {
         }
         return user;
     }
-    public User save(User user){
+
+    public User save(User user) {
         return userRepo.save(user);
     }
 
@@ -52,14 +53,15 @@ public class UserService implements UserDetailsService {
         }
         return user;
     }
-    public User findBySub(String sub){
+
+    public User findBySub(String sub) {
         return userRepo.findBySub(sub);
     }
 
     public boolean register(User user) throws UserAlreadyExistsException, UserPasswordValidationException {
         User userFromDB = userRepo.findByUsername(user.getUsername());
         if (userFromDB != null) {
-            throw new UserAlreadyExistsException();
+            throw new UserAlreadyExistsException("Аккаунт с данным email уже существует!");
         }
         userPasswordValidationService.validate(user.getPassword());
         user.setPassword(passwordEncoder.encode(user.getPassword()));

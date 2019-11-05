@@ -67,71 +67,54 @@ import java.util.Set;
 @Indexed(interceptor = ProductIndexingInterceptor.class)
 public class Product implements Serializable {
     public static final long serialVersionUID = 1L;
+    @OneToMany(mappedBy = "product")
+    List<Picture> pictures = new ArrayList<>();
+    @OneToMany(mappedBy = "productIcon")
+    List<Picture> icons = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
     private Long id;
-
     @Column(length = 255)
     @Length(max = 255)
     private String url;
-
     @Column(length = 255)
     @Length(max = 255)
     @NotBlank
     @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO, analyzer = @Analyzer(definition = "ngram"))
     private String name;
-
     @Column(length = 60, unique = true)
     @Length(max = 60)
     @NotBlank
     @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO, analyzer = @Analyzer(definition = "ngram"))
     private String code;
-
-    @Column(length = 1000)
-    @Length(max = 1000)
+    @Column(length = 2000)
+    @Length(max = 2000)
     private String description;
-
-    private int quantityInStock;
+    private Integer quantityInStock;
     @Basic(fetch = FetchType.LAZY)
-    private int quantityReserved;
+    private Integer quantityReserved;
     @Basic(fetch = FetchType.LAZY)
-    private int quantityFuture;
-
+    private Integer quantityFuture;
     private Double price;
-
+    private Integer discount;
     @Embedded
     private Dimension dimension;
-
     private Double weight; // gram
-
     @Column(length = 20)
     @Length(max = 20)
     @Basic(fetch = FetchType.LAZY)
     private String deliveryCountry;
-
     @Column(length = 20)
     @Length(max = 20)
     private String madeCountry;
-
-    @OneToOne
-    private Picture icon;
-
-    @OneToOne
-    private Picture picture;
-
+    private String icon;
+    private String picture;
     @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
     @SortableField
-    private Integer visitors;
-
+    private boolean popular;
+    private boolean fresh;
     private boolean invisible;
-
-    @OneToMany(mappedBy = "product")
-    List<Picture> pictures = new ArrayList<>();
-
-    @OneToMany(mappedBy = "productIcon")
-    List<Picture> icons = new ArrayList<>();
-
     @OneToOne(fetch = FetchType.LAZY)
     private Supplier supplier;
 
@@ -144,4 +127,8 @@ public class Product implements Serializable {
 
     @OneToMany(mappedBy = "property")
     private Set<ProductProperty> productProperties = new HashSet<>();
+
+    public double getPriceWithDiscount() {
+        return price - (price * discount / 100);
+    }
 }

@@ -63,12 +63,13 @@ public class ProductExtractorService {
     public void saveProductIfNotExistsByCode(IProductExtractor extractor, String url) throws IOException {
         Document doc = jsoupDocService.getJsoupDoc(url);
         Product product = extractor.getProduct(doc);
-        if (productService.existsByCode(product)){
+        if (productService.existsByCode(product)) {
             return;
         }
         saveProduct(extractor, doc, url);
 
     }
+
     private void saveProduct(IProductExtractor extractor, Document doc, String url) throws IOException {
         List<Category> categories = extractor.getCategories(doc);
         Category category = categoryService.saveShaneOfCategory(categories);
@@ -94,27 +95,29 @@ public class ProductExtractorService {
         product.setCategory(category);
         product.setUrl(url);
         product.setPictures(pictures);
-        product.setPicture(pictures.get(0));
+        product.setPicture(pictures.get(0).getPath());
         productService.save(product);
 
 
         int size = properties.size();
-        List<ProductProperty> productProperties = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             ProductProperty productProperty = new ProductProperty();
             productProperty.setProduct(product);
             productProperty.setProperty(properties.get(i));
             productProperty.setData(values.get(i));
-            productProperties.add(productProperty);
+            try {
+                productPropertyService.save(productProperty);
+            } catch (Exception e) {
+                log.error(e.getMessage(), productProperty);
+            }
         }
-        productPropertyService.saveAll(productProperties);
     }
 
     private String getAndRemoveDescription(List<Property> properties, List<String> values) {
         String description = null;
         for (int i = 0; i < properties.size(); i++) {
             Property p = properties.get(i);
-            if (p.getName().equalsIgnoreCase(DESCRIPTION)){
+            if (p.getName().equalsIgnoreCase(DESCRIPTION)) {
                 description = values.get(i);
                 properties.remove(i);
                 values.remove(i);
