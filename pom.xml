@@ -186,6 +186,14 @@
             <version>5.11.3.Final</version>
         </dependency>
 
+        <!-- Transliterator Cyrillic-Latin -->
+        <!--Transliterator toLatinTrans = Transliterator.getInstance(CYRILLIC_TO_LATIN);-->
+        <!--String result = toLatinTrans.transliterate(st);-->
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>63.1</version>
+        </dependency>
 
     </dependencies>
 
