@@ -35,6 +35,10 @@
 
 </div>
 
+<div id="search">
+
+</div>
+
 <script src="<#if isDevMode??>http://localhost:8000/main.js<#else>/static/js/main.js</#if>"></script>
 </body>
 </html>
