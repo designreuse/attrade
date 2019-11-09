@@ -35,7 +35,7 @@ public class CategorySearchService {
                 .createQuery();
         FullTextQuery jpaQuery
                 = searchService.createFullTextQuery(query, Category.class);
-        jpaQuery.setFirstResult((pageable.getPageNumber()-1) * pageable.getPageSize());
+        jpaQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
         jpaQuery.setMaxResults(pageable.getPageSize());
         return jpaQuery.getResultList();
     }
@@ -57,14 +57,14 @@ public class CategorySearchService {
                 .createQuery();
         FullTextQuery jpaQuery
                 = searchService.createFullTextQuery(query, Category.class);
-        jpaQuery.setFirstResult((pageable.getPageNumber()-1) * pageable.getPageSize());
+        jpaQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
         jpaQuery.setMaxResults(pageable.getPageSize());
         return jpaQuery.getResultList();
     }
 
     public List<Category> searchCategory(String text, Pageable pageable) {
         text = text.trim();
-        if (text.length() == 0) return Collections.emptyList();
+        if (text.isEmpty()) return Collections.emptyList();
         if (text.length() > MIN_GRAM_SIZE) {
             return searchCategoryExcessMinGramSize(text, pageable);
         } else {

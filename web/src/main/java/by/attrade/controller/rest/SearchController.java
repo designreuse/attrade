@@ -2,8 +2,10 @@ package by.attrade.controller.rest;
 
 import by.attrade.domain.Category;
 import by.attrade.domain.Product;
+import by.attrade.domain.Views;
 import by.attrade.service.search.CategorySearchService;
 import by.attrade.service.search.ProductSearchService;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -24,6 +26,7 @@ public class SearchController {
     private ProductSearchService productSearchService;
 
     @GetMapping("category/{text}")
+    @JsonView(Views.IdNamePathIcon.class)
     public List<Category> searchCategory(
             @PathVariable(required = false) String text,
             @PageableDefault(size = 16) Pageable pageable
@@ -32,6 +35,7 @@ public class SearchController {
     }
 
     @GetMapping("product/{text}")
+    @JsonView(Views.IdNamePathIconPrice.class)
     public List<Product> searchProduct(
             @PathVariable(required = false) String text,
             @PageableDefault(size = 32) Pageable pageable

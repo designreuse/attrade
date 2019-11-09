@@ -1,6 +1,8 @@
 package by.attrade.domain;
 
 import by.attrade.interceptor.ProductIndexingInterceptor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -79,25 +81,32 @@ import java.util.Set;
 @Indexed(interceptor = ProductIndexingInterceptor.class)
 public class Product implements Serializable {
     private static final long serialVersionUID = 1L;
-    @OneToMany(mappedBy = "productPicture")
-    List<Picture> pictures = new ArrayList<>();
-    @OneToMany(mappedBy = "productIcon")
-    List<Picture> icons = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
+    @JsonView(Views.Id.class)
     private Long id;
-    @Column(length = 255)
-    @Length(max = 255)
-    private String url;
-    @Column(length = 255)
+
+    @Column(length = 255, unique = true)
     @Length(max = 255)
     @NotBlank
     @Fields({
             @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO, analyzer = @Analyzer(definition = "ngram")),
             @Field(name = "name_ascii", analyze = Analyze.YES, normalizer = @Normalizer(definition = "ascii"), store = Store.NO)
     })
+    @JsonView(Views.Name.class)
     private String name;
+
+    @Column(length = 255)
+    @Length(max = 255)
+    @JsonView(Views.Path.class)
+    private String path;
+
+    @Column(length = 255)
+    @Length(max = 255)
+    private String url;
+
     @Column(length = 60, unique = true)
     @Length(max = 60)
     @NotBlank
@@ -106,38 +115,61 @@ public class Product implements Serializable {
             @Field(name = "code_ascii", analyze = Analyze.YES, normalizer = @Normalizer(definition = "ascii"), store = Store.NO),
     })
     private String code;
+
     @Column(length = 2000)
     @Length(max = 2000)
     private String description;
+
     private Integer quantityInStock;
+
     @Basic(fetch = FetchType.LAZY)
     private Integer quantityReserved;
+
     @Basic(fetch = FetchType.LAZY)
     private Integer quantityFuture;
+
+    @JsonView(Views.Price.class)
     private Double price;
+
     private Integer discount;
+
     @Embedded
     private Dimension dimension;
+
     private Double weight; // gram
     @Column(length = 20)
     @Length(max = 20)
     @Basic(fetch = FetchType.LAZY)
     private String deliveryCountry;
+
     @Column(length = 20)
     @Length(max = 20)
     private String madeCountry;
+
+    @JsonView(Views.Icon.class)
     private String icon;
+
     private String picture;
+
     @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
     @SortableField
     private boolean popular;
+
     private boolean fresh;
     private boolean invisible;
+
     @OneToOne(fetch = FetchType.LAZY)
     private Supplier supplier;
+
     @OneToOne
     @IndexedEmbedded(includePaths = {"name"})
     private Category category;
+
+    @OneToMany(mappedBy = "productPicture")
+    List<Picture> pictures = new ArrayList<>();
+
+    @OneToMany(mappedBy = "productIcon")
+    List<Picture> icons = new ArrayList<>();
 
     @OneToMany(mappedBy = "product")
     private Set<ProductDetail> productDetails = new HashSet<>();

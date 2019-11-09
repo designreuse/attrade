@@ -41,7 +41,7 @@ public class ProductSearchService {
                 SortField.FIELD_SCORE,
                 new SortField("popular", SortField.Type.STRING, true));
         jpaQuery.setSort(sort);
-        jpaQuery.setFirstResult((pageable.getPageNumber()-1) * pageable.getPageSize());
+        jpaQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
         jpaQuery.setMaxResults(pageable.getPageSize());
         return jpaQuery.getResultList();
     }
@@ -67,7 +67,7 @@ public class ProductSearchService {
                 SortField.FIELD_SCORE,
                 new SortField("popular", SortField.Type.STRING, true));
         jpaQuery.setSort(sort);
-        jpaQuery.setFirstResult((pageable.getPageNumber()-1) * pageable.getPageSize());
+        jpaQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
         jpaQuery.setMaxResults(pageable.getPageSize());
         return jpaQuery.getResultList();
     }

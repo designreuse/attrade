@@ -1,6 +1,7 @@
 package by.attrade.domain;
 
 import by.attrade.interceptor.CategoryIndexingInterceptor;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -62,6 +63,7 @@ public class Category implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
+    @JsonView(Views.Id.class)
     private Long id;
 
     @Min(0)
@@ -75,8 +77,14 @@ public class Category implements Serializable {
             @Field(index= Index.YES, analyze= Analyze.YES, store = Store.NO, analyzer = @Analyzer(definition = "ngram")),
             @Field(name = "name_ascii", analyze = Analyze.YES, normalizer = @Normalizer(definition = "ascii"), store = Store.NO)
     })
+    @JsonView(Views.Name.class)
 
     private String name;
+
+    @Column(length = 255)
+    @Length(max = 255)
+    @JsonView(Views.Path.class)
+    private String path;
 
     @OneToOne
     private Picture icon;

@@ -3,32 +3,40 @@
         <p>
             <input v-model="question">
         </p>
-        <category-row v-for="category in categories"
-                      :key="category.id"
+        <category-row v-for="(category,i) in categories"
+                      :key="i"
                       :category="category"/>
-        <product-row v-for="product in products"
-                     :key="product.id"
+        <product-row v-for="(product,i) in products"
+                     :key="`A-${i}`"
                      :product="product"/>
     </div>
 </template>
 
-<script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
 <script>
     import CategoryRow from 'components/search/CategoryRow.vue'
     import ProductRow from 'components/search/ProductRow.vue'
-    import { mapActions } from 'vuex'
-    import {mapState} from 'vuex'
+    import * as _ from 'lodash'
+    import searchApi from 'api/search'
+
     export default {
-        data: {
-            question: '',
+
+        components: {
+            CategoryRow,
+            ProductRow
         },
-        computed: mapState(['products'] ['categories']),
+        data() {
+            return {
+                question: null,
+                categories: [],
+                products: [],
+            }
+        },
         watch: {
             // эта функция запускается при любом изменении вопроса
             question: function (newQuestion, oldQuestion) {
-                if (newQuestion === ''){
+                if (newQuestion === '') {
                     this.clearAll()
-                }else {
+                } else {
                     this.debouncedGetAnswer()
                 }
             }
@@ -43,17 +51,29 @@
             this.debouncedGetAnswer = _.debounce(this.getAnswer, 500)
         },
         methods: {
-            ...mapActions(['getProductsAction','getCategoriesAction', 'removeProductsAction', 'removeCategoriesAction']),
-            getAnswer() {
-                //                this.answer = 'Думаю...'
-                this.categories = this.getCategoriesAction(this.question)
-                this.products = this.getProductsAction(this.question)
+            getAnswer: function () {
+//                this.answer = 'Думаю...'
+                if (this.question != '') {
+                    var vm = this
+                    searchApi.getCategories(this.question)
+                        .then(function (response) {
+                            vm.categories = response.data
+                        })
+                        .catch(function (error) {
+                            console.info('Ошибка! Не могу связаться с API. ' + error)
+                        })
+                    searchApi.getProducts(this.question)
+                        .then(function (response) {
+                            vm.products = response.data
+                        })
+                        .catch(function (error) {
+                            console.info('Ошибка! Не могу связаться с API. ' + error)
+                        })
+                }
             },
-            clearAll(){
+            clearAll: function () {
                 this.categories = []
                 this.products = []
-                this.removeCategoriesAction()
-                this.removeProductsAction()
             }
         }
     }
