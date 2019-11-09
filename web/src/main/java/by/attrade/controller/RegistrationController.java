@@ -105,7 +105,7 @@ public class RegistrationController {
                             "Вы зарегистрировались на " + url + "\n" +
                             "\n" +
                             "Перейдите по ссылке для подтверждения регистрации:\n " +
-                            "http://" + url + "/registration/activate/{1}",
+                            url + "/registration/activate/{1}",
                     user.getUsername(),
                     verificationToken.getToken()
             );

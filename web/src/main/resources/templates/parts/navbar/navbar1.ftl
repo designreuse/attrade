@@ -18,8 +18,11 @@
                         <span class="input-group-text bg-warning" id="basic-text1"><i
                                 class="fas fa-search text-white" aria-hidden="true"></i></span>
             </div>
-            <input class="form-control my-0 py-1 mr-5" type="text"
-                   placeholder="Поиск в каталоге. Например, &#34;лампа led&#34;" aria-label="Search">
+            <div id="search">
+
+            </div>
+            <#--<input  class="form-control my-0 py-1 mr-5" type="text"-->
+                   <#--placeholder="Поиск в каталоге. Например, &#34;лампа led&#34;" aria-label="Search">-->
         </div>
     </div>
     <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">

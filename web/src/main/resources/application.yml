@@ -55,7 +55,11 @@ recaptcha:
 #info
 info:
   logo: Attrade
-  url: localhost:8080
+  url: http://localhost:8080
+
+#webpack
+webpack:
+  devPort: http://localhost:8000
 
 #registration
 registration:
