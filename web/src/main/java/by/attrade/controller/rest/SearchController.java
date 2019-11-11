@@ -35,7 +35,7 @@ public class SearchController {
     }
 
     @GetMapping("product/{text}")
-    @JsonView(Views.IdNamePathIconPrice.class)
+    @JsonView(Views.IdNamePathIconPicturePriceCategory.class)
     public List<Product> searchProduct(
             @PathVariable(required = false) String text,
             @PageableDefault(size = 32) Pageable pageable

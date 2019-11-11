@@ -39,9 +39,9 @@ spring:
 # server path
 server:
   path:
-    absolute: d:\\java\\projects\\attrade-core
-    upload: \\upload
-    picture: \\upload\\picture
+    absolute: d:\java\projects\attrade-core
+    upload: \upload
+    picture: \upload\picture
 
 
 mail:
@@ -54,8 +54,8 @@ recaptcha:
 
 #info
 info:
-  logo: Attrade
   url: http://localhost:8080
+  logo: Attrade
 
 #webpack
 webpack:

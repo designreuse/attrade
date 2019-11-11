@@ -149,6 +149,7 @@ public class Product implements Serializable {
     @JsonView(Views.Icon.class)
     private String icon;
 
+    @JsonView(Views.Picture.class)
     private String picture;
 
     @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
@@ -163,6 +164,7 @@ public class Product implements Serializable {
 
     @OneToOne
     @IndexedEmbedded(includePaths = {"name"})
+    @JsonView(Views.Category.class)
     private Category category;
 
     @OneToMany(mappedBy = "productPicture")

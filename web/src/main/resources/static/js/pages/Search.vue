@@ -1,14 +1,21 @@
 <template>
-    <div>
-        <p>
-            <input v-model="question">
-        </p>
-        <category-row v-for="(category,i) in categories"
-                      :key="i"
-                      :category="category"/>
-        <product-row v-for="(product,i) in products"
-                     :key="`A-${i}`"
-                     :product="product"/>
+    <div class="input-group pr-3">
+        <div class="input-group-prepend col-12 px-0 mx-0">
+            <span class="input-group-text bg-warning border-right-0" id="basic-text1"><i
+                    class="fas fa-search text-white" aria-hidden="true"></i>
+                </span>
+            <input v-model="question" id="question" class="form-control rounded-0" type="text"
+                   placeholder="Поиск в каталоге. Например, 'лампа led'" aria-label="Search" data-toggle="dropdown"
+                   aria-haspopup="false" aria-expanded="true">
+            <div class="dropdown-menu col-12" aria-labelledby="question" id="dropdown-menu">
+                <category-row v-for="(category,i) in categories"
+                              :key="i"
+                              :category="category"/>
+                <product-row v-for="(product,i) in products"
+                             :key="`A-${i}`"
+                             :product="product"/>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -19,7 +26,6 @@
     import searchApi from 'api/search'
 
     export default {
-
         components: {
             CategoryRow,
             ProductRow
@@ -35,6 +41,7 @@
             // эта функция запускается при любом изменении вопроса
             question: function (newQuestion, oldQuestion) {
                 if (newQuestion === '') {
+                    $('#question').dropdown('hide')
                     this.clearAll()
                 } else {
                     this.debouncedGetAnswer()
@@ -58,6 +65,11 @@
                     searchApi.getCategories(this.question)
                         .then(function (response) {
                             vm.categories = response.data
+                            if (vm.categories.length != 0) {
+                                $('#question').dropdown('show')
+                            } else {
+                                $('#question').dropdown('hide')
+                            }
                         })
                         .catch(function (error) {
                             console.info('Ошибка! Не могу связаться с API. ' + error)
@@ -74,10 +86,13 @@
             clearAll: function () {
                 this.categories = []
                 this.products = []
-            }
-        }
+            },
+        },
     }
 </script>
 <style>
-
+    .dropdown-menu {
+        height: 600px !important;
+        overflow: scroll;
+    }
 </style>

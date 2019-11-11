@@ -30,9 +30,11 @@ public class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/img/**")
+        registry.addResourceHandler("/upload/picture/**")
                 .addResourceLocations(
-                        "file:/"
+                        "file:///"
+                                + serverPathConfig.getAbsolute()
+                                + "/"
                                 + serverPathConfig.getPicture()
                                 + "/");
         registry.addResourceHandler("/static/**")

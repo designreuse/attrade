@@ -70,11 +70,13 @@
 
 <#macro account_cabinet>
 <form action="/account" method="get">
-    <button type="submit" role="button" class="btn btn-success btn mr-2">
+    <button type="submit" role="button" class="btn btn-success btn mr-2 ">
             <span class="badge bg-transparent">
                     <i class="fa fa-user" aria-hidden="true">
                         </i>
-            ${principalName}
+                <div class="text-truncate">
+                ${principalName}
+                </div>
                 </span>
     </button>
 </form>
