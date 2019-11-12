@@ -6,7 +6,8 @@
                 </span>
             <input v-model="question" id="question" class="form-control rounded-0" type="text"
                    placeholder="Поиск в каталоге. Например, 'лампа led'" aria-label="Search" data-toggle="dropdown"
-                   aria-haspopup="false" aria-expanded="true">
+                   aria-haspopup="false" aria-expanded="true"
+                    @focus="getAnswer">
             <div class="dropdown-menu col-12" aria-labelledby="question" id="dropdown-menu">
                 <category-row v-for="(category,i) in categories"
                               :key="i"
