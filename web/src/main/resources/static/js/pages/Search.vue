@@ -9,12 +9,22 @@
                    aria-haspopup="false" aria-expanded="true"
                     @focus="getAnswer">
             <div class="dropdown-menu col-12" aria-labelledby="question" id="dropdown-menu">
-                <category-row v-for="(category,i) in categories"
+                <category-row  v-for="(category,i) in categories"
                               :key="i"
                               :category="category"/>
                 <product-row v-for="(product,i) in products"
                              :key="`A-${i}`"
                              :product="product"/>
+                <div class="row justify-content-center mx-0 mb-1">
+                    <button type="button" class="btn btn-light btn-block border border-white shadow-lg">
+                        <i class="fas fa-angle-double-down fa-2x text-secondary"></i>
+                    </button>
+                </div>
+                <div class="row justify-content-center mx-0" >
+                    <button type="button" class="btn btn-light btn-block border border-white shadow-lg"  @click="menuScrollTop">
+                        <i class="fas fa-chevron-circle-up fa-2x text-secondary"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -45,6 +55,7 @@
                     $('#question').dropdown('hide')
                     this.clearAll()
                 } else {
+                    this.menuScrollTop()
                     this.debouncedGetAnswer()
                 }
             }
@@ -87,6 +98,10 @@
             clearAll: function () {
                 this.categories = []
                 this.products = []
+            },
+            menuScrollTop: function () {
+                $('#dropdown-menu').scrollTop(0)
+                this.getAnswer()
             },
         },
     }
