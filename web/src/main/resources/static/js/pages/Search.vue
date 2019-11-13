@@ -8,7 +8,7 @@
                    placeholder="Поиск в каталоге. Например, 'лампа led'" aria-label="Search" data-toggle="dropdown"
                    aria-haspopup="false" aria-expanded="true"
                     @focus="getAnswer">
-            <div class="dropdown-menu col-12" aria-labelledby="question" id="dropdown-menu">
+            <div class="dropdown-menu col-12 pb-0" aria-labelledby="question" id="dropdown-menu" ref="menu">
                 <category-row  v-for="(category,i) in categories"
                               :key="i"
                               :category="category"/>
@@ -16,11 +16,11 @@
                              :key="`A-${i}`"
                              :product="product"/>
                 <div class="row justify-content-center mx-0 mb-1">
-                    <button type="button" class="btn btn-light btn-block border border-white shadow-lg">
+                    <button type="button" class="btn btn-light btn-block border border-white shadow-lg" @click.stop="getMoreProducts()">
                         <i class="fas fa-angle-double-down text-muted"></i>
                     </button>
                 </div>
-                <div class="row justify-content-center mx-0" >
+                <div class="row justify-content-center mx-0" id="up">
                     <button type="button" class="btn btn-light btn-block border border-white shadow-lg"  @click="setFocus()">
                         <i class="fas fa-chevron-circle-up text-muted"></i>
                     </button>
@@ -44,6 +44,7 @@
         data() {
             return {
                 question: null,
+                page: 0,
                 categories: [],
                 products: [],
             }
@@ -73,8 +74,8 @@
             getAnswer: function () {
 //                this.answer = 'Думаю...'
                 if (this.question) {
-                    var vm = this
-                    searchApi.getCategories(this.question)
+                    let vm = this
+                    searchApi.getCategories(this.question, this.page, null)
                         .then(function (response) {
                             vm.categories = response.data
                             if (vm.categories.length != 0) {
@@ -86,7 +87,7 @@
                         .catch(function (error) {
                             console.info('Ошибка! Не могу связаться с API. ' + error)
                         })
-                    searchApi.getProducts(this.question)
+                    searchApi.getProducts(this.question, this.page, null)
                         .then(function (response) {
                             vm.products = response.data
                         })
@@ -96,20 +97,39 @@
                 }
             },
             clearAll: function () {
+                this.page = 0
                 this.categories = []
                 this.products = []
             },
             setFocus: function() {
+                this.page = 0
                 this.$refs.search.focus();
                 $('#dropdown-menu').scrollTop(0)
+            },
+            getMoreProducts: function () {
+                let vm = this
+                vm.page = vm.page + 1
+                searchApi.getProducts(this.question, this.page, null)
+                    .then(function (response) {
+                        vm.products = vm.products.concat(response.data)
+                    })
+                    .catch(function (error) {
+                        console.info('Ошибка! Не могу связаться с API. ' + error)
+                    })
             }
         },
     }
 </script>
 <style>
-    .dropdown-menu {
+    #dropdown-menu {
         height: 600px !important;
         overflow: scroll;
         overflow-x: hidden;
+    }
+    #up{
+        position: -webkit-sticky;
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
     }
 </style>

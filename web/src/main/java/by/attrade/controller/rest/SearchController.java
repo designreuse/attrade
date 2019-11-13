@@ -12,6 +12,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -25,20 +26,20 @@ public class SearchController {
     @Autowired
     private ProductSearchService productSearchService;
 
-    @GetMapping("category/{text}")
+    @GetMapping("category")
     @JsonView(Views.IdNamePathIcon.class)
     public List<Category> searchCategory(
-            @PathVariable(required = false) String text,
-            @PageableDefault(size = 16) Pageable pageable
+            @RequestParam String text,
+            @PageableDefault(size = 10) Pageable pageable
     ){
         return categorySearchService.searchCategory(text, pageable);
     }
 
-    @GetMapping("product/{text}")
+    @GetMapping("product")
     @JsonView(Views.IdNamePathIconPicturePriceCategory.class)
     public List<Product> searchProduct(
-            @PathVariable(required = false) String text,
-            @PageableDefault(size = 32) Pageable pageable
+            @RequestParam String text,
+            @PageableDefault(size = 50) Pageable pageable
     ){
         return productSearchService.searchProduct(text, pageable);
     }
