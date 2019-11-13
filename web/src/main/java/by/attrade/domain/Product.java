@@ -1,7 +1,6 @@
 package by.attrade.domain;
 
 import by.attrade.interceptor.ProductIndexingInterceptor;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -69,6 +68,7 @@ import java.util.Set;
         filters = {
                 @TokenFilterDef(factory = StandardFilterFactory.class),
                 @TokenFilterDef(factory = LowerCaseFilterFactory.class),
+//                @TokenFilterDef(factory = UpperCaseFilterFactory.class),
 //                @TokenFilterDef(factory = SnowballPorterFilterFactory.class),
                 @TokenFilterDef(factory = StopFilterFactory.class),
                 @TokenFilterDef(factory = NGramFilterFactory.class,

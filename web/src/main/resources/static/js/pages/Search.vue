@@ -1,10 +1,10 @@
 <template>
     <div class="input-group pr-3">
         <div class="input-group-prepend col-12 px-0 mx-0">
-            <span class="input-group-text bg-warning border-right-0" id="basic-text1"><i
-                    class="fas fa-search text-white" aria-hidden="true"></i>
+            <span class="input-group-text bg-white border-right-0" id="basic-text1"><i
+                    class="fas fa-search text-muted" aria-hidden="true"></i>
                 </span>
-            <input v-model="question" id="question" class="form-control rounded-0" type="text"
+            <input v-model="question" id="question" ref="search" class="form-control rounded-0 border-left-0" type="text"
                    placeholder="Поиск в каталоге. Например, 'лампа led'" aria-label="Search" data-toggle="dropdown"
                    aria-haspopup="false" aria-expanded="true"
                     @focus="getAnswer">
@@ -17,12 +17,12 @@
                              :product="product"/>
                 <div class="row justify-content-center mx-0 mb-1">
                     <button type="button" class="btn btn-light btn-block border border-white shadow-lg">
-                        <i class="fas fa-angle-double-down fa-2x text-secondary"></i>
+                        <i class="fas fa-angle-double-down text-muted"></i>
                     </button>
                 </div>
                 <div class="row justify-content-center mx-0" >
-                    <button type="button" class="btn btn-light btn-block border border-white shadow-lg"  @click="menuScrollTop">
-                        <i class="fas fa-chevron-circle-up fa-2x text-secondary"></i>
+                    <button type="button" class="btn btn-light btn-block border border-white shadow-lg"  @click="setFocus()">
+                        <i class="fas fa-chevron-circle-up text-muted"></i>
                     </button>
                 </div>
             </div>
@@ -55,7 +55,7 @@
                     $('#question').dropdown('hide')
                     this.clearAll()
                 } else {
-                    this.menuScrollTop()
+                    $('#dropdown-menu').scrollTop(0)
                     this.debouncedGetAnswer()
                 }
             }
@@ -72,7 +72,7 @@
         methods: {
             getAnswer: function () {
 //                this.answer = 'Думаю...'
-                if (this.question != '') {
+                if (this.question) {
                     var vm = this
                     searchApi.getCategories(this.question)
                         .then(function (response) {
@@ -99,10 +99,10 @@
                 this.categories = []
                 this.products = []
             },
-            menuScrollTop: function () {
+            setFocus: function() {
+                this.$refs.search.focus();
                 $('#dropdown-menu').scrollTop(0)
-                this.getAnswer()
-            },
+            }
         },
     }
 </script>
@@ -110,5 +110,6 @@
     .dropdown-menu {
         height: 600px !important;
         overflow: scroll;
+        overflow-x: hidden;
     }
 </style>

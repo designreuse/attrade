@@ -3,7 +3,7 @@
 <@c.page>
 <div class="card text-center">
     <div class="card-header bg-warning">
-        <b>АККАУНТ НЕ АКТИВИРОВАН</b>
+        <b>АКТИВИРУЙТЕ АККАУНТ</b>
     </div>
     <div class="card-body">
         <h5 class="card-title">
@@ -19,7 +19,7 @@
         </#if>
     </div>
     <div class="card-footer text-muted bg-warning">
-        АККАУНТ НЕ АКТИВИРОВАН
+        АКТИВИРУЙТЕ АККАУНТ
     </div>
 </div>
 </@c.page>

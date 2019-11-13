@@ -1,7 +1,6 @@
 <#include "security.ftl">
 <#macro registration absolutePath>
-<form action="${path}" method="post">
-
+<form action="${absolutePath}" method="post">
     <div class="form-group row">
         <label class="col-sm-2 col-form-label"> Email:</label>
         <span class="input-group-text"> <i class="fas fa-at"></i> </span>
@@ -70,39 +69,32 @@
 
 <#macro account_cabinet>
 <form action="/account" method="get">
-    <button type="submit" role="button" class="btn btn-success btn mr-2 ">
-            <span class="badge bg-transparent">
-                    <i class="fa fa-user" aria-hidden="true">
-                        </i>
-                <div class="text-truncate">
-                ${principalName}
-                </div>
-                </span>
-    </button>
-</form>
-</#macro>
-<#macro account_new>
-<form action="/registration" method="get">
-    <button type="submit" role="button" class="btn btn-danger btn mr-2">
-            <span class="badge bg-transparent">
-                    <i class="fa fa-user" aria-hidden="true">
-                        </i>
-            Регистрация
-                </span>
+    <button type="submit" role="button" class="btn btn-sm btn-outline-success mr-2 ">
+            <#--<span class="badge bg-transparent">-->
+                <i class="fas fa-user-circle fa-2x" aria-hidden="true"></i>
+                <#--<div class="text-truncate">-->
+                <#--${principalName}-->
+                <#--</div>-->
+                <#--</span>-->
     </button>
 </form>
 </#macro>
 
+
+<#macro account_new>
+    <a href="/registration" class="btn btn-sm btn-outline-success mr-2">
+            <#--<span class="badge bg-transparent">-->
+                    <i class="fa fa-user fa-2x" aria-hidden="true"></i>
+                <#--</span>-->
+    </a>
+</#macro>
+
 <#macro account_new_modal>
-<form>
-    <button type="button" class="btn btn-danger btn mr-2" data-toggle="modal" data-target="#account-new-modal">
-            <span class="badge bg-transparent">
-                    <i class="fa fa-user" aria-hidden="true">
-                        </i>
-            Регистрация
-                </span>
-    </button>
-</form>
+    <a href="/registration" class="btn btn-sm btn-outline-success mr-2" data-toggle="modal" data-target="#account-new-modal">
+            <#--<span class="badge bg-transparent">-->
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                <#--</span>-->
+    </a>
 
 <div class="modal fade" id="account-new-modal">
     <div class="modal-dialog modal-lg">

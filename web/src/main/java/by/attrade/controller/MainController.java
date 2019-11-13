@@ -40,7 +40,7 @@ public class MainController {
         this.messageRepo = messageRepo;
     }
 
-    @GetMapping("/logout")
+    @GetMapping("/login")
     public String logout() {
         return "login";
     }
