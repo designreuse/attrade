@@ -22,6 +22,7 @@ public class ProductSearchService {
     private HibernateSearchService searchService;
 
     public List<Product> searchProductExcessMinGramSize(String text, Pageable pageable) {
+        text = text.toLowerCase();
         QueryBuilder queryBuilder = searchService.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Product.class)
@@ -46,7 +47,8 @@ public class ProductSearchService {
         return jpaQuery.getResultList();
     }
 
-    public List<Product> searchProductInsideMinGramSize(String next, Pageable pageable) {
+    public List<Product> searchProductInsideMinGramSize(String text, Pageable pageable) {
+        text = text.toLowerCase();
         QueryBuilder queryBuilder = searchService.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Product.class)
@@ -59,7 +61,7 @@ public class ProductSearchService {
                         "code",
                         "category.name"
                 )
-                .matching(next.trim() + ANY_CHAR)
+                .matching(text.trim() + ANY_CHAR)
                 .createQuery();
         FullTextQuery jpaQuery
                 = searchService.createFullTextQuery(query, Product.class);

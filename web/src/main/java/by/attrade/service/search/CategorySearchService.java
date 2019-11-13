@@ -20,6 +20,7 @@ public class CategorySearchService {
     private HibernateSearchService searchService;
 
     public List<Category> searchCategoryExcessMinGramSize(String text, Pageable pageable) {
+        text = text.toLowerCase();
         QueryBuilder queryBuilder = searchService.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Category.class)
@@ -41,6 +42,7 @@ public class CategorySearchService {
     }
 
     public List<Category> searchCategoryInsideMinGramSize(String text, Pageable pageable) {
+        text = text.toLowerCase();
         QueryBuilder queryBuilder = searchService.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Category.class)
