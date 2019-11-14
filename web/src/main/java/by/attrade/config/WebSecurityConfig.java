@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,8 +24,11 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilt
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.CompositeFilter;
 
 import javax.servlet.Filter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -39,7 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthProvider authProvider;
     @Autowired
-    private OAuth2ClientContext oAuth2ClientContext;
+    private OAuth2ClientContext oauth2ClientContext;
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -96,36 +100,66 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.authenticationProvider(authProvider);
     }
 
-    @Bean
-    @ConfigurationProperties("google.client")
-    public AuthorizationCodeResourceDetails google()
-    {
-        return new AuthorizationCodeResourceDetails();
+    private Filter ssoFilter() {
+        CompositeFilter filter = new CompositeFilter();
+        List<Filter> filters = new ArrayList<>();
+        filters.add(ssoFilter(google(), "/login/google"));
+        filters.add(ssoFilter(facebook(), "/login/facebook"));
+        filters.add(ssoFilter(github(), "/login/github"));
+        filter.setFilters(filters);
+        return filter;
+    }
+    private Filter ssoFilter(ClientResources client, String path) {
+        OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(path);
+        OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(), oauth2ClientContext);
+        filter.setRestTemplate(template);
+        CustomUserInfoTokenServices tokenServices = new CustomUserInfoTokenServices(
+                client.getResource().getUserInfoUri(), client.getClient().getClientId());
+        tokenServices.setUserService(userService);
+        tokenServices.setRestTemplate(template);
+        filter.setTokenServices(tokenServices);
+        return filter;
     }
 
     @Bean
-    @ConfigurationProperties("google.resource")
-    public ResourceServerProperties googleResource()
-    {
-        return new ResourceServerProperties();
+    @ConfigurationProperties("google")
+    public ClientResources google() {
+        return new ClientResources();
     }
 
     @Bean
-    public FilterRegistrationBean oAuth2ClientFilterRegistration(OAuth2ClientContextFilter oAuth2ClientContextFilter) {
-        FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(oAuth2ClientContextFilter);
+    @ConfigurationProperties("github")
+    public ClientResources github() {
+        return new ClientResources();
+    }
+
+    @Bean
+    @ConfigurationProperties("facebook")
+    public ClientResources facebook() {
+        return new ClientResources();
+    }
+
+    @Bean
+    public FilterRegistrationBean<OAuth2ClientContextFilter> oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
+        FilterRegistrationBean<OAuth2ClientContextFilter> registration = new FilterRegistrationBean<OAuth2ClientContextFilter>();
+        registration.setFilter(filter);
         registration.setOrder(-100);
         return registration;
     }
 
-    private Filter ssoFilter() {
-        OAuth2ClientAuthenticationProcessingFilter googleFilter = new OAuth2ClientAuthenticationProcessingFilter("/login/google");
-        OAuth2RestTemplate googleTemplate = new OAuth2RestTemplate(google(), oAuth2ClientContext);
-        googleFilter.setRestTemplate(googleTemplate);
-        CustomUserInfoTokenServices tokenServices = new CustomUserInfoTokenServices(googleResource().getUserInfoUri(), google().getClientId());
-        tokenServices.setRestTemplate(googleTemplate);
-        googleFilter.setTokenServices(tokenServices);
-        tokenServices.setUserService(userService);
-        return googleFilter;
+}
+class ClientResources {
+    @NestedConfigurationProperty
+    private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();
+
+    @NestedConfigurationProperty
+    private ResourceServerProperties resource = new ResourceServerProperties();
+
+    public AuthorizationCodeResourceDetails getClient() {
+        return client;
+    }
+
+    public ResourceServerProperties getResource() {
+        return resource;
     }
 }
