@@ -116,3 +116,16 @@ product:
                 - name
                 - code
                 - category.name
+
+#https://console.cloud.google.com/apis/credentials?project=attrade-core&supportedpurview=project
+google:
+    client:
+        accessTokenUri: https://www.googleapis.com/oauth2/v4/token
+        clientAuthenticationScheme: form
+        clientId: 185460716091-1rasqe3vdl56flepchpugq569c4hasnk.apps.googleusercontent.com
+        clientSecret: ${clientSecret}
+        scope: openid,email,profile
+        userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
+    resource:
+        preferTokenInfo: true
+        userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
