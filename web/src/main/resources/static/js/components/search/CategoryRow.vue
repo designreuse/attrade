@@ -15,14 +15,9 @@
 
 <script>
     export default {
-        data(){
-            return {
-                url: infoUrl
-            }
-        },
         computed: {
             link(){
-                return this.url + this.category.path;
+                return this.category.path;
             }
         },
         props: ['category'],

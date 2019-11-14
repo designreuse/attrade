@@ -7,7 +7,7 @@ Vue.use(Vuex)
 export default new Vuex.Store(
     {
         state: {
-            messages: []
+            messages: [],
         },
         getters: {
             sortedMessages: state => state.messages.sort((a, b) => -(a.id - b.id))
@@ -38,7 +38,7 @@ export default new Vuex.Store(
             },
             getMessageMutation(state, data){
                 state.messages = data
-            }
+            },
         },
         actions: {
             async addMessageAction({commit, state}, message){
@@ -65,10 +65,10 @@ export default new Vuex.Store(
             async getMessageAction({commit}){
                 const result = await messagesApi.get()
                 const data = await result.data
-                    if (result.ok) {
-                        commit('getMessageMutation', data)
-                    }
-            }
+                if (result.ok) {
+                    commit('getMessageMutation', data)
+                }
+            },
         }
     }
 )

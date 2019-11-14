@@ -47,14 +47,9 @@
 
 <script>
     export default {
-        data(){
-            return {
-                url: infoUrl
-            }
-        },
         computed: {
             link(){
-                return this.url + "/" + this.product.category.path + this.product.path;
+                return this.product.category.path + this.product.path;
             },
             picture(){
                 return "upload/picture/" + this.product.picture
@@ -83,7 +78,4 @@
 </script>
 
 <style>
-    /*.btn{*/
-    /*white-space: nowrap;*/
-    /*}*/
 </style>
