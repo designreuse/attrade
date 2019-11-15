@@ -1,5 +1,7 @@
 package by.attrade.config;
 
+import by.attrade.config.exception.Oauth2LoaderMissedException;
+import by.attrade.config.exception.Oauth2TokenChangedException;
 import by.attrade.domain.User;
 import by.attrade.service.UserService;
 import by.attrade.type.Role;
@@ -23,12 +25,10 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.util.Assert;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -67,29 +67,88 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
     }
 
     public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException, InvalidTokenException {
-        Map<String, Object> map = getMap(this.userInfoEndpointUrl, accessToken);
-        if (map.containsKey("sub")) {
-            String sub = (String) map.get("sub");
-            User userFromDB = userService.findBySub(sub);
-            User user = Optional.ofNullable(userFromDB).orElseGet(() -> getUser(map, sub));
-            userService.save(user);
-        }
-
+        Map<String, Object> map = getMap(userInfoEndpointUrl, accessToken);
         if (map.containsKey("error")) {
             log.debug("userinfo returned error: " + map.get("error"));
             throw new InvalidTokenException(accessToken);
         }
+        if (userInfoEndpointUrl.contains("google")){
+            loadGoogleUser(map);
+        }else if(userInfoEndpointUrl.contains("facebook")){
+            loadFacebookUser(map);
+        }else if(userInfoEndpointUrl.contains("github")){
+            loadGithubUser(map);
+        }
+        else {
+            throw new Oauth2LoaderMissedException("Social provider is not supported there.");
+        }
         return extractAuthentication(map);
     }
+    private void loadGoogleUser(Map<String, Object> map) {
+        String id = "sub";
+        if (map.containsKey(id)) {
+            String sub = "google" + map.get(id);
+            User userFromDB = userService.findBySub(sub);
+            User user = Optional.ofNullable(userFromDB).orElseGet(() -> getGoogleUser(map, sub));
+            userService.save(user);
+        }else{
+            throw new Oauth2TokenChangedException("Key " + id + "is missed." + "Map contains: "+map.entrySet());
+        }
+    }
 
-    private User getUser(Map<String, Object> map, String sub) {
+    private void loadFacebookUser(Map<String, Object> map) {
+        String id = "id";
+        if (map.containsKey(id)) {
+            String sub = "facebook" + map.get(id);
+            User userFromDB = userService.findBySub(sub);
+            User user = Optional.ofNullable(userFromDB).orElseGet(() -> getFacebookUser(map, sub));
+            userService.save(user);
+        }else{
+            throw new Oauth2TokenChangedException("Key " + id + "is missed." + "Map contains: "+map.entrySet());
+        }
+    }
+    private void loadGithubUser(Map<String, Object> map) {
+        String id = "id";
+        if (map.containsKey(id)) {
+            String sub = "github" + map.get(id);
+            User userFromDB = userService.findBySub(sub);
+            User user = Optional.ofNullable(userFromDB).orElseGet(() -> getGithubUser(map, sub));
+            userService.save(user);
+        }else{
+            throw new Oauth2TokenChangedException("Key " + id + "is missed." + "Map contains: "+map.entrySet());
+        }
+    }
+
+    private User getGoogleUser(Map<String, Object> map, String sub) {
+        Boolean active = (Boolean) map.get("email_verified");
+        String email = (String) map.get("email");
         User newUser = new User();
-        String email = String.valueOf(map.get("email"));
         newUser.setUsername(email);
         newUser.setPassword("1Aa".concat(UUID.randomUUID().toString()));
         newUser.setSub(sub);
         newUser.setEmail(email);
-        newUser.setActive((Boolean) map.get("email_verified"));
+        newUser.setActive(active);
+        newUser.setRoles(Collections.singleton(Role.USER));
+        return newUser;
+    }
+
+    private User getFacebookUser(Map<String, Object> map, String sub) {
+        String name = (String) map.get("name");
+        User newUser = new User();
+        newUser.setUsername(name);
+        newUser.setPassword("1Aa".concat(UUID.randomUUID().toString()));
+        newUser.setSub(sub);
+        newUser.setActive(true);
+        newUser.setRoles(Collections.singleton(Role.USER));
+        return newUser;
+    }
+    private User getGithubUser(Map<String, Object> map, String sub) {
+        String name = (String) map.get("login");
+        User newUser = new User();
+        newUser.setUsername(name);
+        newUser.setPassword("1Aa".concat(UUID.randomUUID().toString()));
+        newUser.setSub(sub);
+        newUser.setActive(true);
         newUser.setRoles(Collections.singleton(Role.USER));
         return newUser;
     }
@@ -97,7 +156,16 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
     private OAuth2Authentication extractAuthentication(Map<String, Object> map) {
         Object principal = this.getPrincipal(map);
         List authorities = this.authoritiesExtractor.extractAuthorities(map);
-        OAuth2Request request = new OAuth2Request((Map) null, this.clientId, (Collection) null, true, (Set) null, (Set) null, (String) null, (Set) null, (Map) null);
+        OAuth2Request request = new OAuth2Request(
+                null,
+                clientId,
+                null,
+                true,
+                null,
+                null,
+                null,
+                null,
+                null);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(principal, "N/A", authorities);
         token.setDetails(map);
         return new OAuth2Authentication(request, token);

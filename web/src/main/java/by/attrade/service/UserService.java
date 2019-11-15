@@ -3,9 +3,11 @@ package by.attrade.service;
 import by.attrade.domain.User;
 import by.attrade.repos.UserRepo;
 import by.attrade.service.exception.UserAlreadyExistsException;
-import by.attrade.service.exception.UserPasswordValidationException;
+import by.attrade.service.validation.UserEmailValidationService;
 import by.attrade.service.validation.UserPasswordValidationService;
 import by.attrade.type.Role;
+import by.attrade.util.ErrorWrapper;
+import by.attrade.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +30,8 @@ public class UserService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserPasswordValidationService userPasswordValidationService;
+    @Autowired
+    private UserEmailValidationService userEmailValidationService;
 
     @Autowired
     public UserService(UserRepo userRepo) {
@@ -58,16 +63,20 @@ public class UserService implements UserDetailsService {
         return userRepo.findBySub(sub);
     }
 
-    public boolean register(User user) throws UserAlreadyExistsException, UserPasswordValidationException {
+    public List<Pair<String, Exception>> register(User user){
+        List<Pair<String,Exception>> pairs = new ArrayList<>();
         User userFromDB = userRepo.findByUsername(user.getUsername());
         if (userFromDB != null) {
-            throw new UserAlreadyExistsException("Аккаунт с данным email уже существует!");
+            pairs.add(Pair.of("usernameError", new UserAlreadyExistsException("Аккаунт с данным email уже существует!")));
         }
-        userPasswordValidationService.validate(user.getPassword());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(Collections.singleton(Role.USER));
-        userRepo.save(user);
-        return true;
+        ErrorWrapper.runAndWrap("passwordError", ()-> userPasswordValidationService.validate(user.getPassword()), pairs);
+        ErrorWrapper.runAndWrap("emailError", ()-> userEmailValidationService.validate(user.getEmail()),pairs);
+        if(pairs.isEmpty()){
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRoles(Collections.singleton(Role.USER));
+            userRepo.save(user);
+        }
+        return pairs;
     }
 
     public List<User> findAll() {
