@@ -1,5 +1,8 @@
 package by.attrade.config;
 
+import by.attrade.config.exception.Oauth2ConfigMismatchEntryUrlException;
+import by.attrade.config.exception.Oauth2LoaderMissedException;
+import by.attrade.config.exception.Oauth2TokenChangedException;
 import by.attrade.domain.User;
 import by.attrade.service.UserService;
 import by.attrade.type.Role;
@@ -23,12 +26,10 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.util.Assert;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -42,6 +43,9 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
     @Setter
     @Getter
     private UserService userService;
+    @Setter
+    @Getter
+    private Oauth2Config oauth2Config;
 
     public CustomUserInfoTokenServices(String userInfoEndpointUrl, String clientId) {
         this.userInfoEndpointUrl = userInfoEndpointUrl;
@@ -67,29 +71,55 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
     }
 
     public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException, InvalidTokenException {
-        Map<String, Object> map = getMap(this.userInfoEndpointUrl, accessToken);
-        if (map.containsKey("sub")) {
-            String sub = (String) map.get("sub");
-            User userFromDB = userService.findBySub(sub);
-            User user = Optional.ofNullable(userFromDB).orElseGet(() -> getUser(map, sub));
-            userService.save(user);
-        }
-
+        Map<String, Object> map = getMap(userInfoEndpointUrl, accessToken);
         if (map.containsKey("error")) {
             log.debug("userinfo returned error: " + map.get("error"));
             throw new InvalidTokenException(accessToken);
         }
+        int i = getIndexSocial(map);
+        loadUser(map, oauth2Config.getSocial().get(i), oauth2Config.getIdAttr().get(i) , oauth2Config.getNameAttr().get(i));
+//        if (userInfoEndpointUrl.contains("google")){
+//            loadUser(map, "google", "sub", "email");
+//        }else if(userInfoEndpointUrl.contains("facebook")){
+//            loadUser(map, "facebook", "id", "name");
+//        }else if(userInfoEndpointUrl.contains("github")){
+//            loadUser(map, "github", "id", "login");
+//        }
+//        else {
+//            throw new Oauth2LoaderMissedException("Social provider is not supported there.");
+//        }
         return extractAuthentication(map);
     }
 
-    private User getUser(Map<String, Object> map, String sub) {
+    private int getIndexSocial(Map<String, Object> map) {
+        List<String> socials = oauth2Config.getSocial();
+        int size = socials.size();
+        for (int i = 0; i < size; i++) {
+            if (userInfoEndpointUrl.contains(socials.get(i))){
+                return i;
+            }
+        }
+        throw new Oauth2ConfigMismatchEntryUrlException("Socials in config are not " + userInfoEndpointUrl);
+    }
+
+    private void loadUser(Map<String, Object> map, String social, String idAttr, String nameAttr) {
+        if (map.containsKey(idAttr)) {
+            String sub = social + map.get(idAttr);
+            User userFromDB = userService.findBySub(sub);
+            User user = Optional.ofNullable(userFromDB).orElseGet(() -> getUser(map, sub, nameAttr));
+            userService.save(user);
+        }else{
+            throw new Oauth2TokenChangedException("Key " + idAttr + "is missed." + "Map contains: "+map.entrySet());
+        }
+    }
+
+    private User getUser(Map<String, Object> map, String sub, String nameAttr) {
+        String name = (String) map.get(nameAttr);
         User newUser = new User();
-        String email = String.valueOf(map.get("email"));
-        newUser.setUsername(email);
+        newUser.setUsername(name);
         newUser.setPassword("1Aa".concat(UUID.randomUUID().toString()));
         newUser.setSub(sub);
-        newUser.setEmail(email);
-        newUser.setActive((Boolean) map.get("email_verified"));
+        newUser.setActive(true);
         newUser.setRoles(Collections.singleton(Role.USER));
         return newUser;
     }
@@ -97,7 +127,16 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
     private OAuth2Authentication extractAuthentication(Map<String, Object> map) {
         Object principal = this.getPrincipal(map);
         List authorities = this.authoritiesExtractor.extractAuthorities(map);
-        OAuth2Request request = new OAuth2Request((Map) null, this.clientId, (Collection) null, true, (Set) null, (Set) null, (String) null, (Set) null, (Map) null);
+        OAuth2Request request = new OAuth2Request(
+                null,
+                clientId,
+                null,
+                true,
+                null,
+                null,
+                null,
+                null,
+                null);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(principal, "N/A", authorities);
         token.setDetails(map);
         return new OAuth2Authentication(request, token);

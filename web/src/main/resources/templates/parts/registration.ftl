@@ -69,7 +69,7 @@
 
 <#macro account_cabinet>
 <form action="/account" method="get">
-    <button type="submit" role="button" class="btn btn-sm btn-outline-success mr-2 ">
+    <button type="submit" role="button" class="btn btn-sm btn-outline-success mr-2 px-2">
             <#--<span class="badge bg-transparent">-->
                 <i class="fas fa-user-circle fa-2x" aria-hidden="true"></i>
                 <#--<div class="text-truncate">-->
@@ -82,18 +82,14 @@
 
 
 <#macro account_new>
-    <a href="/registration" class="btn btn-sm btn-outline-success mr-2">
-            <#--<span class="badge bg-transparent">-->
-                    <i class="fa fa-user fa-2x" aria-hidden="true"></i>
-                <#--</span>-->
+    <a href="/registration" class="btn btn-sm btn-outline-success mr-2 py-2">
+                    <i class="fa fa-user fa-1x" aria-hidden="true"></i>
     </a>
 </#macro>
 
 <#macro account_new_modal>
-    <a href="/registration" class="btn btn-sm btn-outline-success mr-2" data-toggle="modal" data-target="#account-new-modal">
-            <#--<span class="badge bg-transparent">-->
+    <a href="/registration" class="btn btn-sm btn-outline-success mr-2 py-2" data-toggle="modal" data-target="#account-new-modal">
                     <i class="fa fa-user" aria-hidden="true"></i>
-                <#--</span>-->
     </a>
 
 <div class="modal fade" id="account-new-modal">

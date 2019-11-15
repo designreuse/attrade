@@ -9,8 +9,8 @@ import by.attrade.service.MailSenderService;
 import by.attrade.service.RecaptchaService;
 import by.attrade.service.UserService;
 import by.attrade.service.VerificationTokenService;
-import by.attrade.service.exception.UserAlreadyExistsException;
-import by.attrade.service.exception.UserPasswordValidationException;
+import by.attrade.util.ErrorMessageAttributeWrapper;
+import by.attrade.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.validation.Valid;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -81,15 +82,13 @@ public class RegistrationController {
             return "registration";
         }
         user.setUsername(user.getEmail());
-        try {
-            userService.register(user);
-        } catch (UserAlreadyExistsException e) {
-            model.addAttribute("usernameError", e.getMessage());
-            return "registration";
-        } catch (UserPasswordValidationException e) {
-            model.addAttribute("passwordError", e.getMessage());
+
+        List<Pair<String, Exception>> errors = userService.register(user);
+        ErrorMessageAttributeWrapper.wrapErrorsAsAttributes(errors, model);
+        if (!errors.isEmpty()){
             return "registration";
         }
+
         sendVerificationToken(user, locale);
         return "redirect:/registration/activation" + "?email=" + user.getEmail();
     }

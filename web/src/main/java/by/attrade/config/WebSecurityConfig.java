@@ -44,6 +44,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthProvider authProvider;
     @Autowired
     private OAuth2ClientContext oauth2ClientContext;
+    @Autowired
+    private Oauth2Config oauth2Config;
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -116,6 +118,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         CustomUserInfoTokenServices tokenServices = new CustomUserInfoTokenServices(
                 client.getResource().getUserInfoUri(), client.getClient().getClientId());
         tokenServices.setUserService(userService);
+        tokenServices.setOauth2Config(oauth2Config);
         tokenServices.setRestTemplate(template);
         filter.setTokenServices(tokenServices);
         return filter;
