@@ -39,7 +39,7 @@
 <div class="container">
     <div class="d-flex justify-content-center h-100">
         <div class="card">
-            <div class="card-header pb-3">
+            <div class="card-header pb-0">
                 <h3>Вход в аккаунт</h3>
             <#--<@p.static path="/logo/logo.png" alt="..." class="" style=""/>-->
                 <div class="row justify-content-center text-white mt-4">
@@ -48,30 +48,39 @@
                 <div class="d-flex justify-content-center social_icon">
                     <a href="/login/github"><span><i class="fab fa-github-square px-2"></i></span></a>
                     <a href="/login/facebook"><span><i class="fab fa-facebook-square px-2"></i></span></a>
-                    <a href="/login/google"><span><i class="fab fa-google-plus-square px-2"></i></span></a>
+                    <a href="/login/google"><span><i class="fab fa-google px-2"></i></span></a>
                 </div>
                 <div class="row justify-content-center text-white mt-3">
                     или
                 </div>
             </div>
             <div class="card-body py-0">
+            <#if error??>
+                <div class="alert alert-danger py-0" role="alert">
+                <small>${error}</small>
+                </div>
+            <#else>
+                <div class="alert alert-transparent py-0" role="alert">
+                    <small>&nbsp;</small>
+                </div>
+            </#if>
                 <form action="/login" method="post">
                     <input type="hidden" name="_csrf" value="${_csrf.token}">
                     <div class="input-group form-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
                         </div>
-                        <input type="text" name="username" autofocus="autofocus"
-                               class="form-control ${(securityMessage??)?string('is-invalid','')}"
+                        <input type="text" name="username" value="<#if username??>${username}</#if>" autofocus="autofocus"
+                               class="form-control ${(error??)?string('is-invalid','')}"
                                placeholder="email"/>
-
                     </div>
+
                     <div class="input-group form-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-key"></i></span>
                         </div>
                         <input type="password" name="password"
-                               class="form-control ${(securityMessage??)?string('is-invalid','')}"
+                               class="form-control ${(error??)?string('is-invalid','')}"
                                placeholder="пароль"/>
                     </div>
 

@@ -77,17 +77,7 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
             throw new InvalidTokenException(accessToken);
         }
         int i = getIndexSocial(map);
-        loadUser(map, oauth2Config.getSocial().get(i), oauth2Config.getIdAttr().get(i) , oauth2Config.getNameAttr().get(i));
-//        if (userInfoEndpointUrl.contains("google")){
-//            loadUser(map, "google", "sub", "email");
-//        }else if(userInfoEndpointUrl.contains("facebook")){
-//            loadUser(map, "facebook", "id", "name");
-//        }else if(userInfoEndpointUrl.contains("github")){
-//            loadUser(map, "github", "id", "login");
-//        }
-//        else {
-//            throw new Oauth2LoaderMissedException("Social provider is not supported there.");
-//        }
+        loadUser(map, oauth2Config.getSocial().get(i), oauth2Config.getIdAttr().get(i), oauth2Config.getNameAttr().get(i));
         return extractAuthentication(map);
     }
 
@@ -95,7 +85,7 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
         List<String> socials = oauth2Config.getSocial();
         int size = socials.size();
         for (int i = 0; i < size; i++) {
-            if (userInfoEndpointUrl.contains(socials.get(i))){
+            if (userInfoEndpointUrl.contains(socials.get(i))) {
                 return i;
             }
         }
@@ -106,17 +96,17 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
         if (map.containsKey(idAttr)) {
             String sub = social + map.get(idAttr);
             User userFromDB = userService.findBySub(sub);
-            User user = Optional.ofNullable(userFromDB).orElseGet(() -> getUser(map, sub, nameAttr));
+            User user = Optional.ofNullable(userFromDB).orElseGet(() -> getUser(map, sub, nameAttr, social));
             userService.save(user);
-        }else{
-            throw new Oauth2TokenChangedException("Key " + idAttr + "is missed." + "Map contains: "+map.entrySet());
+        } else {
+            throw new Oauth2TokenChangedException("Key " + idAttr + "is missed." + "Map contains: " + map.entrySet());
         }
     }
 
-    private User getUser(Map<String, Object> map, String sub, String nameAttr) {
+    private User getUser(Map<String, Object> map, String sub, String nameAttr, String social) {
         String name = (String) map.get(nameAttr);
         User newUser = new User();
-        newUser.setUsername(name);
+        newUser.setUsername(social + ": " + name);
         newUser.setPassword("1Aa".concat(UUID.randomUUID().toString()));
         newUser.setSub(sub);
         newUser.setActive(true);

@@ -5,6 +5,7 @@ import by.attrade.controller.utils.ControllerUtils;
 import by.attrade.domain.Message;
 import by.attrade.domain.User;
 import by.attrade.repos.MessageRepo;
+import by.attrade.service.MessageSourceOnlyLanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,14 +36,23 @@ public class MainController {
 
     @Autowired
     private ServerPathConfig serverPathConfig;
+    @Autowired
+    private MessageSourceOnlyLanguageService messageSourceOnlyLanguageService;
 
     @Autowired
     public MainController(MessageRepo messageRepo) {
         this.messageRepo = messageRepo;
     }
 
-    @GetMapping("/login")
-    public String loginPage() {
+    @PostMapping("/loginFailed")
+    public String loginPage(
+            @RequestParam(value = "username", required = false) String username,
+            Model model,
+            Locale locale
+    ) {
+        model.addAttribute("username", username);
+        String error = messageSourceOnlyLanguageService.getMessage("loginFailed", null, locale);
+        model.addAttribute("error", error);
         return "login";
     }
 
