@@ -5,14 +5,18 @@ public final class Views {
     public interface IdText extends Id, Text{}
     public interface Id{}
     public interface Name{}
+    public interface Code{}
     public interface Icon{}
     public interface Picture{}
     public interface Path{}
     public interface Price{}
     public interface Category{}
+    public interface QuantityInStock{}
+    public interface QuantitySupplier{}
+    public interface Unit{}
     public interface Text{}
     public interface Tag{}
     public interface CreationLDT{}
     public interface IdNamePathIcon extends Id,Name,Path,Icon {}
-    public interface IdNamePathIconPicturePriceCategory extends Id, Name, Path, Icon, Picture, Price, Category {}
+    public interface IdNameCodePathIconPicturePriceCategoryQuantityInStockQuantitySupplierUnit extends Id, Name, Code, Path, Icon, Picture, Price, Category, QuantityInStock, QuantitySupplier, Unit {}
 }

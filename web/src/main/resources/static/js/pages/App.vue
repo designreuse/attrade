@@ -8,7 +8,6 @@
     import { mapState, mapMutations } from 'vuex'
     import MessagesList from 'components/messages/MessageList.vue'
     import {addHandler} from 'util/ws'
-    import messagesApi from 'api/messages'
 
     export default {
         components: {

@@ -14,16 +14,16 @@ html,body{
 }
 
 .card{
-    height: 370px;
+    height: 550px;
     margin-top: auto;
     margin-bottom: auto;
-    width: 400px;
+    width: 380px;
     background-color: rgba(0,0,0,0.5) !important;
 }
 
 .social_icon span{
     font-size: 60px;
-    margin-left: 10px;
+    /*margin-left: 10px;*/
     color: #FFC312;
 }
 
@@ -37,11 +37,11 @@ html,body{
     color: white;
 }
 
-.social_icon{
-    position: absolute;
-    right: 20px;
-    top: -45px;
-}
+/*.social_icon{*/
+    /*position: absolute;*/
+    /*right: 20px;*/
+    /*top: -45px;*/
+/*}*/
 
 .input-group-prepend span{
     width: 50px;
@@ -54,18 +54,6 @@ input:focus{
     outline: 0 0 0 0  !important;
     box-shadow: 0 0 0 0 !important;
 
-}
-
-.remember{
-    color: white;
-}
-
-.remember input
-{
-    width: 20px;
-    height: 20px;
-    margin-left: 15px;
-    margin-right: 5px;
 }
 
 .login_btn{

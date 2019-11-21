@@ -8,7 +8,7 @@
                    placeholder="Поиск в каталоге. Например, 'лампа led'" aria-label="Search" data-toggle="dropdown"
                    aria-haspopup="false" aria-expanded="true"
                     @focus="getAnswer">
-            <div class="dropdown-menu col-12 pb-0" aria-labelledby="question" id="dropdown-menu" ref="menu">
+            <div class="dropdown-menu col-12 pb-0" aria-labelledby="question" id="dropdown-menu" ref="menu" @click.stop="">
                 <category-row  v-for="(category,i) in categories"
                               :key="i"
                               :category="category"/>
@@ -17,7 +17,9 @@
                              :product="product"/>
                 <div class="row justify-content-center mx-0 mb-1">
                     <button type="button" class="btn btn-light btn-block border border-white shadow-lg" @click.stop="getMoreProducts()">
-                        <i class="fas fa-angle-double-down text-muted"></i>
+                        <div class="text-muted">
+                            &#8595;&nbsp;показать ещё 50
+                        </div>
                     </button>
                 </div>
                 <div class="row justify-content-center mx-0" id="up">
@@ -122,7 +124,7 @@
 </script>
 <style>
     #dropdown-menu {
-        height: 600px !important;
+        max-height: 600px !important;
         overflow: scroll;
         overflow-x: hidden;
     }

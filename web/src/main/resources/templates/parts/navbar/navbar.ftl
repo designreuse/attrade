@@ -52,24 +52,24 @@
                 <i class="fas fa-eye" aria-hidden="true"></i>
             </a>
 
+            <a href="/favorites" class="btn btn-secondary mr-sm-1">
+                <i class="far fa-star" aria-hidden="true"></i>
+            </a>
+
             <a href="/history" class="btn btn-secondary mr-sm-1">
                 <i class="fas fa-history" aria-hidden="true"></i>
             <#if principalUser??>
-                <span class="badge badge-<#if isOrdersAccept??>success<#else>danger</#if>">#</span>
+                <span class="badge badge-success"><i class="fas fa-user"></i></span>
             <#else>
                 <span class="badge badge-danger"><i class="fas fa-user-lock"></i></span>
             </#if>
             </a>
 
-            <a href="/basket" class="btn btn-secondary">
-                <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-            <#if basket??>
-                <span class="badge badge-success">4</span>
-            <#else>
+            <a href="/basket" class="btn btn-secondary text-left pl-3" style="min-width: 100px;">
+                <i class="fa fa-shopping-cart pr-1" aria-hidden="true"></i>
                 <span class="badge badge-primary">0</span>
-            </#if>
+                <small>&nbsp;p.</small>
             </a>
-
         </div>
     </nav>
 </div>

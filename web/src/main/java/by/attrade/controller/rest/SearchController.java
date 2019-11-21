@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +35,7 @@ public class SearchController {
     }
 
     @GetMapping("product")
-    @JsonView(Views.IdNamePathIconPicturePriceCategory.class)
+    @JsonView(Views.IdNameCodePathIconPicturePriceCategoryQuantityInStockQuantitySupplierUnit.class)
     public List<Product> searchProduct(
             @RequestParam String text,
             @PageableDefault(size = 50) Pageable pageable

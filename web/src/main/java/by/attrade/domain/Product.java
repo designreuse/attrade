@@ -1,6 +1,7 @@
 package by.attrade.domain;
 
 import by.attrade.interceptor.ProductIndexingInterceptor;
+import by.attrade.type.Unit;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -36,6 +37,8 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -114,13 +117,19 @@ public class Product implements Serializable {
             @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO, analyzer = @Analyzer(definition = "ngram")),
             @Field(name = "code_ascii", analyze = Analyze.YES, normalizer = @Normalizer(definition = "ascii"), store = Store.NO),
     })
+
+    @JsonView(Views.Code.class)
     private String code;
 
     @Column(length = 2000)
     @Length(max = 2000)
     private String description;
 
+    @JsonView(Views.QuantityInStock.class)
     private Integer quantityInStock;
+
+    @JsonView(Views.QuantitySupplier.class)
+    private Integer quantitySupplier;
 
     @Basic(fetch = FetchType.LAZY)
     private Integer quantityReserved;
@@ -151,6 +160,11 @@ public class Product implements Serializable {
 
     @JsonView(Views.Picture.class)
     private String picture;
+
+    @Column(columnDefinition = "default 'ITEM'")
+    @Enumerated(EnumType.STRING)
+    @JsonView(Views.Unit.class)
+    private Unit unit = Unit.ITEM;
 
     @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
     @SortableField

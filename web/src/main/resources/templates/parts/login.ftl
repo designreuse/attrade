@@ -1,5 +1,5 @@
 <#include "security.ftl">
-<#macro logout>
+<#macro login>
     <#if principalUser??>
     <form action="/logout" method="post">
         <button type="submit" class="btn btn-sm btn-outline-primary pt-2 pb-2 px-4">

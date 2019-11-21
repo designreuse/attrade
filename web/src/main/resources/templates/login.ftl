@@ -35,18 +35,26 @@
         crossorigin="anonymous"></script>
 
 <#include "parts/security.ftl">
+<#import "parts/picture.ftl" as p/>
 <div class="container">
     <div class="d-flex justify-content-center h-100">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header pb-3">
                 <h3>Вход в аккаунт</h3>
-                <div class="d-flex justify-content-end social_icon">
-                    <span><i class="fab fa-facebook-square"></i></span>
-                    <span><i class="fab fa-google-plus-square"></i></span>
-                    <span><i class="fab fa-twitter-square"></i></span>
+            <#--<@p.static path="/logo/logo.png" alt="..." class="" style=""/>-->
+                <div class="row justify-content-center text-white mt-4">
+                    через социальные сети
+                </div>
+                <div class="d-flex justify-content-center social_icon">
+                    <a href="/login/github"><span><i class="fab fa-github-square px-2"></i></span></a>
+                    <a href="/login/facebook"><span><i class="fab fa-facebook-square px-2"></i></span></a>
+                    <a href="/login/google"><span><i class="fab fa-google-plus-square px-2"></i></span></a>
+                </div>
+                <div class="row justify-content-center text-white mt-3">
+                    или
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body py-0">
                 <form action="/login" method="post">
                     <input type="hidden" name="_csrf" value="${_csrf.token}">
                     <div class="input-group form-group">
@@ -67,9 +75,7 @@
                                placeholder="пароль"/>
                     </div>
 
-                    <#--<div class="d-flex justify-content-left">-->
-                        <a href="#">Забыли пароль?</a>
-                    <#--</div>-->
+                    <a href="#">Забыли пароль?</a>
 
                     <div class="form-group">
                         <input type="submit" value="Войти" class="btn float-right login_btn">
@@ -80,7 +86,11 @@
                 <div class="d-flex justify-content-center links">
                     Еще не зарегистрированы?<a href="/registration">Регистрация</a>
                 </div>
+                <div class="row justify-content-right text-muted mt-2">
+                    <small>© 2001–2019 &emsp;ATTrade</small>
+                </div>
             </div>
+
         </div>
     </div>
 </div>
