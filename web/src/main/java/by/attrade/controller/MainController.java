@@ -41,7 +41,7 @@ public class MainController {
     }
 
     @GetMapping("/login")
-    public String logout() {
+    public String loginPage() {
         return "login";
     }
 

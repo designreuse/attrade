@@ -6,15 +6,21 @@
         <span class="input-group-text"> <i class="fas fa-at"></i> </span>
         <div class="col-sm-6">
             <input type="email" name="email" value="<#if user.email??>${user.email}<#else></#if>"
-                   class="form-control ${(emailError??)?string('is-invalid','')}" placeholder="some@some.com"/>
+                   class="form-control ${(emailError?? || UserAlreadyExistsException?? || UserEmailValidationException??)?string('is-invalid','')}"
+                   placeholder="some@some.com"/>
             <#if emailError??>
                 <div class="invalid-feedback">
                 ${emailError}
                 </div>
             </#if>
-            <#if usernameError??>
+            <#if UserAlreadyExistsException??>
                 <div class="invalid-feedback">
-                ${usernameError}
+                ${UserAlreadyExistsException}
+                </div>
+            </#if>
+            <#if UserEmailValidationException??>
+                <div class="invalid-feedback">
+                ${UserEmailValidationException}
                 </div>
             </#if>
         </div>
@@ -25,10 +31,16 @@
         <span class="input-group-text"> <i class="fas fa-user-lock"></i> </span>
         <div class="col-sm-6">
             <input type="password" name="password"
-                   class="form-control ${(passwordError??)?string('is-invalid','')}" placeholder="Пароль"/>
+                   class="form-control ${(passwordError?? || UserPasswordValidationException??)?string('is-invalid','')}"
+                   placeholder="Пароль"/>
             <#if passwordError??>
                 <div class="invalid-feedback">
                 ${passwordError}
+                </div>
+            </#if>
+            <#if UserPasswordValidationException??>
+                <div class="invalid-feedback">
+                ${UserPasswordValidationException}
                 </div>
             </#if>
         </div>
@@ -70,27 +82,23 @@
 <#macro account_cabinet>
 <form action="/account" method="get">
     <button type="submit" role="button" class="btn btn-sm btn-outline-success mr-2 px-2">
-            <#--<span class="badge bg-transparent">-->
-                <i class="fas fa-user-circle fa-2x" aria-hidden="true"></i>
-                <#--<div class="text-truncate">-->
-                <#--${principalName}-->
-                <#--</div>-->
-                <#--</span>-->
+        <i class="fas fa-user-circle fa-2x" aria-hidden="true"></i>
     </button>
 </form>
 </#macro>
 
 
 <#macro account_new>
-    <a href="/registration" class="btn btn-sm btn-outline-success mr-2 py-2">
-                    <i class="fa fa-user fa-1x" aria-hidden="true"></i>
-    </a>
+<a href="/registration" class="btn btn-sm btn-outline-success mr-2 py-2">
+    <i class="fa fa-user fa-1x" aria-hidden="true"></i>
+</a>
 </#macro>
 
 <#macro account_new_modal>
-    <a href="/registration" class="btn btn-sm btn-outline-success mr-2 py-2" data-toggle="modal" data-target="#account-new-modal">
-                    <i class="fa fa-user" aria-hidden="true"></i>
-    </a>
+<a href="/registration" class="btn btn-sm btn-outline-success mr-2 py-2" data-toggle="modal"
+   data-target="#account-new-modal">
+    <i class="fa fa-user" aria-hidden="true"></i>
+</a>
 
 <div class="modal fade" id="account-new-modal">
     <div class="modal-dialog modal-lg">
@@ -106,7 +114,7 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary">Save changes</button>
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+        </div>
+    </div>
+</div>
 </#macro>

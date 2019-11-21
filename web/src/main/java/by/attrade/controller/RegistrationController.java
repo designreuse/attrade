@@ -5,12 +5,13 @@ import by.attrade.controller.utils.ControllerUtils;
 import by.attrade.domain.User;
 import by.attrade.domain.VerificationToken;
 import by.attrade.domain.dto.RecaptchaResponseDTO;
+import by.attrade.service.LocaleExceptionAttributeWrapperService;
 import by.attrade.service.MailSenderService;
+import by.attrade.service.MessageSourceOnlyLanguageService;
 import by.attrade.service.RecaptchaService;
 import by.attrade.service.UserService;
 import by.attrade.service.VerificationTokenService;
-import by.attrade.util.ErrorMessageAttributeWrapper;
-import by.attrade.util.Pair;
+import by.attrade.util.LocaleException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +47,10 @@ public class RegistrationController {
 
     @Autowired
     private RegistrationTokenExpirationDTConfig registrationTokenExpirationDTConfig;
+    @Autowired
+    private LocaleExceptionAttributeWrapperService localeExceptionAttributeWrapperService;
+    @Autowired
+    private MessageSourceOnlyLanguageService messageSourceOnlyLanguageService;
 
     @Autowired
     public RegistrationController(UserService userService, RecaptchaService recaptchaService, MailSenderService mailSenderService, VerificationTokenService verificationTokenService) {
@@ -71,21 +76,22 @@ public class RegistrationController {
         RecaptchaResponseDTO response = recaptchaService.getCaptchaResponseDTO(captchaResponse);
         if (!response.isSuccess()) {
             log.debug("Recaptcha error: {}", response);
-            model.addAttribute("captchaError", "Заполните reCAPTCHA.");
+            String captchaError = messageSourceOnlyLanguageService.getMessage("captchaError", null, locale);
+            model.addAttribute("captchaError", captchaError);
         }
         if (user.getPassword() != null && !user.getPassword().equals(passwordConfirm)) {
-            model.addAttribute("passwordError", "Пароли не совпадают.");
+            String passwordError = messageSourceOnlyLanguageService.getMessage("passwordError", null, locale);
+            model.addAttribute("passwordError", passwordError);
         }
         if (!response.isSuccess() || bindingResult.hasErrors()) {
             Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
             model.mergeAttributes(errors);
-            return "registration";
         }
         user.setUsername(user.getEmail());
 
-        List<Pair<String, Exception>> errors = userService.register(user);
-        ErrorMessageAttributeWrapper.wrapErrorsAsAttributes(errors, model);
-        if (!errors.isEmpty()){
+        List<LocaleException> localeExceptions = userService.register(user);
+        localeExceptionAttributeWrapperService.wrapAsAttributes(localeExceptions, model, locale);
+        if (!localeExceptions.isEmpty()){
             return "registration";
         }
 

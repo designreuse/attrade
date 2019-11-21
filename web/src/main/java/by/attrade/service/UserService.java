@@ -6,8 +6,7 @@ import by.attrade.service.exception.UserAlreadyExistsException;
 import by.attrade.service.validation.UserEmailValidationService;
 import by.attrade.service.validation.UserPasswordValidationService;
 import by.attrade.type.Role;
-import by.attrade.util.ErrorWrapper;
-import by.attrade.util.Pair;
+import by.attrade.util.LocaleException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,6 +31,8 @@ public class UserService implements UserDetailsService {
     private UserPasswordValidationService userPasswordValidationService;
     @Autowired
     private UserEmailValidationService userEmailValidationService;
+    @Autowired
+    private LocaleExceptionWrapperService localeExceptionWrapperService;
 
     @Autowired
     public UserService(UserRepo userRepo) {
@@ -63,20 +64,21 @@ public class UserService implements UserDetailsService {
         return userRepo.findBySub(sub);
     }
 
-    public List<Pair<String, Exception>> register(User user){
-        List<Pair<String,Exception>> pairs = new ArrayList<>();
-        User userFromDB = userRepo.findByEmail(user.getEmail());
+    public List<LocaleException> register(User user) {
+        List<LocaleException> exs = new ArrayList<>();
+        String email = user.getEmail();
+        User userFromDB = userRepo.findByEmail(email);
         if (userFromDB != null) {
-            pairs.add(Pair.of("emailError", new UserAlreadyExistsException("Аккаунт с данным email уже существует!")));
+            exs.add(new LocaleException(new UserAlreadyExistsException("Аккаунт " + email + " уже существует!"), email));
         }
-        ErrorWrapper.runAndWrap("passwordError", ()-> userPasswordValidationService.validate(user.getPassword()), pairs);
-        ErrorWrapper.runAndWrap("emailError", ()-> userEmailValidationService.validate(user.getEmail()),pairs);
-        if(pairs.isEmpty()){
+        localeExceptionWrapperService.runAndWrap(() -> userEmailValidationService.validate(email), exs);
+        localeExceptionWrapperService.runAndWrap(() -> userPasswordValidationService.validate(user.getPassword()), exs);
+        if (exs.isEmpty()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setRoles(Collections.singleton(Role.USER));
             userRepo.save(user);
         }
-        return pairs;
+        return exs;
     }
 
     public List<User> findAll() {

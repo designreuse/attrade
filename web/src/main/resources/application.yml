@@ -174,3 +174,6 @@ oauth2:
           - email
           - name
           - login
+
+messages-source:
+  onlyLanguage: true
