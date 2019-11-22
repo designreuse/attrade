@@ -3,6 +3,8 @@
 @import url('../tag/a_img/hover.css');
 @import url('../parts/carousel/banner.css');
 @import url('../parts/carousel/categoryMain.css');
+@import url('../parts/login.css');
+
 
 html, body {
     background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg');

@@ -17,6 +17,6 @@
     </div>
     <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
     <@r.account/>
-        <@l.login/>
+        <@l.loginButtons/>
     </div>
 </nav>

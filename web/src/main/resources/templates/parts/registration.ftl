@@ -81,7 +81,7 @@
 
 <#macro account_cabinet>
 <form action="/account" method="get">
-    <button type="submit" role="button" class="btn btn-sm btn-outline-success mr-2 px-2">
+    <button type="submit" role="button" class="btn btn-sm btn-outline-success mr-2 px-2 shadow-none">
         <i class="fas fa-user-circle fa-2x" aria-hidden="true"></i>
     </button>
 </form>
@@ -89,7 +89,7 @@
 
 
 <#macro account_new>
-<a href="/registration" class="btn btn-sm btn-outline-success mr-2 py-2">
+<a href="/registration" class="btn btn-sm btn-outline-success mr-2 py-2 shadow-none">
     <i class="fa fa-user fa-1x" aria-hidden="true"></i>
 </a>
 </#macro>

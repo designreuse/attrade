@@ -1,6 +1,6 @@
 <#include "../security.ftl">
 <div class="parts-navbar-navbar">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-fixed-top py-2 shadow" style="position:fixed; z-index: 10000; width:100%;">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-fixed-top py-2 shadow border-bottom border-secondary" style="position:fixed; z-index: 10000; width:100%;">
         <!-- размер и цветовая схема-->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar"
                 aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
