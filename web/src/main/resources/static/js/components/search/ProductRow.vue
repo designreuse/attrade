@@ -49,12 +49,12 @@
             <div class="col-3">
                 <div class="row">
                     <div v-if="product.price" class="col text-right">
-                        <a :href="link" class="btn border-0 float-right py-3">
+                        <a :href="link" class="btn border-0 float-right my-3">
                             {{product.price}}&nbsp;р.
                         </a>
                     </div>
                     <div v-else="product.price" class="col text-right">
-                        <a :href="link" class="btn border-0 float-right py-3">
+                        <a :href="link" class="btn border-0 float-right my-3">
                             не указана
                         </a>
                     </div>
