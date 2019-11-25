@@ -11,12 +11,12 @@
 
 
     <a href="/login" class="btn btn-sm btn-outline-primary pt-2 px-4 shadow-none">
-       <#--data-toggle="modal"-->
-       <#--data-target="#exampleModalCenter">-->
+    <#--data-toggle="modal"-->
+    <#--data-target="#exampleModalCenter">-->
         ВХОД
     </a>
     <#--<div class="modal" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"-->
-         <#--aria-hidden="true">-->
+    <#--aria-hidden="true">-->
     <#--</div>-->
 
 
@@ -40,16 +40,19 @@
         <div class="modal-content">
             <div class="card shadow-lg border border-white">
                 <div class="card-header pb-0">
-                    <div class="row d-flex">
-                        <div class="text-danger ml-2 mt-2">
-                            <a href="/" class="btn btn-transparent text-danger border-0 shadow-none"><h3>ATTRADE</h3></a>
-                        </div>
+                    <div class="row d-flex ml-1">
+                        <a href="javascript:history.go(-1)"
+                           class="btn btn-transparent border-0 shadow-none text-secondary px-2 py-2 mt-2"
+                        <#--data-dismiss="modal"-->
+                        <#--aria-label="Close"-->
+                        >
+                            <i class="fas fa-long-arrow-alt-left fa-2x"></i>
+                        </a>
                         <div class="ml-auto">
-                            <button type="button" class="close text-secondary px-2 py-2 mt-2"
-                                    data-dismiss="modal"
-                                    aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <div class="text-danger ml-2 mt-2">
+                                <a href="/" class="btn btn-transparent text-danger border-0 shadow-none"><h3>
+                                    ATTRADE</h3></a>
+                            </div>
                         </div>
                     </div>
                     <div class="row ml-1 mt-4 mb-2 text-dark">

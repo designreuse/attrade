@@ -8,7 +8,7 @@
                    placeholder="Поиск в каталоге. Например, 'лампа led'" aria-label="Search" data-toggle="dropdown"
                    aria-haspopup="false" aria-expanded="true"
                     @focus="getAnswer">
-            <div class="dropdown-menu col-12 pb-0" aria-labelledby="question" id="dropdown-menu" ref="menu" @click.stop="">
+            <div class="dropdown-menu col-12 pb-0 shadow-lg" aria-labelledby="question" id="dropdown-menu" ref="menu" @click.stop="">
                 <category-row  v-for="(category,i) in categories"
                               :key="i"
                               :category="category"/>
