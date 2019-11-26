@@ -91,8 +91,8 @@ public class Product implements Serializable {
     @JsonView(Views.Id.class)
     private Long id;
 
-    @Column(length = 255, unique = true)
-    @Length(max = 255)
+    @Column(length = 500, unique = true)
+    @Length(max = 500)
     @NotBlank
     @Fields({
             @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO, analyzer = @Analyzer(definition = "ngram")),
@@ -101,13 +101,13 @@ public class Product implements Serializable {
     @JsonView(Views.Name.class)
     private String name;
 
-    @Column(length = 255)
-    @Length(max = 255)
+    @Column(length = 500)
+    @Length(max = 500)
     @JsonView(Views.Path.class)
     private String path;
 
-    @Column(length = 255)
-    @Length(max = 255)
+    @Column(length = 500)
+    @Length(max = 500)
     private String url;
 
     @Column(length = 60, unique = true)
@@ -120,6 +120,10 @@ public class Product implements Serializable {
 
     @JsonView(Views.Code.class)
     private String code;
+
+    @Column(length = 13, unique = true)
+    @Length(max = 13)
+    private String barcode;
 
     @Column(length = 2000)
     @Length(max = 2000)
@@ -140,7 +144,9 @@ public class Product implements Serializable {
     @JsonView(Views.Price.class)
     private Double price;
 
-    private Integer discount;
+    private Double vat;
+
+    private Double discount;
 
     @Embedded
     private Dimension dimension;

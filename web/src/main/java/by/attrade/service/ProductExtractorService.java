@@ -13,6 +13,7 @@ import by.attrade.service.jsoup.IProductExtractor;
 import by.attrade.service.jsoup.JsoupDocService;
 import by.attrade.service.jsoup.extractor.ExtractorErrorService;
 import by.attrade.service.jsoup.extractor.ExtractorErrorUrlService;
+import by.attrade.service.productPathExtractor.Utf8OfNameProductPathExtractorService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.jsoup.HttpStatusException;
@@ -21,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,6 +61,9 @@ public class ProductExtractorService {
     @Autowired
     private ExtractorErrorUrlService urlService;
 
+    @Autowired
+    private Utf8OfNameProductPathExtractorService productPathExtractor;
+
 
     public ExtractorError saveProductsIfNotExistsByCode(IProductExtractor extractor, List<String> urls) {
         List<ExtractorErrorUrl> errorUrls = new LinkedList<>();
@@ -79,7 +82,7 @@ public class ProductExtractorService {
         return errorService.save(extractorError);
     }
 
-    public void saveProductIfNotExistsByCode(IProductExtractor extractor, String url) throws IOException {
+    public void saveProductIfNotExistsByCode(IProductExtractor extractor, String url) throws Exception {
         Document doc = jsoupDocService.getJsoupDoc(url);
         Product product = extractor.getProduct(doc);
         if (productService.existsByCode(product)) {
@@ -89,7 +92,7 @@ public class ProductExtractorService {
 
     }
 
-    private void saveProduct(IProductExtractor extractor, Document doc, String url) throws IOException {
+    private void saveProduct(IProductExtractor extractor, Document doc, String url) throws Exception {
         List<Category> categories = extractor.getCategories(doc);
         Category category = categoryService.saveShaneOfCategory(categories);
         List<String> imagesUrl = extractor.getImagesUrl(doc);
@@ -110,13 +113,15 @@ public class ProductExtractorService {
         properties = propertyService.saveAll(properties, category);
 
         Product product = extractor.getProduct(doc);
+        String path = productPathExtractor.getPath(product);
+
         product.setDescription(description);
         product.setCategory(category);
         product.setUrl(url);
         product.setPictures(pictures);
         product.setPicture(pictures.get(0).getPath());
+        product.setPath(path);
         productService.save(product);
-
 
         int size = properties.size();
         for (int i = 0; i < size; i++) {
