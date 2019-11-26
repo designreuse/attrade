@@ -61,8 +61,10 @@ public class RegistrationController {
     }
 
     @GetMapping
-    public String registration(Model model) {
+    public String registration(Model model, Locale locale) {
+        String userPasswordInfo = messageSourceOnlyLanguageService.getMessage("userPasswordInfo", null, locale);
         model.addAttribute("user", new User());
+        model.addAttribute("userPasswordInfo", userPasswordInfo);
         return "registration";
     }
 

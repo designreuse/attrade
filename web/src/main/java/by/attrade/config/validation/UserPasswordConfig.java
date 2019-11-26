@@ -11,7 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @PropertySource("classpath:validation.properties")
 @ConfigurationProperties(prefix = "registration.password")
-public class RegistrationPasswordConfig {
+public class UserPasswordConfig {
     private String regex;
     private String message;
 }
