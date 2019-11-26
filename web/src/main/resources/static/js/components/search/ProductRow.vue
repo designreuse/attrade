@@ -1,4 +1,4 @@
-<template>
+ <template>
     <div>
         <div class="row mx-0 border-top border-muted border-2">
             <div class="col-9 px-0">
@@ -7,7 +7,8 @@
                         <div class="col-4 py-3 pr-1">
                             <a :href="link" class="btn bg-transparent border-0 rounded-0 btn-block px-0 py-0"
                                style="height: 100%">
-                                <img :src="picture" class="card-img">
+                                <picture-upload :pathPic="picture" :alt="alt" :pictureClass="pictureClass" :pictureStyle="pictureStyle"/>
+                                <!--<img :src="picture" class="card-img">-->
                                 <div class="text-left pl-2">
                                     <small>код:&nbsp;{{product.code}}</small>
                                 </div>
@@ -107,22 +108,26 @@
 
 <script>
     import Unit from 'components/types/Unit.vue'
+    import PictureUpload from 'components/picture/PictureUpload.vue'
     export default {
         data() {
             return {
                 unit: this.product.unit,
-                count: 1
+                count: 1,
+                pictureClass: "img-fluid",
+                pictureStyle: "max-width: 100%; height: auto;"
             }
         },
         components: {
             Unit,
+            PictureUpload
         },
         computed: {
             link(){
                 return this.product.category.path + this.product.path;
             },
             picture(){
-                return "upload/picture/" + this.product.picture
+                return this.product.picture
             },
             alt(){
                 return this.product.name
