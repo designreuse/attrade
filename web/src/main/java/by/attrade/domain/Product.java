@@ -45,6 +45,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -144,6 +145,8 @@ public class Product implements Serializable {
     @JsonView(Views.Price.class)
     private Double price;
 
+
+
     private Double vat;
 
     private Double discount;
@@ -181,6 +184,22 @@ public class Product implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY)
     private Supplier supplier;
+
+    @Column(length = 60)
+    @Length(max = 60)
+    private String vendorShort;
+
+    @Column(length = 255)
+    @Length(max=255)
+    private String vendorFull;
+
+    @Column(length = 255)
+    @Length(max = 255)
+    private String vendorIcon;
+
+    @Column(length = 255)
+    @Length(max = 255)
+    private String serviceCenter;
 
     @OneToOne
     @IndexedEmbedded(includePaths = {"name"})

@@ -153,6 +153,11 @@ google:
     resource:
         preferTokenInfo: true
         userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
+
+    #https://script.google.com/d/1zm1fkG5LiHZkp74o5vFzzPLnvnaCt71gCk6fpED51dAfZC9NEKmZMPpx/edit?template=default
+    script:
+        translator:
+          url: https://script.google.com/macros/s/AKfycbxcmiDPFv1OFHdreLBzhHnX5OXt9wW4jctck1KNZsdwwftZScc/exec
 security:
     oauth2:
         client:
