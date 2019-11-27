@@ -182,3 +182,17 @@ oauth2:
 
 messages-source:
   onlyLanguage: true
+
+picture:
+  media:
+    turnOn: false
+    unknownAutoRecognize: true
+    unknownAutoImageType: jpg
+    removeNotSynchronized: true
+    overwriteAll: false
+    paths:
+      - /540
+    medias:
+      - '(max-width: 540px;)'
+    compressionWidthPercents:
+      - 65

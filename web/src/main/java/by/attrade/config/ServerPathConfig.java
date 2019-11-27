@@ -27,7 +27,7 @@ public class ServerPathConfig {
         createDirectories(absolute + picture);
     }
 
-    private void createDirectories(String pathName) throws IOException {
+    public void createDirectories(String pathName) throws IOException {
         Path path = Paths.get(pathName);
         if (!Files.exists(path)) {
             Files.createDirectories(path);

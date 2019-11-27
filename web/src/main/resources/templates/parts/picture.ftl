@@ -20,7 +20,6 @@ path541 = "/541"
 <#macro static path alt class style>
 <picture>
     <source srcset="${staticRoot}${path540}${path}" media="(max-width: 540px)">
-    <source srcset="${staticRoot}${path541}${path}" media="(min-width: 541px)">
 
     <source srcset="${staticRoot}${path}">
     <img srcset="${staticRoot}${path}" alt="${alt}" class="${class}" style="${style}">
@@ -30,7 +29,6 @@ path541 = "/541"
 <#macro upload path alt class style>
 <picture>
     <source srcset="${uploadRoot}${path540}${path}" media="(max-width: 540px)">
-    <source srcset="${uploadRoot}${path541}${path}" media="(min-width: 541px)">
 
     <source srcset="${uploadRoot}${path}">
     <img srcset="${uploadRoot}${path}" alt="${alt}" class="${class}" style="${style}">
