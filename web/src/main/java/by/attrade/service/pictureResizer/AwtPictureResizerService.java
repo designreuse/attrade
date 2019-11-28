@@ -1,5 +1,6 @@
 package by.attrade.service.pictureResizer;
 
+
 import com.sun.image.codec.jpeg.JPEGCodec;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,8 @@ public class AwtPictureResizerService implements IPictureResizer {
      *
      * @param inputImagePath  Path of the original image
      * @param outputImagePath Path to save the resized image
-     * @param width     absolute width in pixels
-     * @param height    absolute height in pixels
+     * @param width           absolute width in pixels
+     * @param height          absolute height in pixels
      * @throws IOException
      */
     @Override
@@ -54,7 +55,7 @@ public class AwtPictureResizerService implements IPictureResizer {
      *
      * @param inputImagePath  Path of the original image
      * @param outputImagePath Path to save the resized image
-     * @param ratio         a double number specifies percentage of the output image
+     * @param ratio           a double number specifies percentage of the output image
      *                        over the input image.
      * @throws IOException
      */

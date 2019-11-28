@@ -38,13 +38,13 @@ public class ProductExtractorServiceIT {
 
     @Test
     public void saveProducts() throws Exception {
-        ExtractorError extractorError = service.saveProductsIfNotExistsByCode(extractor, urls);
+        ExtractorError extractorError = service.saveProductsIfNotExistsByCode(extractor, urls, null);
         extractorError.getUrls().forEach(System.out::println);
     }
 
     @Test
     public void saveProduct() throws Exception {
-        service.saveProductIfNotExistsByCode(extractor, url);
+        service.saveProductIfNotExistsByCode(extractor, url, null);
     }
 
 }

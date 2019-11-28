@@ -1,5 +1,6 @@
 package by.attrade.service;
 
+import by.attrade.config.PictureMediaConfig;
 import by.attrade.config.ServerPathConfig;
 import by.attrade.domain.Category;
 import by.attrade.domain.ExtractorError;
@@ -22,6 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,12 +68,18 @@ public class ProductExtractorService {
     @Autowired
     private Utf8OfNameProductPathExtractorService productPathExtractor;
 
+//    @Autowired
+//    private PictureMediaConfig pictureMediaConfig;
 
-    public ExtractorError saveProductsIfNotExistsByCode(IProductExtractor extractor, List<String> urls) {
+    @Autowired
+    private PictureMediaService pictureMediaService;
+
+
+    public ExtractorError saveProductsIfNotExistsByCode(IProductExtractor extractor, List<String> urls, List<Double> compressions) {
         List<ExtractorErrorUrl> errorUrls = new LinkedList<>();
         for (String url : urls) {
             try {
-                saveProductIfNotExistsByCode(extractor, url);
+                saveProductIfNotExistsByCode(extractor, url, compressions);
             } catch (HttpStatusException e) {
                 errorUrls.add(new ExtractorErrorUrl(url));
             } catch (Exception e) {
@@ -82,29 +92,21 @@ public class ProductExtractorService {
         return errorService.save(extractorError);
     }
 
-    public void saveProductIfNotExistsByCode(IProductExtractor extractor, String url) throws Exception {
+    public void saveProductIfNotExistsByCode(IProductExtractor extractor, String url, List<Double> compressions) throws Exception {
         Document doc = jsoupDocService.getJsoupDoc(url);
         Product product = extractor.getProduct(doc);
         if (productService.existsByCode(product)) {
             return;
         }
-        saveProduct(extractor, doc, url);
+        saveProduct(extractor, doc, url, compressions);
 
     }
 
-    private void saveProduct(IProductExtractor extractor, Document doc, String url) throws Exception {
+    private void saveProduct(IProductExtractor extractor, Document doc, String url, List<Double> compressions) throws Exception {
         List<Category> categories = extractor.getCategories(doc);
         Category category = categoryService.saveShaneOfCategory(categories);
         List<String> imagesUrl = extractor.getImagesUrl(doc);
-        List<Picture> pictures = new ArrayList<>();
-        int priority = 0;
-        for (String imageUrl : imagesUrl) {
-            String extension = FilenameUtils.getExtension(imageUrl);
-            String name = UUID.randomUUID().toString() + "." + extension;
-            String pathName = serverPathConfig.getAbsolute() + serverPathConfig.getPicture() + File.separator + name;
-            imageDownloader.download(imageUrl, pathName);
-            pictures.add(new Picture(name, priority++));
-        }
+        List<Picture> pictures = getPictures(imagesUrl, compressions);
         pictures = pictureService.saveAll(pictures);
 
         List<Property> properties = extractor.getProperties(doc);
@@ -135,6 +137,26 @@ public class ProductExtractorService {
                 log.error(e.getMessage(), productProperty);
             }
         }
+    }
+
+    private List<Picture> getPictures(List<String> imagesUrl, List<Double> compressions) throws IOException {
+        List<Picture> pictures = new ArrayList<>();
+        int priority = 0;
+        for (String imageUrl : imagesUrl) {
+            String extension = FilenameUtils.getExtension(imageUrl);
+            String uuid = UUID.randomUUID().toString();
+            String name = uuid + "." + extension;
+            String pathName = serverPathConfig.getAbsolute() + serverPathConfig.getPicture() + File.separator + name;
+            imageDownloader.download(imageUrl, pathName);
+            Path source = Paths.get(pathName);
+//            if (pictureMediaConfig.isPictureWrongType(source)) {
+//                pictureMediaConfig.rename(source);
+//                name = uuid + "." + pictureMediaConfig.getUnknownAutoImageType();
+//            }
+            pictureMediaService.createResizedPictures(source, compressions);
+            pictures.add(new Picture(name, imageUrl, priority++));
+        }
+        return pictures;
     }
 
     private String getAndRemoveDescription(List<Property> properties, List<String> values) {

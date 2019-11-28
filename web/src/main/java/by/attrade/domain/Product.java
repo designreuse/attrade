@@ -92,8 +92,8 @@ public class Product implements Serializable {
     @JsonView(Views.Id.class)
     private Long id;
 
-    @Column(length = 500, unique = true)
-    @Length(max = 500)
+    @Column(length = 300, unique = true)
+    @Length(max = 300)
     @NotBlank
     @Fields({
             @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO, analyzer = @Analyzer(definition = "ngram")),
@@ -145,8 +145,6 @@ public class Product implements Serializable {
     @JsonView(Views.Price.class)
     private Double price;
 
-
-
     private Double vat;
 
     private Double discount;
@@ -170,7 +168,7 @@ public class Product implements Serializable {
     @JsonView(Views.Picture.class)
     private String picture;
 
-    @Column(columnDefinition = "default 'ITEM'")
+
     @Enumerated(EnumType.STRING)
     @JsonView(Views.Unit.class)
     private Unit unit = Unit.ITEM;

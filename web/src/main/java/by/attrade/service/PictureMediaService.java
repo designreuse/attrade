@@ -9,13 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,28 +37,32 @@ public class PictureMediaService {
 
     @PostConstruct
     public void init() throws IOException {
-        if (pictureMediaConfig.isTurnOn()) {
-            List<PictureMediaDTO> pictureMedias = pictureMediaConfig.getPictureMedias();
-            String uploadPicture = serverPathConfig.getAbsolute() + serverPathConfig.getPicture();
-            processUploadPictures(pictureMedias, uploadPicture);
+        if (pictureMediaConfig.isInit()) {
+            processUploadPictures();
         }
     }
 
-    private void processUploadPictures(List<PictureMediaDTO> pictureMedias, String mainPath) throws IOException {
-        for (PictureMediaDTO p : pictureMedias) {
-            String childPath = mainPath + p.getPath();
-            createDirectories(childPath);
-            copyAndSqueezePictures(mainPath, childPath, p.getCompressionPercent());
-            removeNotSynchronized(mainPath, childPath);
-        }
+    private void processUploadPictures() throws IOException {
+        createDirectories();
+        removeNotSynchronized();
+        copyAndSqueezePictures();
     }
 
-    private void removeNotSynchronized(String main, String child) {
+    private void removeNotSynchronized() {
         if (pictureMediaConfig.isRemoveNotSynchronized()) {
-            Path mainPath = Paths.get(main);
-            Path childPath = Paths.get(child);
-            walkAndRemoveIfNotExistsInMain(mainPath, childPath);
+            List<PictureMediaDTO> pictureMedias = pictureMediaConfig.getPictureMedias();
+            for (PictureMediaDTO p : pictureMedias) {
+                String child = getMainPath() + p.getPath();
+
+                Path mainPath = Paths.get(getMainPath());
+                Path childPath = Paths.get(child);
+                walkAndRemoveIfNotExistsInMain(mainPath, childPath);
+            }
         }
+    }
+
+    private String getMainPath() {
+        return serverPathConfig.getAbsolute() + serverPathConfig.getPicture();
     }
 
     private void walkAndRemoveIfNotExistsInMain(Path mainPath, Path childPath) {
@@ -83,49 +85,72 @@ public class PictureMediaService {
         }
     }
 
-    private void copyAndSqueezePictures(String mainPath, String targetPath, double compressionPercent) throws IOException {
+    private void copyAndSqueezePictures() throws IOException {
         Files
-                .walk(Paths.get(mainPath), 1)
-                .forEach(source -> copyResizePicture(source, targetPath, compressionPercent));
+                .walk(Paths.get(getMainPath()), 1)
+                .filter(Files::isRegularFile)
+                .forEach(this::createResizedPictures);
     }
 
-    private void copyResizePicture(Path source, String targetPath, double compressionPercent) {
-        if (Files.isRegularFile(source)) {
-            if (pictureMediaConfig.isUnknownAutoRecognize() && isPictureWrongType(source)) {
-                try {
-                    source = rename(source);
-                } catch (IOException e) {
-                    log.error("Rename source: " + source, e);
-                    return;
-                }
-            }
+    private void createResizedPictures(Path source) {
+        List<PictureMediaDTO> pictureMedias = pictureMediaConfig.getPictureMedias();
+        for (PictureMediaDTO p : pictureMedias) {
+            String targetPath = getMainPath() + p.getPath();
+//            if (pictureMediaConfig.isUnknownAutoRecognize() && pictureMediaConfig.isPictureWrongType(source)) {
+//                try {
+//                    source = pictureMediaConfig.rename(source);
+//                } catch (IOException e) {
+//                    log.error("Rename source: " + source, e);
+//                    return;
+//                }
+//            }
             String stringTarget = targetPath + File.separator + source.getFileName();
             Path target = Paths.get(stringTarget);
             boolean exists = Files.exists(target);
-            if (!exists) {
-                copyPicture(source, target);
-            }
             if (!exists || pictureMediaConfig.isOverwriteAll()) {
+                resizePicture(source, target, p.getCompressionPercent());
+            }
+
+        }
+    }
+
+    public void createResizedPictures(Path source, List<Double> compressions) {
+        List<PictureMediaDTO> pictureMedias = pictureMediaConfig.getPictureMedias();
+        int size = pictureMedias.size();
+        if (compressions!=null && compressions.size() != size) {
+            throw new RuntimeException(
+                    "Size of compressions must be equal size of picture medias: " + compressions.size() + " / " + +size);
+        }
+        for (int i = 0; i < size; i++) {
+            PictureMediaDTO p = pictureMedias.get(i);
+            String targetPath = getMainPath() + p.getPath();
+//            if (pictureMediaConfig.isUnknownAutoRecognize() && pictureMediaConfig.isPictureWrongType(source)) {
+//                try {
+//                    source = pictureMediaConfig.rename(source);
+//                } catch (IOException e) {
+//                    log.error("Rename source: " + source, e);
+//                    return;
+//                }
+//            }
+            String stringTarget = targetPath + File.separator + source.getFileName();
+            Path target = Paths.get(stringTarget);
+            boolean exists = Files.exists(target);
+            double compressionPercent = getCompressionPercent(compressions, i, p);
+            if (!exists) {
                 resizePicture(source, target, compressionPercent);
             }
         }
     }
 
-    private Path rename(Path source) throws IOException {
-        String str = source.toString();
-        int i = str.lastIndexOf(".");
-        str = str.substring(0, i + 1) + pictureMediaConfig.getUnknownAutoImageType();
-        Path target = Paths.get(str);
-        Files.move(source, target);
-        return target;
-    }
-
-    private boolean isPictureWrongType(Path source) {
-        String str = source.toString();
-        String suffix = str.substring(str.lastIndexOf(".") + 1);
-        String[] readerFileSuffixes = ImageIO.getReaderFileSuffixes();
-        List<String> list = Arrays.asList(readerFileSuffixes);
-        return !list.contains(suffix);
+    private double getCompressionPercent(List<Double> compressions, int i, PictureMediaDTO p) {
+        double compressionPercent = p.getCompressionPercent();
+        if (compressions != null) {
+            Double customCompression = compressions.get(i);
+            if (customCompression > 0) {
+                compressionPercent = customCompression;
+            }
+        }
+        return compressionPercent;
     }
 
     private void resizePicture(Path source, Path target, double compressionPercent) {
@@ -145,7 +170,11 @@ public class PictureMediaService {
         }
     }
 
-    private void createDirectories(String path) throws IOException {
-        serverPathConfig.createDirectories(path);
+    private void createDirectories() throws IOException {
+        List<PictureMediaDTO> pictureMedias = pictureMediaConfig.getPictureMedias();
+        for (PictureMediaDTO p : pictureMedias) {
+            String path = getMainPath() + p.getPath();
+            serverPathConfig.createDirectories(path);
+        }
     }
 }

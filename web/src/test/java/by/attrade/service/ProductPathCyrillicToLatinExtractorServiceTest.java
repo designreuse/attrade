@@ -4,11 +4,6 @@ import com.ibm.icu.text.Transliterator;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Enumeration;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.*;
-
 public class ProductPathCyrillicToLatinExtractorServiceTest {
     @Test
     public void getPath() throws Exception {

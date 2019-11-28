@@ -1,7 +1,6 @@
 package by.attrade.service;
 
 import by.attrade.service.productPathExtractor.UrlOfNameProductPathExtractorService;
-import by.attrade.service.productPathExtractor.Utf8OfNameProductPathExtractorService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
