@@ -19,5 +19,9 @@ new Vue({
 })
 new Vue({
     el: '#search',
+    store,
     render: a => a(Search),
+    created() {
+        this.$store.dispatch('getPictureMediaAction') //TODO - out of #app - page scope
+    },
 })

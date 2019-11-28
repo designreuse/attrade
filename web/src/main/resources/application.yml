@@ -193,6 +193,6 @@ picture:
     paths:
       - /540
     medias:
-      - '(max-width: 540px;)'
+      - '(max-width: 540px)'
     compressionWidthPercents:
       - 65

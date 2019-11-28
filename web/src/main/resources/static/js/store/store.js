@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import messagesApi from 'api/messages'
+import pictureMediaApi from 'api/pictureMedia'
 
 Vue.use(Vuex)
 
@@ -8,6 +9,7 @@ export default new Vuex.Store(
     {
         state: {
             messages: [],
+            pictureMedia: [],
         },
         getters: {
             sortedMessages: state => state.messages.sort((a, b) => -(a.id - b.id))
@@ -39,6 +41,9 @@ export default new Vuex.Store(
             getMessageMutation(state, data){
                 state.messages = data
             },
+            getPictureMediaMutation(state, data){
+                state.pictureMedia = data
+            },
         },
         actions: {
             async addMessageAction({commit, state}, message){
@@ -67,6 +72,13 @@ export default new Vuex.Store(
                 const data = await result.data
                 if (result.ok) {
                     commit('getMessageMutation', data)
+                }
+            },
+            async getPictureMediaAction({commit}){
+                const result = await pictureMediaApi.get()
+                const data = await result.data
+                if (result.ok) {
+                    commit('getPictureMediaMutation', data)
                 }
             },
         }
