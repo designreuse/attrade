@@ -1,6 +1,5 @@
 package by.attrade.service;
 
-import by.attrade.config.PictureMediaConfig;
 import by.attrade.config.ServerPathConfig;
 import by.attrade.domain.Category;
 import by.attrade.domain.ExtractorError;
@@ -67,9 +66,6 @@ public class ProductExtractorService {
 
     @Autowired
     private Utf8OfNameProductPathExtractorService productPathExtractor;
-
-//    @Autowired
-//    private PictureMediaConfig pictureMediaConfig;
 
     @Autowired
     private PictureMediaService pictureMediaService;
@@ -149,12 +145,11 @@ public class ProductExtractorService {
             String pathName = serverPathConfig.getAbsolute() + serverPathConfig.getPicture() + File.separator + name;
             imageDownloader.download(imageUrl, pathName);
             Path source = Paths.get(pathName);
-//            if (pictureMediaConfig.isPictureWrongType(source)) {
-//                pictureMediaConfig.rename(source);
-//                name = uuid + "." + pictureMediaConfig.getUnknownAutoImageType();
-//            }
-            pictureMediaService.createResizedPictures(source, compressions);
-            pictures.add(new Picture(name, imageUrl, priority++));
+
+            boolean resized = pictureMediaService.createResizedPictures(source, compressions);
+            if (resized){
+                pictures.add(new Picture(name, imageUrl, priority++));
+            }
         }
         return pictures;
     }

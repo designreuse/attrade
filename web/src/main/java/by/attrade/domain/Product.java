@@ -1,5 +1,7 @@
 package by.attrade.domain;
 
+import by.attrade.converter.LocalDateTimeToTimestampConverter;
+import by.attrade.converter.LocalDateToTimestampConverter;
 import by.attrade.interceptor.ProductIndexingInterceptor;
 import by.attrade.type.Unit;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -15,6 +17,7 @@ import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilterFactory;
 import org.apache.lucene.analysis.ngram.NGramFilterFactory;
 import org.apache.lucene.analysis.standard.StandardFilterFactory;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.AnalyzerDef;
@@ -35,6 +38,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -48,6 +52,8 @@ import javax.persistence.OneToOne;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -91,6 +97,10 @@ public class Product implements Serializable {
     @DocumentId
     @JsonView(Views.Id.class)
     private Long id;
+
+    @CreationTimestamp
+    @Convert(converter = LocalDateTimeToTimestampConverter.class)
+    private LocalDateTime creationLDT;
 
     @Column(length = 300, unique = true)
     @Length(max = 300)

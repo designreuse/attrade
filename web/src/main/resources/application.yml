@@ -186,9 +186,8 @@ messages-source:
 
 picture:
   media:
-    init: false
-    unknownAutoRecognize: true
-    unknownAutoImageType: jpg
+    init: true
+    unknownAutoImageType: jpeg
     removeNotSynchronized: true
     overwriteAll: false
     paths:

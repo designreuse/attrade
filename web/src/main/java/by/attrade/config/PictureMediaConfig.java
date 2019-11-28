@@ -21,7 +21,6 @@ import java.util.List;
 @ConfigurationProperties(prefix = "picture.media")
 public class PictureMediaConfig {
     private boolean init;
-    private boolean unknownAutoRecognize;
     private String unknownAutoImageType;
     private boolean removeNotSynchronized;
     private boolean overwriteAll;
@@ -36,21 +35,5 @@ public class PictureMediaConfig {
             list.add(new PictureMediaDTO(paths.get(i), medias.get(i), compressionWidthPercents.get(i)));
         }
         return list;
-    }
-    public Path rename(Path source) throws IOException {
-        String str = source.toString();
-        int i = str.lastIndexOf(".");
-        str = str.substring(0, i + 1) + unknownAutoImageType;
-        Path target = Paths.get(str);
-        Files.move(source, target);
-        return target;
-    }
-
-    public boolean isPictureWrongType(Path source) {
-        String str = source.toString();
-        String suffix = str.substring(str.lastIndexOf(".") + 1);
-        String[] readerFileSuffixes = ImageIO.getReaderFileSuffixes();
-        List<String> list = Arrays.asList(readerFileSuffixes);
-        return !list.contains(suffix);
     }
 }

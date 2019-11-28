@@ -1,6 +1,7 @@
 package by.attrade.service.pictureResizer;
 
 
+import by.attrade.service.exception.ImageWithoutContentException;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import org.springframework.stereotype.Service;
 
@@ -61,11 +62,17 @@ public class AwtPictureResizerService implements IPictureResizer {
      */
     @Override
     public void resize(String inputImagePath, String outputImagePath, double ratio)
-            throws IOException {
+            throws IOException, ImageWithoutContentException {
         File inputFile = new File(inputImagePath);
         BufferedImage inputImage = getBufferedImage(inputFile);
-        int scaledWidth = (int) (inputImage.getWidth() * ratio);
-        int scaledHeight = (int) (inputImage.getHeight() * ratio);
+        int scaledWidth;
+        int scaledHeight;
+        try {
+            scaledWidth = (int) (inputImage.getWidth() * ratio);
+            scaledHeight = (int) (inputImage.getHeight() * ratio);
+        } catch (Exception e) {
+            throw new ImageWithoutContentException("There is no content in image with path: "+ inputImagePath);
+        }
         resize(inputImagePath, outputImagePath, scaledWidth, scaledHeight);
     }
 

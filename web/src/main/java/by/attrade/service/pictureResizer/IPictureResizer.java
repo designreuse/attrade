@@ -1,5 +1,6 @@
 package by.attrade.service.pictureResizer;
 
+import by.attrade.service.exception.ImageWithoutContentException;
 import by.attrade.service.exception.PictureAlreadySmallException;
 
 import java.io.IOException;
@@ -9,5 +10,5 @@ public interface IPictureResizer {
             throws IOException, PictureAlreadySmallException;
 
     void resize(String inputImagePath, String outputImagePath, double ratio)
-            throws IOException, PictureAlreadySmallException;
+            throws IOException, PictureAlreadySmallException, ImageWithoutContentException;
 }
