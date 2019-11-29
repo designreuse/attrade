@@ -24,6 +24,9 @@ public class PictureMediaConfig {
     private String unknownAutoImageType;
     private boolean removeNotSynchronized;
     private boolean overwriteAll;
+    private boolean applyCompressionToMarkers;
+    private List<String> markerNames = new ArrayList<>();
+    private List<Integer> markerWidths = new ArrayList<>();
     private List<String> paths = new ArrayList<>();
     private List<String> medias = new ArrayList<>();
     private List<Double> compressionWidthPercents = new ArrayList<>();
@@ -35,5 +38,17 @@ public class PictureMediaConfig {
             list.add(new PictureMediaDTO(paths.get(i), medias.get(i), compressionWidthPercents.get(i)));
         }
         return list;
+    }
+    public int getIndexMarker(Path path){
+        String filename = path.getFileName().toString();
+        int size = markerNames.size();
+        for (int i = 0; i < size; i++) {
+            String m = markerNames.get(i);
+            if (filename.contains(m)){
+                return i;
+            }
+
+        }
+        return -1;
     }
 }

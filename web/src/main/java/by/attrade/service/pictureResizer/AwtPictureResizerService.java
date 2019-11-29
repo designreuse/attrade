@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 
 @Service
 public class AwtPictureResizerService implements IPictureResizer {
@@ -27,17 +28,20 @@ public class AwtPictureResizerService implements IPictureResizer {
      */
     @Override
     public void resize(String inputImagePath, String outputImagePath, int width, int height)
-            throws IOException {
+            throws IOException, ImageWithoutContentException {
 
         // reads input image
         File inputFile = new File(inputImagePath);
         BufferedImage inputImage = getBufferedImage(inputFile);
 
+        if (isEmpty(inputImage)){
+            throw new ImageWithoutContentException("There is no content in image with path: "+ inputImagePath);
+        }
+
         Image tmp = inputImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
 
         // creates output image
-        BufferedImage outputImage = new BufferedImage(width,
-                height, inputImage.getType());
+        BufferedImage outputImage = getBufferedImage(width, height, inputImage);
 
         // scales the input image to the output image
         Graphics2D g2d = outputImage.createGraphics();
@@ -65,24 +69,48 @@ public class AwtPictureResizerService implements IPictureResizer {
             throws IOException, ImageWithoutContentException {
         File inputFile = new File(inputImagePath);
         BufferedImage inputImage = getBufferedImage(inputFile);
-        int scaledWidth;
-        int scaledHeight;
-        try {
-            scaledWidth = (int) (inputImage.getWidth() * ratio);
-            scaledHeight = (int) (inputImage.getHeight() * ratio);
-        } catch (Exception e) {
+        if(isEmpty(inputImage)){
             throw new ImageWithoutContentException("There is no content in image with path: "+ inputImagePath);
         }
+            int scaledWidth = (int) (inputImage.getWidth() * ratio);
+            int scaledHeight = (int) (inputImage.getHeight() * ratio);
         resize(inputImagePath, outputImagePath, scaledWidth, scaledHeight);
+    }
+
+    private boolean isEmpty(BufferedImage inputImage) {
+        try {
+            inputImage.getWidth();
+        } catch (Exception e) {
+            return true;
+        }
+        return false;
     }
 
     private BufferedImage getBufferedImage(File inputFile) throws IOException {
         BufferedImage inputImage;
         try {
             inputImage = ImageIO.read(inputFile);
-        } catch (IOException e) {
+        } catch (Exception e) {
             inputImage = JPEGCodec.createJPEGDecoder(new FileInputStream(inputFile)).decodeAsBufferedImage();
         }
         return inputImage;
+    }
+
+    private BufferedImage getBufferedImage(int width, int height, BufferedImage inputImage) {
+        BufferedImage bufferedImage;
+        try {
+            bufferedImage = new BufferedImage(width,
+                    height, inputImage.getType());
+        } catch (Exception e) {
+            bufferedImage = new BufferedImage(width,
+                    height, BufferedImage.TYPE_INT_RGB);
+        }
+        return bufferedImage;
+    }
+
+    public int getWidth(Path source) throws IOException {
+        File inputFile = source.toFile();
+        BufferedImage inputImage = getBufferedImage(inputFile);
+        return inputImage.getWidth();
     }
 }

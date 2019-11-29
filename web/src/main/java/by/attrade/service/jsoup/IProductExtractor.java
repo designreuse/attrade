@@ -18,5 +18,5 @@ public interface IProductExtractor {
 
     List<String> getImagesUrl(Document document) throws IOException;
 
-    String getMainUrl();
+    String getUrl();
 }

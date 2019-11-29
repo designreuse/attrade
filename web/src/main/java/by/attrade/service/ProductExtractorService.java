@@ -71,7 +71,7 @@ public class ProductExtractorService {
     private PictureMediaService pictureMediaService;
 
 
-    public ExtractorError saveProductsIfNotExistsByCode(IProductExtractor extractor, List<String> urls, List<Double> compressions) {
+    public ExtractorError saveProductsIfNotExistsByCode(IProductExtractor extractor, List<String> urls, double[] compressions) {
         List<ExtractorErrorUrl> errorUrls = new LinkedList<>();
         for (String url : urls) {
             try {
@@ -88,7 +88,7 @@ public class ProductExtractorService {
         return errorService.save(extractorError);
     }
 
-    public void saveProductIfNotExistsByCode(IProductExtractor extractor, String url, List<Double> compressions) throws Exception {
+    public void saveProductIfNotExistsByCode(IProductExtractor extractor, String url, double[] compressions) throws Exception {
         Document doc = jsoupDocService.getJsoupDoc(url);
         Product product = extractor.getProduct(doc);
         if (productService.existsByCode(product)) {
@@ -98,27 +98,26 @@ public class ProductExtractorService {
 
     }
 
-    private void saveProduct(IProductExtractor extractor, Document doc, String url, List<Double> compressions) throws Exception {
+    private void saveProduct(IProductExtractor extractor, Document doc, String url, double[] compressions) throws Exception {
         List<Category> categories = extractor.getCategories(doc);
-        Category category = categoryService.saveShaneOfCategory(categories);
         List<String> imagesUrl = extractor.getImagesUrl(doc);
-        List<Picture> pictures = getPictures(imagesUrl, compressions);
-        pictures = pictureService.saveAll(pictures);
-
         List<Property> properties = extractor.getProperties(doc);
         List<String> values = extractor.getPropertiesValue(doc);
+        Product product = extractor.getProduct(doc);
+
+        List<Picture> pictures = downloadPictures(imagesUrl, compressions);
+        Category category = categoryService.saveShaneOfCategory(categories);
+        pictures = pictureService.saveAll(pictures);
         String description = getAndRemoveDescription(properties, values);
         properties = propertyService.saveAll(properties, category);
-
-        Product product = extractor.getProduct(doc);
         String path = productPathExtractor.getPath(product);
 
-        product.setDescription(description);
         product.setCategory(category);
         product.setUrl(url);
+        product.setPath(path);
+        product.setDescription(description);
         product.setPictures(pictures);
         product.setPicture(pictures.get(0).getPath());
-        product.setPath(path);
         productService.save(product);
 
         int size = properties.size();
@@ -135,23 +134,28 @@ public class ProductExtractorService {
         }
     }
 
-    private List<Picture> getPictures(List<String> imagesUrl, List<Double> compressions) throws IOException {
+    private List<Picture> downloadPictures(List<String> imagesUrl, double[] compressions) throws IOException {
         List<Picture> pictures = new ArrayList<>();
         int priority = 0;
         for (String imageUrl : imagesUrl) {
-            String extension = FilenameUtils.getExtension(imageUrl);
-            String uuid = UUID.randomUUID().toString();
-            String name = uuid + "." + extension;
+            String name = getFileName(imageUrl);
             String pathName = serverPathConfig.getAbsolute() + serverPathConfig.getPicture() + File.separator + name;
             imageDownloader.download(imageUrl, pathName);
             Path source = Paths.get(pathName);
 
-            boolean resized = pictureMediaService.createResizedPictures(source, compressions);
+            boolean resized = pictureMediaService.createResizedPictures(source, compressions, true);
             if (resized){
+                pictureMediaService.createMarkedPictures(source, true);
                 pictures.add(new Picture(name, imageUrl, priority++));
             }
         }
         return pictures;
+    }
+
+    private String getFileName(String imageUrl) {
+        String extension = FilenameUtils.getExtension(imageUrl);
+        String uuid = UUID.randomUUID().toString();
+        return uuid + "." + extension;
     }
 
     private String getAndRemoveDescription(List<Property> properties, List<String> values) {

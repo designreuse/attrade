@@ -16,7 +16,6 @@ import java.util.List;
 
 @Service
 public class ProductJsoupS3RuExtractor implements IProductExtractor {
-    public static final String MAIN_URL = "http://www.s3.ru";
 
     @Autowired
     private JsoupS3ruProductConfig config;
@@ -85,7 +84,7 @@ public class ProductJsoupS3RuExtractor implements IProductExtractor {
     }
 
     @Override
-    public String getMainUrl() {
-        return MAIN_URL;
+    public String getUrl() {
+        return config.getUrl();
     }
 }
