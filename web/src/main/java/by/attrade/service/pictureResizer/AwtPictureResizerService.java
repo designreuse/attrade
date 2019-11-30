@@ -3,6 +3,7 @@ package by.attrade.service.pictureResizer;
 
 import by.attrade.service.exception.ImageWithoutContentException;
 import com.sun.image.codec.jpeg.JPEGCodec;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @Service
+@Slf4j
 public class AwtPictureResizerService implements IPictureResizer {
 
     /**
@@ -34,8 +36,8 @@ public class AwtPictureResizerService implements IPictureResizer {
         File inputFile = new File(inputImagePath);
         BufferedImage inputImage = getBufferedImage(inputFile);
 
-        if (isEmpty(inputImage)){
-            throw new ImageWithoutContentException("There is no content in image with path: "+ inputImagePath);
+        if (isEmpty(inputImage)) {
+            throw new ImageWithoutContentException("There is no content in image with path: " + inputImagePath);
         }
 
         Image tmp = inputImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
@@ -52,7 +54,13 @@ public class AwtPictureResizerService implements IPictureResizer {
         String formatName = outputImagePath.substring(outputImagePath.lastIndexOf(".") + 1);
 
         // writes to output file
-        ImageIO.write(outputImage, formatName, new File(outputImagePath));
+        try {
+            File output = new File(outputImagePath);
+            ImageIO.write(outputImage, formatName, output);
+        } catch (Exception e) {
+            log.error("Error: " + outputImage + " / " + formatName + " / " + outputImagePath, e);
+            throw e;
+        }
     }
 
     /**
@@ -69,11 +77,11 @@ public class AwtPictureResizerService implements IPictureResizer {
             throws IOException, ImageWithoutContentException {
         File inputFile = new File(inputImagePath);
         BufferedImage inputImage = getBufferedImage(inputFile);
-        if(isEmpty(inputImage)){
-            throw new ImageWithoutContentException("There is no content in image with path: "+ inputImagePath);
+        if (isEmpty(inputImage)) {
+            throw new ImageWithoutContentException("There is no content in image with path: " + inputImagePath);
         }
-            int scaledWidth = (int) (inputImage.getWidth() * ratio);
-            int scaledHeight = (int) (inputImage.getHeight() * ratio);
+        int scaledWidth = (int) (inputImage.getWidth() * ratio);
+        int scaledHeight = (int) (inputImage.getHeight() * ratio);
         resize(inputImagePath, outputImagePath, scaledWidth, scaledHeight);
     }
 
@@ -98,10 +106,11 @@ public class AwtPictureResizerService implements IPictureResizer {
 
     private BufferedImage getBufferedImage(int width, int height, BufferedImage inputImage) {
         BufferedImage bufferedImage;
-        try {
+        int type = inputImage.getType();
+        if (type != 0) {
             bufferedImage = new BufferedImage(width,
-                    height, inputImage.getType());
-        } catch (Exception e) {
+                    height, type);
+        } else {
             bufferedImage = new BufferedImage(width,
                     height, BufferedImage.TYPE_INT_RGB);
         }

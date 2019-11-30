@@ -22,8 +22,10 @@ import java.util.List;
 public class PictureMediaConfig {
     private boolean init;
     private String unknownAutoImageType;
+    private boolean removeMarkersFromMain;
     private boolean removeNotSynchronized;
-    private boolean overwriteAll;
+    private boolean replaceExistingResized;
+    private boolean replaceExistingMarker;
     private boolean applyCompressionToMarkers;
     private List<String> markerNames = new ArrayList<>();
     private List<Integer> markerWidths = new ArrayList<>();

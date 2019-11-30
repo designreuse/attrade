@@ -187,10 +187,12 @@ messages-source:
 
 picture:
   media:
-    init: true
+    init: false
     unknownAutoImageType: jpeg
+    removeMarkersFromMain: false
     removeNotSynchronized: true
-    overwriteAll: false
+    replaceExistingResized: false
+    replaceExistingMarker: false
     applyCompressionToMarkers: false
     markerNames:
       - -icon

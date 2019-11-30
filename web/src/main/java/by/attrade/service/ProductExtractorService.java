@@ -14,6 +14,7 @@ import by.attrade.service.jsoup.JsoupDocService;
 import by.attrade.service.jsoup.extractor.ExtractorErrorService;
 import by.attrade.service.jsoup.extractor.ExtractorErrorUrlService;
 import by.attrade.service.productPathExtractor.Utf8OfNameProductPathExtractorService;
+import by.attrade.util.ImageIOService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.jsoup.HttpStatusException;
@@ -139,20 +140,30 @@ public class ProductExtractorService {
         int priority = 0;
         for (String imageUrl : imagesUrl) {
             String name = getFileName(imageUrl);
+            name = changePictureNameIfWrongType(name);
             String pathName = serverPathConfig.getAbsolute() + serverPathConfig.getPicture() + File.separator + name;
             imageDownloader.download(imageUrl, pathName);
             Path source = Paths.get(pathName);
-
-            boolean resized = pictureMediaService.createResizedPictures(source, compressions, true);
+            boolean empty = pictureMediaService.removePictureIfEmpty(source);
+            if (empty){
+                continue;
+            }
+            boolean resized = pictureMediaService.createAllResizedPictures(source, compressions, true);
             if (resized){
-                pictureMediaService.createMarkedPictures(source, true);
+                pictureMediaService.createAllMediaMarkerPictures(source, true);
                 pictures.add(new Picture(name, imageUrl, priority++));
             }
         }
         return pictures;
     }
 
+    private String changePictureNameIfWrongType(String name) {
+        Path path = pictureMediaService.renameUnknownImageTypeToDefault(Paths.get(name));
+        return path.toString();
+    }
+
     private String getFileName(String imageUrl) {
+
         String extension = FilenameUtils.getExtension(imageUrl);
         String uuid = UUID.randomUUID().toString();
         return uuid + "." + extension;

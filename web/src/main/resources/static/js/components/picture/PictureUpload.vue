@@ -10,7 +10,7 @@
 <script>
     import { mapState } from 'vuex'
     export default{
-        props: ['pathPic', 'alt', 'pictureClass', 'pictureStyle'],
+        props: ['pathPic', 'marker', 'alt', 'pictureClass', 'pictureStyle'],
         data(){
             return {
                 root: "/upload/picture",
@@ -19,14 +19,18 @@
         },
         methods:{
             srcsetItem:  function (path){
-                return this.root + path + this.slash + this.pathPic
+                return this.root + path + this.slash + this.markerPath
             }
         },
         computed: {
             ...mapState(['pictureMedia']),
             srcset(){
-                return this.root + this.slash + this.pathPic
+                return this.root + this.slash + this.markerPath
             },
+            markerPath(){
+                let split = this.pathPic.split(".")
+                return split[0] + this.marker + "." + split[1]
+            }
         }
     }
 </script>

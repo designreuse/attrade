@@ -5,29 +5,27 @@ import by.attrade.config.ServerPathConfig;
 import by.attrade.domain.dto.PictureMediaDTO;
 import by.attrade.service.exception.ImageWithoutContentException;
 import by.attrade.service.pictureResizer.AwtPictureResizerService;
+import by.attrade.util.ImageIOService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @Service
 @Slf4j
 public class PictureMediaService {
     public static final double MAX_COMPRESSION_PERCENT = 100;
+    private static final int MAX_DEPTH_ONLY_MAIN = 1;
 
     @Autowired
     private PictureMediaConfig pictureMediaConfig;
@@ -37,6 +35,9 @@ public class PictureMediaService {
 
     @Autowired
     private AwtPictureResizerService pictureResizerService;
+
+    @Autowired
+    private ImageIOService imageIOService;
 
 
     @PostConstruct
@@ -49,31 +50,47 @@ public class PictureMediaService {
     private void processUploadPictures() throws IOException {
         createDirectories();
         removeEmptyPictures();
-        renameWrongTypePictures();
+        renameUnknownTypePictures();
+        if (pictureMediaConfig.isRemoveMarkersFromMain()){
+            removeMarkersFromMain();
+        }
+        if(pictureMediaConfig.isRemoveNotSynchronized()){
+            removeNotSynchronized();
+        }
+        copyResizedPictures(pictureMediaConfig.isReplaceExistingResized());
         createMarkerPictures();
-        removeNotSynchronized();
-        copyAndSqueezePictures();
+    }
+
+    private void removeMarkersFromMain() {
+        try {
+            Files
+                    .walk(Paths.get(getMainPath()), MAX_DEPTH_ONLY_MAIN)
+                    .filter(path -> Files.isRegularFile(path) && isMarkerPicture(path))
+                    .forEach(this::removePath);
+        } catch (IOException e) {
+            log.error("Cannot walk to delete marker pictures.", e);
+        }
     }
 
     private void createMarkerPictures() {
         try {
             Files
                     .walk(Paths.get(getMainPath()))
-                    .filter(path -> Files.isRegularFile(path))
-                    .forEach(path -> createMarkedPictures(path, false));
+                    .filter(path -> Files.isRegularFile(path) && !isMarkerPicture(path))
+                    .forEach(path -> createMarkerPictures(path, pictureMediaConfig.isReplaceExistingMarker()));
         } catch (IOException e) {
             log.error("Cannot walk to create marker pictures.", e);
         }
     }
 
-    private void renameWrongTypePictures() {
+    private void renameUnknownTypePictures() {
         try {
             Files
                     .walk(Paths.get(getMainPath()))
-                    .filter(path -> Files.isRegularFile(path) && isPictureWrongType(path))
-                    .forEach(this::autoRename);
+                    .filter(path -> Files.isRegularFile(path) && imageIOService.isPictureUnknownType(path))
+                    .forEach(this::renameUnknownImageTypeToDefault);
         } catch (IOException e) {
-            log.error("Cannot walk to autoRename wrong type pictures.", e);
+            log.error("Cannot walk to renameUnknownImageTypeToDefault wrong type pictures.", e);
         }
     }
 
@@ -81,8 +98,8 @@ public class PictureMediaService {
         try {
             Files
                     .walk(Paths.get(getMainPath()))
-                    .filter(path -> Files.isRegularFile(path) && isEmptyFile(path))
-                    .forEach(this::deletePath);
+                    .filter(path -> Files.isRegularFile(path))
+                    .forEach(this::removePictureIfEmpty);
         } catch (IOException e) {
             log.error("Cannot walk to remove empty pictures.", e);
         }
@@ -104,14 +121,12 @@ public class PictureMediaService {
 
 
     private void removeNotSynchronized() {
-        if (pictureMediaConfig.isRemoveNotSynchronized()) {
-            List<PictureMediaDTO> pictureMedias = pictureMediaConfig.getPictureMedias();
-            for (PictureMediaDTO p : pictureMedias) {
-                String child = getMainPath() + p.getPath();
-                Path mainPath = Paths.get(getMainPath());
-                Path childPath = Paths.get(child);
-                walkAndRemoveIfNotExistsInMain(mainPath, childPath);
-            }
+        List<PictureMediaDTO> pictureMedias = pictureMediaConfig.getPictureMedias();
+        for (PictureMediaDTO p : pictureMedias) {
+            String child = getMainPath() + p.getPath();
+            Path mainPath = Paths.get(getMainPath());
+            Path childPath = Paths.get(child);
+            walkAndRemoveIfNotExistsInMain(mainPath, childPath);
         }
     }
 
@@ -125,35 +140,41 @@ public class PictureMediaService {
             Files
                     .walk(childPath)
                     .filter(path -> !fileNames.contains(path.getFileName()) && Files.isRegularFile(path))
-                    .forEach(this::deletePath);
+                    .forEach(this::removePath);
         } catch (IOException e) {
             log.error("Files operations with: " + mainPath + " / " + childPath, e);
         }
     }
 
-    private void deletePath(Path p) {
+    public boolean removePictureIfEmpty(Path p){
+        if (isEmptyFile(p)){
+            removePath(p);
+            return true;
+        }
+        return false;
+    }
+
+    private void removePath(Path p) {
         try {
             Files.delete(p);
         } catch (IOException e) {
-            log.error("Delete path: " + p, e);
+            log.error("Remove path: " + p, e);
         }
     }
 
-    private void copyAndSqueezePictures() throws IOException {
+    private void copyResizedPictures(boolean replaceExisting) throws IOException {
         Files
-                .walk(Paths.get(getMainPath()), 1)
+                .walk(Paths.get(getMainPath()), MAX_DEPTH_ONLY_MAIN)
                 .filter(Files::isRegularFile)
-                .forEach(this::createResizedPictures);
+                .forEach(path -> createAllResizedPictures(path, replaceExisting));
     }
 
-    private void createResizedPictures(Path source) {
+    private void createAllResizedPictures(Path source, boolean replaceExisting) {
         List<PictureMediaDTO> pictureMedias = pictureMediaConfig.getPictureMedias();
         for (PictureMediaDTO p : pictureMedias) {
-            String mediaPath = getMainPath() + p.getPath();
-            String stringTarget = mediaPath + File.separator + source.getFileName();
-            Path target = Paths.get(stringTarget);
+            Path target = getMediaPath(source, p);
             boolean exists = Files.exists(target);
-            if (!exists || pictureMediaConfig.isOverwriteAll()) {
+            if (!exists || replaceExisting) {
                 Double compressionPercent = getMarkerCompression(p, target);
                 resizePicture(source, target, compressionPercent);
             }
@@ -169,37 +190,16 @@ public class PictureMediaService {
         return compressionPercent;
     }
 
-    private Path autoRename(Path source) {
-        String str = source.toString();
-        int i = str.lastIndexOf(".");
-        str = str.substring(0, i + 1) + pictureMediaConfig.getUnknownAutoImageType();
-        Path target = Paths.get(str);
-        try {
-            Files.move(source, target);
-        } catch (IOException e) {
-            log.error("Cannot move file: " + source + " to: " + target);
-        }
-        return target;
+    public Path renameUnknownImageTypeToDefault(Path source) {
+        return imageIOService.renameImageTypeTo(source, pictureMediaConfig.getUnknownAutoImageType());
     }
 
-    private boolean isPictureWrongType(Path source) {
-        String str = source.toString();
-        String suffix = str.substring(str.lastIndexOf(".") + 1);
-        String[] readerFileSuffixes = ImageIO.getReaderFileSuffixes();
-        List<String> list = Arrays.asList(readerFileSuffixes);
-        return !list.contains(suffix);
-    }
-
-    public void createMarkedPictures(Path source, boolean replaceExisting) {
-        if (isMarkerPicture(source)){
-            return;
-        }
+    private void createMarkerPictures(Path source, boolean replaceExisting) {
         int size = pictureMediaConfig.getMarkerNames().size();
         for (int i = 0; i < size; i++) {
             Path target = getMarkerPath(source, i);
             if (!Files.exists(target) || replaceExisting) {
                 createMarkerPicture(source, target, i);
-                createMediaMarkerPictures(target);
             }
         }
     }
@@ -225,7 +225,7 @@ public class PictureMediaService {
         if (markerWidth >= width) {
             compression = MAX_COMPRESSION_PERCENT;
         } else {
-            compression = markerWidth / ((double)width) * 100;
+            compression = markerWidth / ((double) width) * 100;
         }
         return compression;
     }
@@ -241,42 +241,27 @@ public class PictureMediaService {
         return source.resolveSibling(split[0] + marker + "." + split[1]);
     }
 
-    private boolean copy(Path source, Path target) {
-        try {
-            Files.copy(source, target, REPLACE_EXISTING);
-        } catch (IOException e) {
-            log.error("Cannot copy file from: " + source + " to: " + source, e);
-            return false;
-        }
-        return true;
-    }
-
-    private void createMediaMarkerPictures(Path target) {
-        if (pictureMediaConfig.isApplyCompressionToMarkers()) {
-            createResizedPictures(target, null, true);
-        } else {
-            double[] compressions = getMaxValueCompressions();
-            createResizedPictures(target, compressions, true);
+    public void createAllMediaMarkerPictures(Path source, boolean replaceExisting) {
+        createMarkerPictures(source, replaceExisting);
+        for (PictureMediaDTO p : pictureMediaConfig.getPictureMedias()) {
+            Path target = getMediaPath(source, p);
+            createMarkerPictures(target, replaceExisting);
         }
     }
 
-    private double[] getMaxValueCompressions() {
-        int s = pictureMediaConfig.getPictureMedias().size();
-        double[] compressions = new double[s];
-        for (int j = 0; j < s; j++) {
-            compressions[j] = MAX_COMPRESSION_PERCENT;
-        }
-        return compressions;
+    private Path getMediaPath(Path source, PictureMediaDTO p) {
+        String targetPath = getMainPath() + p.getPath();
+        String stringTarget = targetPath + File.separator + source.getFileName();
+        return Paths.get(stringTarget);
     }
 
-
-    public boolean createResizedPictures(Path source, double[] compressions, boolean replaceExisting) {
+    public boolean createAllResizedPictures(Path source, double[] compressions, boolean replaceExisting) {
         if (isEmptyFile(source)) {
-            deletePath(source);
+            removePath(source);
             return false;
         }
-        if (isPictureWrongType(source)) {
-            source = autoRename(source);
+        if (imageIOService.isPictureUnknownType(source)) {
+            source = renameUnknownImageTypeToDefault(source);
         }
         List<PictureMediaDTO> pictureMedias = pictureMediaConfig.getPictureMedias();
         int size = pictureMedias.size();
@@ -286,9 +271,7 @@ public class PictureMediaService {
         }
         for (int i = 0; i < size; i++) {
             PictureMediaDTO p = pictureMedias.get(i);
-            String targetPath = getMainPath() + p.getPath();
-            String stringTarget = targetPath + File.separator + source.getFileName();
-            Path target = Paths.get(stringTarget);
+            Path target = getMediaPath(source, p);
             double compressionPercent = getCompressionPercent(compressions, i, p);
             boolean exists = Files.exists(target);
             if (!exists || replaceExisting) {

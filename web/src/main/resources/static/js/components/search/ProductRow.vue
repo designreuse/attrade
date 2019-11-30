@@ -7,7 +7,7 @@
                         <div class="col-4 py-3 pr-1">
                             <a :href="link" class="btn bg-transparent border-0 rounded-0 btn-block px-0 py-0"
                                style="height: 100%">
-                                <picture-upload :pathPic="picture" :alt="alt" :pictureClass="pictureClass" :pictureStyle="pictureStyle"/>
+                                <picture-upload :pathPic="picture" :marker="marker" :alt="alt" :pictureClass="pictureClass" :pictureStyle="pictureStyle"/>
                                 <!--<img :src="picture" class="card-img">-->
                                 <div class="text-left pl-2">
                                     <small>код:&nbsp;{{product.code}}</small>
@@ -114,6 +114,7 @@
             return {
                 unit: this.product.unit,
                 count: 1,
+                marker: "-small",
                 pictureClass: "img-fluid",
                 pictureStyle: "max-width: 100%; height: auto;"
             }
