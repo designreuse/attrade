@@ -1,9 +1,10 @@
-package by.attrade.util;
+package by.attrade.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,5 +33,8 @@ public class ImageIOService {
             log.error("Cannot move file: " + source + " to: " + target);
         }
         return target;
+    }
+    public boolean isImage(String pathName) throws IOException {
+        return ImageIO.read(new File(pathName)) != null;
     }
 }

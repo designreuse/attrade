@@ -4,8 +4,7 @@ import by.attrade.config.PictureMediaConfig;
 import by.attrade.config.ServerPathConfig;
 import by.attrade.domain.dto.PictureMediaDTO;
 import by.attrade.service.exception.ImageWithoutContentException;
-import by.attrade.service.pictureResizer.AwtPictureResizerService;
-import by.attrade.util.ImageIOService;
+import by.attrade.service.pictureResizer.ImageIOPictureResizerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +33,7 @@ public class PictureMediaService {
     private ServerPathConfig serverPathConfig;
 
     @Autowired
-    private AwtPictureResizerService pictureResizerService;
+    private ImageIOPictureResizerService pictureResizerService;
 
     @Autowired
     private ImageIOService imageIOService;

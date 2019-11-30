@@ -14,7 +14,6 @@ import by.attrade.service.jsoup.JsoupDocService;
 import by.attrade.service.jsoup.extractor.ExtractorErrorService;
 import by.attrade.service.jsoup.extractor.ExtractorErrorUrlService;
 import by.attrade.service.productPathExtractor.Utf8OfNameProductPathExtractorService;
-import by.attrade.util.ImageIOService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.jsoup.HttpStatusException;

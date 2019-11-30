@@ -16,7 +16,7 @@ import java.nio.file.Path;
 
 @Service
 @Slf4j
-public class AwtPictureResizerService implements IPictureResizer {
+public class ImageIOPictureResizerService implements IPictureResizer {
 
     /**
      * Resizes an image to a absolute width and height (the image may not be
