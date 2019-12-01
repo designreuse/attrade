@@ -87,10 +87,7 @@ public class Category implements Serializable {
     private String path;
 
     @OneToOne
-    private Picture icon;
-
-    @OneToOne
-    private Picture image;
+    private Picture picture;
 
     private Integer priority;
     private boolean invisible;

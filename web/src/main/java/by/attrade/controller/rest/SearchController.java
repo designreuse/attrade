@@ -35,7 +35,7 @@ public class SearchController {
     }
 
     @GetMapping("product")
-    @JsonView(Views.IdNameCodePathIconPicturePriceCategoryQuantityInStockQuantitySupplierUnit.class)
+    @JsonView(Views.IdNameCodePathPicturePriceCategoryQuantityInStockQuantitySupplierUnit.class)
     public List<Product> searchProduct(
             @RequestParam String text,
             @PageableDefault(size = 50) Pageable pageable

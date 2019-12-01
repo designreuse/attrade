@@ -43,9 +43,7 @@ public class Picture implements Serializable {
     @ManyToOne
     @JoinColumn(name = "product_picture_id")
     private Product productPicture;
-    @ManyToOne
-    @JoinColumn(name = "product_icon_id")
-    private Product productIcon;
+
 
     public Picture(@NotEmpty String path, @NotNull String sourceUrl, @NotNull Integer priority) {
         this.path = path;

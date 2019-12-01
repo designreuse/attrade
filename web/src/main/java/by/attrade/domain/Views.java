@@ -18,5 +18,5 @@ public final class Views {
     public interface Tag{}
     public interface CreationLDT{}
     public interface IdNamePathIcon extends Id,Name,Path,Icon {}
-    public interface IdNameCodePathIconPicturePriceCategoryQuantityInStockQuantitySupplierUnit extends Id, Name, Code, Path, Icon, Picture, Price, Category, QuantityInStock, QuantitySupplier, Unit {}
+    public interface IdNameCodePathPicturePriceCategoryQuantityInStockQuantitySupplierUnit extends Id, Name, Code, Path, Picture, Price, Category, QuantityInStock, QuantitySupplier, Unit {}
 }

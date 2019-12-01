@@ -172,9 +172,6 @@ public class Product implements Serializable {
     @Length(max = 20)
     private String madeCountry;
 
-    @JsonView(Views.Icon.class)
-    private String icon;
-
     @JsonView(Views.Picture.class)
     private String picture;
 
@@ -216,9 +213,6 @@ public class Product implements Serializable {
 
     @OneToMany(mappedBy = "productPicture")
     List<Picture> pictures = new ArrayList<>();
-
-    @OneToMany(mappedBy = "productIcon")
-    List<Picture> icons = new ArrayList<>();
 
     @OneToMany(mappedBy = "product")
     private Set<ProductDetail> productDetails = new HashSet<>();
