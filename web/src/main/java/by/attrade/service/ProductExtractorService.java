@@ -143,15 +143,11 @@ public class ProductExtractorService {
             String pathName = serverPathConfig.getAbsolute() + serverPathConfig.getPicture() + File.separator + name;
             imageDownloader.download(imageUrl, pathName);
             Path source = Paths.get(pathName);
-            boolean empty = pictureMediaService.removePictureIfEmpty(source);
-            if (empty){
-                continue;
-            }
-            boolean resized = pictureMediaService.createAllResizedPictures(source, compressions, true);
-            if (resized){
-                pictureMediaService.createAllMediaMarkerPictures(source, true);
+            boolean noError = pictureMediaService.saveAllMedia(source, compressions);
+            if (noError) {
                 pictures.add(new Picture(name, imageUrl, priority++));
             }
+
         }
         return pictures;
     }
