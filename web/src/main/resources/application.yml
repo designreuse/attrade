@@ -187,14 +187,19 @@ messages-source:
 
 picture:
   media:
-    init: false
+    init: true
+    removeMarkers: true
+    removeNotSynchronized: true
     compressMain: false
     compressMainQuality: 100
+    copyMediaPictures: false
+    replaceExistingMedia: false
+    createMarkerPictures: true
+    replaceExistingMarker: true
+    compressMarker: true
+    compressMarkerQuality: 100
     unknownAutoImageType: jpeg
-    removeMarkersFromMain: false
-    removeNotSynchronized: true
-    replaceExistingResized: false
-    replaceExistingMarker: false
+
     markerNames:
       - -icon
       - -small

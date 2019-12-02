@@ -21,13 +21,17 @@ import java.util.List;
 @ConfigurationProperties(prefix = "picture.media")
 public class PictureMediaConfig {
     private boolean init;
+    private String unknownAutoImageType;
+    private boolean removeMarkers;
+    private boolean removeNotSynchronized;
     private boolean compressMain;
     private double compressMainQuality;
-    private String unknownAutoImageType;
-    private boolean removeMarkersFromMain;
-    private boolean removeNotSynchronized;
-    private boolean replaceExistingResized;
+    private boolean copyMediaPictures;
+    private boolean replaceExistingMedia;
+    private boolean createMarkerPictures;
     private boolean replaceExistingMarker;
+    private boolean compressMarker;
+    private double compressMarkerQuality;
     private List<String> markerNames = new ArrayList<>();
     private List<Integer> markerWidths = new ArrayList<>();
     private List<String> paths = new ArrayList<>();

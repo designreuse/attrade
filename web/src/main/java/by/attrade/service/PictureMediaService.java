@@ -23,7 +23,9 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class PictureMediaService {
-    public static final double MAX_COMPRESSION_PERCENT = 100;
+
+    private static final double MAX_COMPRESSION_PERCENT = 100;
+    private static final double MAX_COMPRESSION_QUALITY = 100;
     private static final int MAX_DEPTH_ONLY_MAIN = 1;
 
     @Autowired
@@ -47,30 +49,57 @@ public class PictureMediaService {
     }
 
     private void processUploadPictures() throws IOException {
+        log.info("Create directories");
         createDirectories();
+        log.info("Remove empty pictures");
         removeEmptyPictures();
+        log.info("Remove unknown type of pictures");
         renameUnknownTypePictures();
-        if (pictureMediaConfig.isRemoveMarkersFromMain()) {
-            removeMarkersFromMain();
+        if (pictureMediaConfig.isRemoveMarkers()) {
+            log.info("Remove marker pictures");
+            removeMarkers();
         }
         if (pictureMediaConfig.isRemoveNotSynchronized()) {
+            log.info("Remove not synchronized");
             removeNotSynchronized();
         }
         if (pictureMediaConfig.isCompressMain()) {
+            log.info("Compress main pictures");
             compressMain(pictureMediaConfig.getCompressMainQuality());
         }
-        copyResizedPictures(pictureMediaConfig.isReplaceExistingResized());
-        createMarkerPictures();
+        if (pictureMediaConfig.isCopyMediaPictures()) {
+            log.info("Copy and resize pictures");
+            copyMediaPictures(pictureMediaConfig.isReplaceExistingMedia());
+        }
+        if (pictureMediaConfig.isCreateMarkerPictures()) {
+            log.info("Create marker pictures");
+            createMarkerPictures(pictureMediaConfig.isReplaceExistingMarker());
+        }
+        if (pictureMediaConfig.isCompressMarker()) {
+            log.info("Compress marker pictures");
+            compressMarker(pictureMediaConfig.getCompressMarkerQuality());
+        }
     }
 
-    private void compressMain(double compressMainQuality) {
+    private void compressMain(double compressQuality) {
         try {
             Files
                     .walk(Paths.get(getMainPath()), MAX_DEPTH_ONLY_MAIN)
                     .filter(path -> Files.isRegularFile(path) && !isMarkerPicture(path))
-                    .forEach(path -> compress(path, compressMainQuality));
+                    .forEach(path -> compress(path, compressQuality));
         } catch (IOException e) {
-            log.error("Cannot walk to delete marker pictures.", e);
+            log.error("Cannot walk to compress main pictures.", e);
+        }
+    }
+
+    private void compressMarker(double compressQuality) {
+        try {
+            Files
+                    .walk(Paths.get(getMainPath()))
+                    .filter(path -> Files.isRegularFile(path) && isMarkerPicture(path))
+                    .forEach(path -> compress(path, compressQuality));
+        } catch (IOException e) {
+            log.error("Cannot walk to compress marker pictures.", e);
         }
     }
 
@@ -84,13 +113,13 @@ public class PictureMediaService {
         }
     }
 
-    public boolean saveAllMedia(Path source, double[] compressions) {
+    public boolean saveAllMediaAndMarkers(Path source, double[] compressions) {
         boolean empty = removePictureIfEmpty(source);
         if (empty) {
             return false;
         }
-        compress(source, MAX_COMPRESSION_PERCENT);
-        boolean resized = createAllResizedPictures(source, compressions, true);
+        compress(source, MAX_COMPRESSION_QUALITY);
+        boolean resized = createAllMediaPictures(source, compressions, true);
         if (resized) {
             createAllMediaMarkerPictures(source, true);
         } else {
@@ -99,23 +128,23 @@ public class PictureMediaService {
         return true;
     }
 
-    private void removeMarkersFromMain() {
+    private void removeMarkers() {
         try {
             Files
-                    .walk(Paths.get(getMainPath()), MAX_DEPTH_ONLY_MAIN)
+                    .walk(Paths.get(getMainPath()))
                     .filter(path -> Files.isRegularFile(path) && isMarkerPicture(path))
-                    .forEach(this::removePath);
+                    .forEach(this::deletePath);
         } catch (IOException e) {
             log.error("Cannot walk to delete marker pictures.", e);
         }
     }
 
-    private void createMarkerPictures() {
+    private void createMarkerPictures(boolean replaceExisting) {
         try {
             Files
                     .walk(Paths.get(getMainPath()))
                     .filter(path -> Files.isRegularFile(path) && !isMarkerPicture(path))
-                    .forEach(path -> createMarkerPictures(path, pictureMediaConfig.isReplaceExistingMarker()));
+                    .forEach(path -> createMarkerPictures(path, replaceExisting));
         } catch (IOException e) {
             log.error("Cannot walk to create marker pictures.", e);
         }
@@ -178,7 +207,7 @@ public class PictureMediaService {
             Files
                     .walk(childPath)
                     .filter(path -> !fileNames.contains(path.getFileName()) && Files.isRegularFile(path))
-                    .forEach(this::removePath);
+                    .forEach(this::deletePath);
         } catch (IOException e) {
             log.error("Files operations with: " + mainPath + " / " + childPath, e);
         }
@@ -186,13 +215,13 @@ public class PictureMediaService {
 
     public boolean removePictureIfEmpty(Path p) {
         if (isEmptyFile(p)) {
-            removePath(p);
+            deletePath(p);
             return true;
         }
         return false;
     }
 
-    private void removePath(Path p) {
+    private void deletePath(Path p) {
         try {
             Files.delete(p);
         } catch (IOException e) {
@@ -200,18 +229,21 @@ public class PictureMediaService {
         }
     }
 
-    private void copyResizedPictures(boolean replaceExisting) throws IOException {
+    private void copyMediaPictures(boolean replaceExisting) throws IOException {
         Files
                 .walk(Paths.get(getMainPath()), MAX_DEPTH_ONLY_MAIN)
                 .filter(Files::isRegularFile)
-                .forEach(path -> createAllResizedPictures(path, replaceExisting));
+                .forEach(path -> createAllMediaPictures(path, replaceExisting));
     }
 
-    private void createAllResizedPictures(Path source, boolean replaceExisting) {
+    private void createAllMediaPictures(Path source, boolean replaceExisting) {
         List<PictureMediaDTO> pictureMedias = pictureMediaConfig.getPictureMedias();
         for (PictureMediaDTO p : pictureMedias) {
             Path target = getMediaPath(source, p);
             boolean exists = Files.exists(target);
+            if (exists && replaceExisting) {
+                deletePath(target);
+            }
             if (!exists || replaceExisting) {
                 Double compressionPercent = getMarkerCompression(p, target);
                 resizePicture(source, target, compressionPercent);
@@ -236,7 +268,11 @@ public class PictureMediaService {
         int size = pictureMediaConfig.getMarkerNames().size();
         for (int i = 0; i < size; i++) {
             Path target = getMarkerPath(source, i);
-            if (!Files.exists(target) || replaceExisting) {
+            boolean exists = Files.exists(target);
+            if (exists && replaceExisting){
+                deletePath(target);
+            }
+            if (!exists || replaceExisting) {
                 createMarkerPicture(source, target, i);
             }
         }
@@ -293,9 +329,9 @@ public class PictureMediaService {
         return Paths.get(stringTarget);
     }
 
-    public boolean createAllResizedPictures(Path source, double[] compressions, boolean replaceExisting) {
+    public boolean createAllMediaPictures(Path source, double[] compressions, boolean replaceExisting) {
         if (isEmptyFile(source)) {
-            removePath(source);
+            deletePath(source);
             return false;
         }
         if (imageService.isPictureUnknownType(source)) {

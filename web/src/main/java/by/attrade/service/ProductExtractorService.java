@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,14 +27,19 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 @Slf4j
 public class ProductExtractorService {
     private static final String DESCRIPTION = "описание";
+    private static final String HREF_CSS_QUERY = "a[href]";
+    public static final String HREF_CSS_ATTRIBUTE = "href";
+
     @Autowired
     private CategoryService categoryService;
 
@@ -70,8 +76,46 @@ public class ProductExtractorService {
     @Autowired
     private PictureMediaService pictureMediaService;
 
+    public ExtractorError saveProductsIfNotExistsByCodeAndSaveErrors(IProductExtractor extractor, String domain, double[] compressions) {
+        List<ExtractorErrorUrl> errorUrls = saveProductsIfNotExistsByCode(extractor, domain, compressions);
+        return saveErrorUrls(errorUrls);
+    }
 
-    public ExtractorError saveProductsIfNotExistsByCode(IProductExtractor extractor, List<String> urls, double[] compressions) {
+    public List<ExtractorErrorUrl> saveProductsIfNotExistsByCode(IProductExtractor extractor, String domain, double[] compressions) {
+        Set<String> all = new HashSet<>();
+        Set<String> selected = new HashSet<>();
+        all.add(domain);
+        List<ExtractorErrorUrl> errorUrls = new LinkedList<>();
+        while (!all.isEmpty()) {
+            String url = all.iterator().next();
+            all.remove(url);
+            selected.add(url);
+            Document doc = null;
+            try {
+                doc = jsoupDocService.getJsoupDoc(url);
+                saveProductIfNotExistsByCode(extractor, doc, url, compressions);
+            } catch (HttpStatusException e) {
+                errorUrls.add(new ExtractorErrorUrl(url));
+            } catch (Exception e) {
+                log.info(e.getMessage(), url);
+            }
+            extractUrls(doc, all, selected);
+        }
+        return errorUrls;
+    }
+
+    private void extractUrls(Document doc, Set<String> all, Set<String> selected) {
+        Elements links = doc.select(HREF_CSS_QUERY);
+        links.stream().map(e -> e.absUrl(HREF_CSS_ATTRIBUTE)).filter(e -> !all.contains(e) && !selected.contains(e)).forEach(all::add);
+    }
+
+    public ExtractorError saveProductsIfNotExistsByCodeAndSaveErrors(IProductExtractor extractor, List<String> urls, double[] compressions) {
+        List<ExtractorErrorUrl> errorUrls = saveProductsIfNotExistsByCode(extractor, urls, compressions);
+        return saveErrorUrls(errorUrls);
+    }
+
+
+    public List<ExtractorErrorUrl> saveProductsIfNotExistsByCode(IProductExtractor extractor, List<String> urls, double[] compressions) {
         List<ExtractorErrorUrl> errorUrls = new LinkedList<>();
         for (String url : urls) {
             try {
@@ -82,10 +126,22 @@ public class ProductExtractorService {
                 log.info(e.getMessage(), url);
             }
         }
+        return errorUrls;
+    }
+
+    private ExtractorError saveErrorUrls(List<ExtractorErrorUrl> errorUrls) {
         List<ExtractorErrorUrl> saveErrorUrls = urlService.saveAll(errorUrls);
         ExtractorError extractorError = new ExtractorError();
         extractorError.setUrls(saveErrorUrls);
         return errorService.save(extractorError);
+    }
+
+    public void saveProductIfNotExistsByCode(IProductExtractor extractor, Document doc, String url, double[] compressions) throws Exception {
+        Product product = extractor.getProduct(doc);
+        if (productService.existsByCode(product)) {
+            return;
+        }
+        saveProduct(extractor, doc, url, compressions);
     }
 
     public void saveProductIfNotExistsByCode(IProductExtractor extractor, String url, double[] compressions) throws Exception {
@@ -95,7 +151,6 @@ public class ProductExtractorService {
             return;
         }
         saveProduct(extractor, doc, url, compressions);
-
     }
 
     private void saveProduct(IProductExtractor extractor, Document doc, String url, double[] compressions) throws Exception {
@@ -143,7 +198,7 @@ public class ProductExtractorService {
             String pathName = serverPathConfig.getAbsolute() + serverPathConfig.getPicture() + File.separator + name;
             imageDownloader.download(imageUrl, pathName);
             Path source = Paths.get(pathName);
-            boolean noError = pictureMediaService.saveAllMedia(source, compressions);
+            boolean noError = pictureMediaService.saveAllMediaAndMarkers(source, compressions);
             if (noError) {
                 pictures.add(new Picture(name, imageUrl, priority++));
             }
