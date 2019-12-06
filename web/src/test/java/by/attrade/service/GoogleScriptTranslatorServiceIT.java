@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class GoogleScriptTranslatorServiceIT {
     @Autowired
-    private GoogleScriptTranslatorService service;
+    private TranslatorGoogleUsingScriptService service;
     @Test
     public void translate() throws Exception {
         String text = "Hello world!";

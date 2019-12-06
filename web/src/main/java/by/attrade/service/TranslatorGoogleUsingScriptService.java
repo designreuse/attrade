@@ -1,6 +1,7 @@
 package by.attrade.service;
 
 import by.attrade.config.GoogleScriptTranslatorConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,11 @@ import java.net.URLEncoder;
  * https://stackoverflow.com/questions/8147284/how-to-use-google-translate-api-in-my-java-application
  */
 @Service
-public class GoogleScriptTranslatorService {
+@Slf4j
+public class TranslatorGoogleUsingScriptService {
     @Autowired
     private GoogleScriptTranslatorConfig config;
+
     public String translate(String langFrom, String langTo, String text) throws IOException {
         // INSERT YOU URL HERE
         String urlStr = config.getUrl() +
@@ -34,6 +37,7 @@ public class GoogleScriptTranslatorService {
             response.append(inputLine);
         }
         in.close();
+        log.info("Translate from: " + text + " to: " + response);
         return response.toString();
     }
 

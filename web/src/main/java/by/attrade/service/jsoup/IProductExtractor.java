@@ -10,7 +10,7 @@ import java.util.List;
 public interface IProductExtractor {
     Product getProduct(Document document) throws IOException;
 
-    List<Category> getCategories(Document document) throws IOException;
+    List<Category> getCategories(Document document) throws Exception;
 
     List<Property> getProperties(Document document) throws IOException;
 

@@ -2,7 +2,9 @@ package by.attrade.service;
 
 import by.attrade.config.PictureMediaConfig;
 import by.attrade.domain.Category;
-import by.attrade.service.categoryPathExtractor.UrlOfNameCategoryPathExtractorService;
+import by.attrade.service.categoryPathAdjuster.ReplacePunctuationMarksCategoryPathAdjusterService;
+import by.attrade.service.categoryPathAdjuster.SpaceToHyphenCategoryPathAdjusterService;
+import by.attrade.service.categoryPathAdjuster.TranslatorCategoryPathByNameAdjusterService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,26 @@ public class CategoryServiceIT {
     @Autowired
     private CategoryService categoryService;
     @Autowired
-    private UrlOfNameCategoryPathExtractorService extractor;
+    private TranslatorCategoryPathByNameAdjusterService translatorAdjuster;
+
+    @Autowired
+    private SpaceToHyphenCategoryPathAdjusterService spaceToHyphenCategoryPathAdjusterService;
+
+    @Autowired
+    private ReplacePunctuationMarksCategoryPathAdjusterService replacePunctuationMarksCategoryPathAdjusterService;
+
+
     @Test
-    public void updatePaths() throws Exception {
-        categoryService.updatePaths(extractor, 100);
+    public void replaceSpaceToHyphenFromPaths() throws Exception {
+        categoryService.updatePaths(spaceToHyphenCategoryPathAdjusterService, 100);
+    }
+    @Test
+    public void replacePunctuationMarksFromPaths() throws Exception {
+        categoryService.updatePaths(replacePunctuationMarksCategoryPathAdjusterService, 100);
+    }
+    @Test
+    public void translatePaths() throws Exception {
+        categoryService.updatePaths(translatorAdjuster, 100);
     }
     @Test
     public void updatePictures(){

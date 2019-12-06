@@ -1,9 +1,8 @@
 package by.attrade.service;
 
 import by.attrade.domain.Category;
-import by.attrade.domain.Product;
 import by.attrade.repos.CategoryRepo;
-import by.attrade.service.categoryPathExtractor.ICategoryPathExtractor;
+import by.attrade.service.categoryPathAdjuster.ICategoryPathAdjuster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,7 +42,7 @@ public class CategoryService {
         return last;
     }
 
-    public void updatePaths(ICategoryPathExtractor extractor, int sizeBunch) throws Exception {
+    public void updatePaths(ICategoryPathAdjuster adjuster, int sizeBunch) throws Exception {
         long count = categoryRepo.count();
         long remainder = count % sizeBunch;
         int countPages;
@@ -55,10 +54,7 @@ public class CategoryService {
         for (int i = 0; i < countPages; i++) {
             Page<Category> products = getCategories(i, sizeBunch);
             List<Category> content = products.getContent();
-            for (Category category : content) {
-                String path = extractor.getPath(category);
-                category.setPath(path);
-            }
+            adjuster.adjustPaths(content);
             saveAll(content);
         }
     }
@@ -67,10 +63,12 @@ public class CategoryService {
         PageRequest pageable = PageRequest.of(page, size);
         return categoryRepo.findAll(pageable);
     }
+
     public List<Category> saveAll(List<Category> categories) {
         return categoryRepo.saveAll(categories);
     }
-    public List<Category> findAll(){
+
+    public List<Category> findAll() {
         return categoryRepo.findAll();
     }
 

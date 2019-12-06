@@ -7,6 +7,7 @@ import by.attrade.domain.Picture;
 import by.attrade.domain.Product;
 import by.attrade.domain.ProductProperty;
 import by.attrade.domain.Property;
+import by.attrade.service.categoryPathAdjuster.CategoryPathByNameAdjusterService;
 import by.attrade.service.jsoup.IProductExtractor;
 import by.attrade.service.jsoup.JsoupDocService;
 import by.attrade.service.jsoup.extractor.ExtractorErrorService;
@@ -31,7 +32,7 @@ import java.util.Set;
 public class ProductExtractorService {
     private static final String DESCRIPTION = "описание";
     private static final String HREF_CSS_QUERY = "a[href]";
-    public static final String HREF_CSS_ATTRIBUTE = "href";
+    private static final String HREF_CSS_ATTRIBUTE = "href";
 
     @Autowired
     private CategoryService categoryService;
@@ -63,6 +64,9 @@ public class ProductExtractorService {
     @Autowired
     private PictureMediaService pictureMediaService;
 
+    @Autowired
+    private CategoryPathByNameAdjusterService categoryPathAdjusterService;
+
     public ExtractorError saveProductsIfNotExistsByCodeAndSaveErrors(IProductExtractor extractor, String domain, double[] compressions) {
         List<ExtractorErrorUrl> errorUrls = saveProductsIfNotExistsByCode(extractor, domain, compressions);
         return saveErrorUrls(errorUrls);
@@ -78,7 +82,7 @@ public class ProductExtractorService {
             String url = all.iterator().next();
             all.remove(url);
             selected.add(url);
-            Document doc = null;
+            Document doc;
             try {
                 doc = jsoupDocService.getJsoupDoc(url);
             } catch (HttpStatusException e) {
@@ -107,7 +111,6 @@ public class ProductExtractorService {
         List<ExtractorErrorUrl> errorUrls = saveProductsIfNotExistsByCode(extractor, urls, compressions);
         return saveErrorUrls(errorUrls);
     }
-
 
     public List<ExtractorErrorUrl> saveProductsIfNotExistsByCode(IProductExtractor extractor, List<String> urls, double[] compressions) {
         List<ExtractorErrorUrl> errorUrls = new LinkedList<>();
@@ -149,6 +152,7 @@ public class ProductExtractorService {
 
     private void saveProduct(IProductExtractor extractor, Document doc, String url, double[] compressions) throws Exception {
         List<Category> categories = extractor.getCategories(doc);
+        categoryPathAdjusterService.adjustPaths(categories);
         List<String> imagesUrl = extractor.getImagesUrl(doc);
         List<Property> properties = extractor.getProperties(doc);
         List<String> values = extractor.getPropertiesValue(doc);

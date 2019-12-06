@@ -5,6 +5,7 @@ import by.attrade.domain.Category;
 import by.attrade.domain.Product;
 import by.attrade.domain.Property;
 import by.attrade.service.jsoup.IProductExtractor;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class ProductJsoupS3RuExtractor implements IProductExtractor {
 
     @Autowired
@@ -32,12 +34,13 @@ public class ProductJsoupS3RuExtractor implements IProductExtractor {
     }
 
     @Override
-    public List<Category> getCategories(Document doc) {
+    public List<Category> getCategories(Document doc) throws Exception {
         List<Category> categories = new ArrayList<>();
         Elements elems = doc.select(config.getCategoriesParent()).select(config.getCategoriesChild());
         for (Element e : elems) {
             String categoryName = e.text();
-            categories.add(new Category(categoryName));
+            Category category = new Category(categoryName);
+            categories.add(category);
         }
         categories = categories.subList(config.getCategoriesStartWithIndex(), categories.size());
         return categories;
@@ -88,9 +91,9 @@ public class ProductJsoupS3RuExtractor implements IProductExtractor {
 
     private String renameToNullIfDefaultPictureName(String url) {
         String filename = Paths.get(url).getFileName().toString();
-        if (config.getDefaultPictureFileName().equals(filename)){
+        if (config.getDefaultPictureFileName().equals(filename)) {
             return null;
-        }else {
+        } else {
             return url;
         }
     }
