@@ -1,6 +1,7 @@
 package by.attrade.domain;
 
 import by.attrade.interceptor.CategoryIndexingInterceptor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -15,6 +16,9 @@ import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.ngram.NGramFilterFactory;
 import org.apache.lucene.analysis.standard.StandardFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.hibernate.annotations.Formula;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.AnalyzerDef;
@@ -58,6 +62,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Indexed(interceptor = CategoryIndexingInterceptor.class)
+@JsonIgnoreProperties(value = {"products", "properties"})
 public class Category implements Serializable {
     public static final long serialVersionUID = 1L;
     @Id
@@ -86,11 +91,16 @@ public class Category implements Serializable {
     @JsonView(Views.Path.class)
     private String path;
 
-    @OneToOne
-    private Picture picture;
+    @Column(length = 150)
+    @Length(max = 150)
+    private String picture;
 
     private Integer priority;
     private boolean invisible;
+
+    @JsonView(Views.ProductCount.class)
+    @Formula("(select count(*) from Product p where p.category_id = id and p.invisible = 0)")
+    private Long productCount;
 
     @OneToMany(mappedBy = "category")
     @IndexedEmbedded(includePaths = { "name", "code"})

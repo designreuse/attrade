@@ -8,7 +8,6 @@
                             <a :href="link" class="btn bg-transparent border-0 rounded-0 btn-block px-0 py-0"
                                style="height: 100%">
                                 <picture-upload :pathPic="picture" :marker="marker" :alt="alt" :pictureClass="pictureClass" :pictureStyle="pictureStyle"/>
-                                <!--<img :src="picture" class="card-img">-->
                                 <div class="text-left pl-2">
                                     <small>код:&nbsp;{{product.code}}</small>
                                 </div>
@@ -63,15 +62,6 @@
 
                 <div class="row">
                     <div class="col text-center">
-                        <a href="#" class="btn btn-sm btn-primary shadow-sm">
-                            <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-                            &nbsp;В&nbsp;корзину
-                        </a>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col text-center pb-3">
                         <div class="btn-group btn-group-sm" role="group">
                             <button type="button" class="btn btn-sm btn-light border shadow-none" @click.stop="decrement()">
                                 <i class="fa fa-minus fa-xs" aria-hidden="true"></i>
@@ -87,6 +77,15 @@
                                 <i class="fa fa-plus fa-xs" aria-hidden="true"></i>
                             </button>
                         </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col text-center pb-3">
+                        <a href="#" class="btn btn-sm btn-primary shadow-sm">
+                            <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                            &nbsp;В&nbsp;корзину
+                        </a>
                     </div>
                 </div>
 
@@ -114,7 +113,7 @@
             return {
                 unit: this.product.unit,
                 count: 1,
-                marker: "-small",
+                marker: "-icon",
                 pictureClass: "img-fluid",
                 pictureStyle: "max-width: 100%; height: auto;"
             }

@@ -49,8 +49,8 @@
 
     <#include "../navbar/navbar.ftl">
     <#include "../navbar/navbar1.ftl">
-    <#include "../navbar/navbar2.ftl">
-    <#include "../navbar/navbar3.ftl">
+    <#--<#include "../navbar/navbar2.ftl">-->
+    <div id="categoryHierarchy"></div>
 
     <#nested>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"

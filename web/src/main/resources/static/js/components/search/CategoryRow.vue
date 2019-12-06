@@ -5,7 +5,7 @@
                 &emsp;
                 <i class="fas fa-angle-right text-muted"></i>
                 &emsp;
-                {{ category.name }}
+                {{ category.name }}&emsp;&emsp;<small class="text-muted">товаров:&nbsp;<span class="badge badge-white">{{category.productCount}}</span></small>
             </div>
         </a>
     </div>

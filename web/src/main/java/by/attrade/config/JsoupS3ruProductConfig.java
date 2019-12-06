@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "jsoup.s3.ru.product")
 public class JsoupS3ruProductConfig {
     private String url;
+    private String defaultPictureFileName;
     private String nameParent;
     private String nameChild;
     private String codeParent;

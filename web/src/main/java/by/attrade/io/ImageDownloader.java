@@ -10,7 +10,7 @@ import java.net.URL;
 @Component
 public class ImageDownloader {
 
-    public void download(String urlName, String pathName) throws IOException {
+    public void downloadByUrl(String urlName, String pathName) throws IOException {
         FileUtils.copyURLToFile(
                 new URL(urlName),
                 new File(pathName));

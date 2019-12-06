@@ -80,12 +80,15 @@ logging:
 
 
 jsoup:
-  userAgent: Chrome/4.0.249.0 Safari/532.5
+  userAgent: Mozilla
+#   Chrome/4.0.249.0 Safari/532.5
   referrer: http://www.google.com
+  timeout: 5000
   s3:
     ru:
       product:
         url: http://www.s3.ru
+        defaultPictureFileName: no-photo.png
         nameParent: .catalog-element
         nameChild: .header
         codeParent: table#catalog_element
@@ -187,7 +190,7 @@ messages-source:
 
 picture:
   media:
-    init: true
+    init: false
     removeMarkers: true
     removeNotSynchronized: true
     compressMain: false
@@ -196,13 +199,13 @@ picture:
     replaceExistingMedia: false
     createMarkerPictures: true
     replaceExistingMarker: true
-    compressMarker: true
-    compressMarkerQuality: 100
     unknownAutoImageType: jpeg
+    defaultPictureFileName: default.png
 
     markerNames:
       - -icon
       - -small
+
     markerWidths:
       - 150
       - 250
@@ -212,3 +215,10 @@ picture:
       - '(max-width: 540px)'
     compressionWidthPercents:
       - 65
+
+
+scheduled:
+  CategoryHierarchyService:
+    build:
+      fixedDelayInMilliseconds: 60000
+      initialDelayInMilliseconds: 60000

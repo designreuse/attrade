@@ -11,12 +11,13 @@ public final class Views {
     public interface Path{}
     public interface Price{}
     public interface Category{}
+    public interface ProductCount{}
     public interface QuantityInStock{}
     public interface QuantitySupplier{}
     public interface Unit{}
     public interface Text{}
     public interface Tag{}
     public interface CreationLDT{}
-    public interface IdNamePathIcon extends Id,Name,Path,Icon {}
+    public interface IdNamePathIconProductCount extends Id,Name,Path,Icon, ProductCount {}
     public interface IdNameCodePathPicturePriceCategoryQuantityInStockQuantitySupplierUnit extends Id, Name, Code, Path, Picture, Price, Category, QuantityInStock, QuantitySupplier, Unit {}
 }

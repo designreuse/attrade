@@ -1,6 +1,5 @@
 package by.attrade.service;
 
-import by.attrade.config.ServerPathConfig;
 import by.attrade.domain.Category;
 import by.attrade.domain.ExtractorError;
 import by.attrade.domain.ExtractorErrorUrl;
@@ -8,30 +7,24 @@ import by.attrade.domain.Picture;
 import by.attrade.domain.Product;
 import by.attrade.domain.ProductProperty;
 import by.attrade.domain.Property;
-import by.attrade.io.ImageDownloader;
 import by.attrade.service.jsoup.IProductExtractor;
 import by.attrade.service.jsoup.JsoupDocService;
 import by.attrade.service.jsoup.extractor.ExtractorErrorService;
 import by.attrade.service.jsoup.extractor.ExtractorErrorUrlService;
 import by.attrade.service.productPathExtractor.Utf8OfNameProductPathExtractorService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
 import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -54,12 +47,6 @@ public class ProductExtractorService {
 
     @Autowired
     private PictureService pictureService;
-
-    @Autowired
-    private ImageDownloader imageDownloader;
-
-    @Autowired
-    private ServerPathConfig serverPathConfig;
 
     @Autowired
     private JsoupDocService jsoupDocService;
@@ -85,6 +72,7 @@ public class ProductExtractorService {
         Set<String> all = new HashSet<>();
         Set<String> selected = new HashSet<>();
         all.add(domain);
+        selected.addAll(productService.getUrls());
         List<ExtractorErrorUrl> errorUrls = new LinkedList<>();
         while (!all.isEmpty()) {
             String url = all.iterator().next();
@@ -93,20 +81,26 @@ public class ProductExtractorService {
             Document doc = null;
             try {
                 doc = jsoupDocService.getJsoupDoc(url);
+            } catch (HttpStatusException e) {
+                errorUrls.add(new ExtractorErrorUrl(url));
+                continue;
+            } catch (Exception e) {
+                continue;
+            }
+            try {
                 saveProductIfNotExistsByCode(extractor, doc, url, compressions);
             } catch (HttpStatusException e) {
                 errorUrls.add(new ExtractorErrorUrl(url));
             } catch (Exception e) {
-                log.info(e.getMessage(), url);
             }
-            extractUrls(doc, all, selected);
+            extractUrls(doc, all, selected, extractor);
         }
         return errorUrls;
     }
 
-    private void extractUrls(Document doc, Set<String> all, Set<String> selected) {
+    private void extractUrls(Document doc, Set<String> all, Set<String> selected, IProductExtractor extractor) {
         Elements links = doc.select(HREF_CSS_QUERY);
-        links.stream().map(e -> e.absUrl(HREF_CSS_ATTRIBUTE)).filter(e -> !all.contains(e) && !selected.contains(e)).forEach(all::add);
+        links.stream().map(e -> e.absUrl(HREF_CSS_ATTRIBUTE)).filter(e -> !all.contains(e) && !selected.contains(e) && e.contains(extractor.getUrl())).forEach(all::add);
     }
 
     public ExtractorError saveProductsIfNotExistsByCodeAndSaveErrors(IProductExtractor extractor, List<String> urls, double[] compressions) {
@@ -193,30 +187,12 @@ public class ProductExtractorService {
         List<Picture> pictures = new ArrayList<>();
         int priority = 0;
         for (String imageUrl : imagesUrl) {
-            String name = getFileName(imageUrl);
-            name = changePictureNameIfWrongType(name);
-            String pathName = serverPathConfig.getAbsolute() + serverPathConfig.getPicture() + File.separator + name;
-            imageDownloader.download(imageUrl, pathName);
-            Path source = Paths.get(pathName);
-            boolean noError = pictureMediaService.saveAllMediaAndMarkers(source, compressions);
-            if (noError) {
+            String name = pictureMediaService.savePicture(imageUrl, compressions);
+            if (name != null) {
                 pictures.add(new Picture(name, imageUrl, priority++));
             }
-
         }
         return pictures;
-    }
-
-    private String changePictureNameIfWrongType(String name) {
-        Path path = pictureMediaService.renameUnknownImageTypeToDefault(Paths.get(name));
-        return path.toString();
-    }
-
-    private String getFileName(String imageUrl) {
-
-        String extension = FilenameUtils.getExtension(imageUrl);
-        String uuid = UUID.randomUUID().toString();
-        return uuid + "." + extension;
     }
 
     private String getAndRemoveDescription(List<Property> properties, List<String> values) {

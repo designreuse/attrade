@@ -26,7 +26,7 @@ public class SearchController {
     private ProductSearchService productSearchService;
 
     @GetMapping("category")
-    @JsonView(Views.IdNamePathIcon.class)
+    @JsonView(Views.IdNamePathIconProductCount.class)
     public List<Category> searchCategory(
             @RequestParam String text,
             @PageableDefault(size = 10) Pageable pageable

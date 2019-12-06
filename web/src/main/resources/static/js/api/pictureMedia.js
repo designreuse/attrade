@@ -1,6 +1,6 @@
 import Vue from "vue";
-const messages = Vue.resource('/pictureMedia/{id}')
+const pictureMedia = Vue.resource('/pictureMedia/{id}')
 
 export default {
-    get: () => messages.get()
+    get: () => pictureMedia.get()
 }

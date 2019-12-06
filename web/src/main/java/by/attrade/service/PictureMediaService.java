@@ -3,9 +3,11 @@ package by.attrade.service;
 import by.attrade.config.PictureMediaConfig;
 import by.attrade.config.ServerPathConfig;
 import by.attrade.domain.dto.PictureMediaDTO;
+import by.attrade.io.ImageDownloader;
 import by.attrade.service.exception.ImageWithoutContentException;
 import by.attrade.service.imageResizer.ImageResizerService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +42,9 @@ public class PictureMediaService {
 
     @Autowired
     private ImageService imageService;
+
+    @Autowired
+    private ImageDownloader imageDownloader;
 
 
     @PostConstruct
@@ -75,10 +81,6 @@ public class PictureMediaService {
             log.info("Create marker pictures");
             createMarkerPictures(pictureMediaConfig.isReplaceExistingMarker());
         }
-        if (pictureMediaConfig.isCompressMarker()) {
-            log.info("Compress marker pictures");
-            compressMarker(pictureMediaConfig.getCompressMarkerQuality());
-        }
     }
 
     private void compressMain(double compressQuality) {
@@ -89,17 +91,6 @@ public class PictureMediaService {
                     .forEach(path -> compress(path, compressQuality));
         } catch (IOException e) {
             log.error("Cannot walk to compress main pictures.", e);
-        }
-    }
-
-    private void compressMarker(double compressQuality) {
-        try {
-            Files
-                    .walk(Paths.get(getMainPath()))
-                    .filter(path -> Files.isRegularFile(path) && isMarkerPicture(path))
-                    .forEach(path -> compress(path, compressQuality));
-        } catch (IOException e) {
-            log.error("Cannot walk to compress marker pictures.", e);
         }
     }
 
@@ -121,7 +112,7 @@ public class PictureMediaService {
         compress(source, MAX_COMPRESSION_QUALITY);
         boolean resized = createAllMediaPictures(source, compressions, true);
         if (resized) {
-            createAllMediaMarkerPictures(source, true);
+            createAllMarkerPictures(source, true);
         } else {
             return false;
         }
@@ -140,6 +131,7 @@ public class PictureMediaService {
     }
 
     private void createMarkerPictures(boolean replaceExisting) {
+
         try {
             Files
                     .walk(Paths.get(getMainPath()))
@@ -155,9 +147,9 @@ public class PictureMediaService {
             Files
                     .walk(Paths.get(getMainPath()))
                     .filter(path -> Files.isRegularFile(path) && imageService.isPictureUnknownType(path))
-                    .forEach(this::renameUnknownImageTypeToDefault);
+                    .forEach(this::renameIfUnknownImageTypeToDefault);
         } catch (IOException e) {
-            log.error("Cannot walk to renameUnknownImageTypeToDefault wrong type pictures.", e);
+            log.error("Cannot walk to renameIfUnknownImageTypeToDefault wrong type pictures.", e);
         }
     }
 
@@ -260,8 +252,65 @@ public class PictureMediaService {
         return compressionPercent;
     }
 
-    public Path renameUnknownImageTypeToDefault(Path source) {
-        return imageService.renameImageTypeTo(source, pictureMediaConfig.getUnknownAutoImageType());
+    public Path renameIfUnknownImageTypeToDefault(Path source) {
+        if(imageService.isPictureUnknownType(source)){
+            return imageService.renameImageTypeTo(source, pictureMediaConfig.getUnknownAutoImageType());
+        }
+        return source;
+    }
+    public String savePicture(String imageUrl, double[] compressions) {
+        if (imageUrl == null){
+            return pictureMediaConfig.getDefaultPictureFileName();
+        }
+        Path target = getPicturePath(imageUrl);
+        if (!savePicture(imageUrl, target, compressions)) {
+            return null;
+        }
+        return target.getFileName().toString();
+    }
+    public String saveDefaultPicture(String imageUrl, double [] compressions){
+        String pictureFileName = getPictureFileName(pictureMediaConfig.getDefaultPictureFileName());
+        Path target = Paths.get(pictureFileName);
+        if (!savePicture(imageUrl, target, compressions)) {
+            return null;
+        }
+        return target.getFileName().toString();
+    }
+
+    private boolean savePicture(String imageUrl, Path target, double[] compressions) {
+        try {
+            imageDownloader.downloadByUrl(imageUrl, target.toString());
+        } catch (IOException e) {
+            return false;
+        }
+        boolean noError = saveAllMediaAndMarkers(target, compressions);
+        if (!noError){
+            deletePath(target);
+            return false;
+        }
+        return true;
+    }
+
+    private Path getPicturePath(String imageUrl) {
+        String fileName = getFileName(imageUrl);
+        fileName = changeImageFileNameIfWrongType(fileName);
+        String pictureFileName = getPictureFileName(fileName);
+        return Paths.get(pictureFileName);
+    }
+
+    private String getPictureFileName(String fileName) {
+        return serverPathConfig.getAbsolute() + serverPathConfig.getPicture() + File.separator + fileName;
+    }
+
+    private String changeImageFileNameIfWrongType(String name) {
+        Path path = renameIfUnknownImageTypeToDefault(Paths.get(name));
+        return path.toString();
+    }
+
+    private String getFileName(String imageUrl) {
+        String extension = FilenameUtils.getExtension(imageUrl);
+        String uuid = UUID.randomUUID().toString();
+        return uuid + "." + extension;
     }
 
     private void createMarkerPictures(Path source, boolean replaceExisting) {
@@ -315,7 +364,7 @@ public class PictureMediaService {
         return source.resolveSibling(split[0] + marker + "." + split[1]);
     }
 
-    public void createAllMediaMarkerPictures(Path source, boolean replaceExisting) {
+    public void createAllMarkerPictures(Path source, boolean replaceExisting) {
         createMarkerPictures(source, replaceExisting);
         for (PictureMediaDTO p : pictureMediaConfig.getPictureMedias()) {
             Path target = getMediaPath(source, p);
@@ -335,7 +384,7 @@ public class PictureMediaService {
             return false;
         }
         if (imageService.isPictureUnknownType(source)) {
-            source = renameUnknownImageTypeToDefault(source);
+            source = renameIfUnknownImageTypeToDefault(source);
         }
         List<PictureMediaDTO> pictureMedias = pictureMediaConfig.getPictureMedias();
         int size = pictureMedias.size();

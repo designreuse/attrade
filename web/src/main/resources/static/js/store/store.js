@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import messagesApi from 'api/messages'
 import pictureMediaApi from 'api/pictureMedia'
+import categoryHierarchyApi from 'api/categoryHierarchy'
 
 Vue.use(Vuex)
 
@@ -10,6 +11,9 @@ export default new Vuex.Store(
         state: {
             messages: [],
             pictureMedia: [],
+            categoryChildMap: null,
+            categoryRootCategories: null,
+            categoryProductCountMap: null,
         },
         getters: {
             sortedMessages: state => state.messages.sort((a, b) => -(a.id - b.id))
@@ -44,6 +48,13 @@ export default new Vuex.Store(
             getPictureMediaMutation(state, data){
                 state.pictureMedia = data
             },
+            getCategoryChildMapMutation(state, data){
+                state.categoryChildMap = data
+            },
+            getCategoryRootCategoriesMutation(state, data){
+                state.categoryRootCategories = data
+            },
+
         },
         actions: {
             async addMessageAction({commit, state}, message){
@@ -81,6 +92,21 @@ export default new Vuex.Store(
                     commit('getPictureMediaMutation', data)
                 }
             },
+            async getCategoryChildMapAction({commit}){
+                const result = await categoryHierarchyApi.getChildMap()
+                const data = await result.data
+                if (result.ok) {
+                    commit('getCategoryChildMapMutation', data)
+                }
+            },
+            async getCategoryRootCategoriesAction({commit}){
+                const result = await categoryHierarchyApi.getRootCategories()
+                const data = await result.data
+                if (result.ok) {
+                    commit('getCategoryRootCategoriesMutation', data)
+                }
+            },
+
         }
     }
 )

@@ -173,6 +173,8 @@ public class Product implements Serializable {
     private String madeCountry;
 
     @JsonView(Views.Picture.class)
+    @Column(length = 400)
+    @Length(max = 400)
     private String picture;
 
 

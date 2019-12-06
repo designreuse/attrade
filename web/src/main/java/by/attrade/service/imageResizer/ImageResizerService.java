@@ -43,6 +43,7 @@ public class ImageResizerService implements IImageResizer {
      * @throws IOException
      */
     @Override
+    //TODO - switch and adjust separately GIF image
     public void resize(String inputImagePath, String outputImagePath, int width, int height)
             throws IOException, ImageWithoutContentException {
         // reads input image

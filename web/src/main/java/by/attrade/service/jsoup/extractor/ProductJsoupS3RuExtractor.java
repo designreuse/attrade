@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,9 +79,20 @@ public class ProductJsoupS3RuExtractor implements IProductExtractor {
         List<String> urls = new ArrayList<>();
         Elements elems = doc.select(config.getImageParent()).select(config.getImageChild());
         for (Element e : elems) {
-            urls.add(e.absUrl("src"));
+            String url = e.absUrl("src");
+            url = renameToNullIfDefaultPictureName(url);
+            urls.add(url);
         }
         return urls;
+    }
+
+    private String renameToNullIfDefaultPictureName(String url) {
+        String filename = Paths.get(url).getFileName().toString();
+        if (config.getDefaultPictureFileName().equals(filename)){
+            return null;
+        }else {
+            return url;
+        }
     }
 
     @Override

@@ -12,4 +12,5 @@ import org.springframework.context.annotation.Configuration;
 public class JsoupConfig {
     private String userAgent;
     private String referrer;
+    private int timeout;
 }

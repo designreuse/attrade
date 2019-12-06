@@ -8,9 +8,10 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbar1">
-        <a class="navbar-brand" href="/">
-            <img src="/static/picture/logo/logo.png" alt="..">
-        </a>
+        <div class="text-danger pl-3 pr-5 mt-1">
+            <a href="/" class="btn btn-transparent text-danger border-0 shadow-none">
+                <h1>ATTRADE</h1></a>
+        </div>
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
         <div id="search"></div>
 

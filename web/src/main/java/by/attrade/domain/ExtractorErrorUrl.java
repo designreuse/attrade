@@ -28,7 +28,7 @@ public class ExtractorErrorUrl implements Serializable {
     @Id
     private Long id;
 
-    @Column(length = 255)
+    @Column(length = 500)
     @NonNull
     private String url;
 

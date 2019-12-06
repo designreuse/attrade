@@ -1,8 +1,12 @@
 package by.attrade.service;
 
 import by.attrade.domain.Category;
+import by.attrade.domain.Product;
 import by.attrade.repos.CategoryRepo;
+import by.attrade.service.categoryPathExtractor.ICategoryPathExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,20 +16,25 @@ import java.util.Optional;
 public class CategoryService {
     @Autowired
     private CategoryRepo categoryRepo;
-    public Category save(Category category){
+
+    public Category save(Category category) {
         return categoryRepo.save(category);
     }
-    public Optional<Category> findByName(String name){return categoryRepo.findByName(name);}
-    public Category saveShaneOfCategory(List<Category> categories){
+
+    public Optional<Category> findByName(String name) {
+        return categoryRepo.findByName(name);
+    }
+
+    public Category saveShaneOfCategory(List<Category> categories) {
         Category last = null;
-        for (Category c: categories){
+        for (Category c : categories) {
             Optional<Category> optional = findByName(c.getName());
-            if (optional.isPresent()){
+            if (optional.isPresent()) {
                 last = optional.get();
-            }else {
-                if (last == null){
+            } else {
+                if (last == null) {
                     c.setParent(0L);
-                }else {
+                } else {
                     c.setParent(last.getId());
                 }
                 last = save(c);
@@ -33,4 +42,36 @@ public class CategoryService {
         }
         return last;
     }
+
+    public void updatePaths(ICategoryPathExtractor extractor, int sizeBunch) throws Exception {
+        long count = categoryRepo.count();
+        long remainder = count % sizeBunch;
+        int countPages;
+        if (remainder > 0) {
+            countPages = (int) (count / sizeBunch) + 1;
+        } else {
+            countPages = (int) (count / sizeBunch);
+        }
+        for (int i = 0; i < countPages; i++) {
+            Page<Category> products = getCategories(i, sizeBunch);
+            List<Category> content = products.getContent();
+            for (Category category : content) {
+                String path = extractor.getPath(category);
+                category.setPath(path);
+            }
+            saveAll(content);
+        }
+    }
+
+    public Page<Category> getCategories(int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size);
+        return categoryRepo.findAll(pageable);
+    }
+    public List<Category> saveAll(List<Category> categories) {
+        return categoryRepo.saveAll(categories);
+    }
+    public List<Category> findAll(){
+        return categoryRepo.findAll();
+    }
+
 }

@@ -47,4 +47,7 @@ public class ProductService {
             saveAll(content);
         }
     }
+    public List<String> getUrls(){
+        return productRepo.getUrls();
+    }
 }
