@@ -10,16 +10,15 @@ uploadRoot = "/upload/picture"
 <#--path1281 = "/1281"&lt;#&ndash;@media (min-width:1281px) { /* hi-res laptops and desktops */ }&ndash;&gt;-->
 
 <#--Bootstrap grid sm md lg xl-->
-path540 = "/540"
+path576 = "/576"
 <#--path720 = "/720"-->
 <#--path992 = "/992"-->
 <#--path1140 = "/1140"-->
 
-path541 = "/541"
 />
 <#macro static path alt class style>
 <picture>
-    <source srcset="${staticRoot}${path540}${path}" media="(max-width: 540px)">
+    <source srcset="${staticRoot}${path576}${path}" media="(max-width: 576px)">
 
     <source srcset="${staticRoot}${path}">
     <img srcset="${staticRoot}${path}" alt="${alt}" class="${class}" style="${style}">
@@ -28,7 +27,7 @@ path541 = "/541"
 
 <#macro upload path alt class style>
 <picture>
-    <source srcset="${uploadRoot}${path540}${path}" media="(max-width: 540px)">
+    <source srcset="${uploadRoot}${path576}${path}" media="(max-width: 576px)">
 
     <source srcset="${uploadRoot}${path}">
     <img srcset="${uploadRoot}${path}" alt="${alt}" class="${class}" style="${style}">

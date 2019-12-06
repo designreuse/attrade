@@ -1,5 +1,6 @@
 package by.attrade.service;
 
+import by.attrade.util.Pair;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -76,6 +77,13 @@ public class ImageService {
         File inputFile = new File(inputImagePath);
         BufferedImage inputImage = getBufferedImage(inputFile);
         return inputImage.getWidth();
+    }
+    public Pair<Integer, Integer> getWidthHeight(String inputImagePath) throws IOException {
+        File inputFile = new File(inputImagePath);
+        BufferedImage inputImage = getBufferedImage(inputFile);
+        int width = inputImage.getWidth();
+        int height = inputImage.getHeight();
+        return new Pair<>(width, height);
     }
     public int[][] getRgbData(String inputImagePath) throws IOException {
         File inputFile = new File(inputImagePath);

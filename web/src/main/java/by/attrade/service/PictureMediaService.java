@@ -6,6 +6,7 @@ import by.attrade.domain.dto.PictureMediaDTO;
 import by.attrade.io.ImageDownloader;
 import by.attrade.service.exception.ImageWithoutContentException;
 import by.attrade.service.imageResizer.ImageResizerService;
+import by.attrade.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -253,13 +254,14 @@ public class PictureMediaService {
     }
 
     public Path renameIfUnknownImageTypeToDefault(Path source) {
-        if(imageService.isPictureUnknownType(source)){
+        if (imageService.isPictureUnknownType(source)) {
             return imageService.renameImageTypeTo(source, pictureMediaConfig.getUnknownAutoImageType());
         }
         return source;
     }
+
     public String savePicture(String imageUrl, double[] compressions) {
-        if (imageUrl == null){
+        if (imageUrl == null) {
             return pictureMediaConfig.getDefaultPictureFileName();
         }
         Path target = getPicturePath(imageUrl);
@@ -268,7 +270,8 @@ public class PictureMediaService {
         }
         return target.getFileName().toString();
     }
-    public String saveDefaultPicture(String imageUrl, double [] compressions){
+
+    public String saveDefaultPicture(String imageUrl, double[] compressions) {
         String pictureFileName = getPictureFileName(pictureMediaConfig.getDefaultPictureFileName());
         Path target = Paths.get(pictureFileName);
         if (!savePicture(imageUrl, target, compressions)) {
@@ -284,7 +287,7 @@ public class PictureMediaService {
             return false;
         }
         boolean noError = saveAllMediaAndMarkers(target, compressions);
-        if (!noError){
+        if (!noError) {
             deletePath(target);
             return false;
         }
@@ -318,11 +321,14 @@ public class PictureMediaService {
         for (int i = 0; i < size; i++) {
             Path target = getMarkerPath(source, i);
             boolean exists = Files.exists(target);
-            if (exists && replaceExisting){
+            if (exists && replaceExisting) {
                 deletePath(target);
             }
             if (!exists || replaceExisting) {
-                createMarkerPicture(source, target, i);
+                Pair<Integer, Integer> widthHeight = getWidthHeight(source, i);
+                if (widthHeight != null) {
+                    resizePicture(source, target, widthHeight.getFirst(), widthHeight.getSecond());
+                }
             }
         }
     }
@@ -331,13 +337,25 @@ public class PictureMediaService {
         return pictureMediaConfig.getIndexMarker(source) != -1;
     }
 
-    private void createMarkerPicture(Path source, Path target, int i) {
-        double compression = getCompression(source, i);
-        resizePicture(source, target, compression);
+    private Pair<Integer, Integer> getWidthHeight(Path source, int i) {
+        Integer markerWidth = getMarkerWidth(source, i);
+        Pair<Integer, Integer> widthHeight;
+        try {
+            widthHeight = imageService.getWidthHeight(source.toString());
+        } catch (IOException e) {
+            return null;
+        }
+        Integer width = widthHeight.getFirst();
+        if (markerWidth >= width) {
+            return widthHeight;
+        } else {
+            int markerHeight = (int) Math.round(markerWidth / ((double) width) * widthHeight.getSecond());
+            return new Pair<>(markerWidth, markerHeight);
+        }
     }
 
     private double getCompression(Path source, int i) {
-        Integer markerWidth = getMarkerWidth(i);
+        Integer markerWidth = getMarkerWidth(source, i);
         int width;
         try {
             width = imageService.getWidth(source.toString());
@@ -353,14 +371,22 @@ public class PictureMediaService {
         return compression;
     }
 
-    private Integer getMarkerWidth(int i) {
-        return pictureMediaConfig.getMarkerWidths().get(i);
+    private Integer getMarkerWidth(Path source, int i) {
+        String key;
+        Path parent = source.getParent();
+        String markerName = pictureMediaConfig.getMarkerNames().get(i);
+        if (parent.toString().equals(getMainPath())) {
+            key = markerName;
+        } else {
+            key = markerName + parent.getFileName();
+        }
+        return pictureMediaConfig.getMarkerWidths().get(key);
     }
 
-    private Path getMarkerPath(Path source, int i) {
+    private Path getMarkerPath(Path source, int iMarker) {
         String s = source.getFileName().toString();
         String[] split = s.split("\\.");
-        String marker = pictureMediaConfig.getMarkerNames().get(i);
+        String marker = pictureMediaConfig.getMarkerNames().get(iMarker);
         return source.resolveSibling(split[0] + marker + "." + split[1]);
     }
 

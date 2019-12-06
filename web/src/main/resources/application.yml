@@ -207,14 +207,16 @@ picture:
       - -small
 
     markerWidths:
-      - 150
-      - 250
+      --icon: 110
+      --icon576: 60
+      --small: 250
+      --small576: 110
     paths:
-      - /540
+      - /576
     medias:
-      - '(max-width: 540px)'
+      - '(max-width: 576px)'
     compressionWidthPercents:
-      - 65
+      - 50
 
 
 scheduled:

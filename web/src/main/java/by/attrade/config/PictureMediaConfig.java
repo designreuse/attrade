@@ -8,7 +8,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -27,7 +29,7 @@ public class PictureMediaConfig {
     private boolean replaceExistingMarker;
     private String defaultPictureFileName;
     private List<String> markerNames = new ArrayList<>();
-    private List<Integer> markerWidths = new ArrayList<>();
+    private Map<String, Integer> markerWidths = new HashMap<>();
     private List<String> paths = new ArrayList<>();
     private List<String> medias = new ArrayList<>();
     private List<Double> compressionWidthPercents = new ArrayList<>();

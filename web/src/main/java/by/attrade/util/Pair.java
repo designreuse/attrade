@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 @ToString
 @EqualsAndHashCode
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor()
 public final class Pair<S, T> {
 
     private final
