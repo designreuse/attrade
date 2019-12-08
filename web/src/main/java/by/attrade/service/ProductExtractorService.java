@@ -1,5 +1,6 @@
 package by.attrade.service;
 
+import by.attrade.config.ServerLanguageConfig;
 import by.attrade.domain.Category;
 import by.attrade.domain.ExtractorError;
 import by.attrade.domain.ExtractorErrorUrl;
@@ -67,15 +68,18 @@ public class ProductExtractorService {
     @Autowired
     private CategoryPathByNameAdjusterService categoryPathAdjusterService;
 
-    public ExtractorError saveProductsIfNotExistsByCodeAndSaveErrors(IProductExtractor extractor, String domain, double[] compressions) {
-        List<ExtractorErrorUrl> errorUrls = saveProductsIfNotExistsByCode(extractor, domain, compressions);
+    @Autowired
+    private ServerLanguageConfig serverLanguageConfig;
+
+    public ExtractorError saveProductsIfNotExistsByCodeAndSaveErrors(IProductExtractor extractor, double[] compressions) {
+        List<ExtractorErrorUrl> errorUrls = saveProductsIfNotExistsByCode(extractor, compressions);
         return saveErrorUrls(errorUrls);
     }
 
-    public List<ExtractorErrorUrl> saveProductsIfNotExistsByCode(IProductExtractor extractor, String domain, double[] compressions) {
+    public List<ExtractorErrorUrl> saveProductsIfNotExistsByCode(IProductExtractor extractor, double[] compressions) {
         Set<String> all = new HashSet<>();
         Set<String> selected = new HashSet<>();
-        all.add(domain);
+        all.add(extractor.getUrl());
         selected.addAll(productService.getUrls());
         List<ExtractorErrorUrl> errorUrls = new LinkedList<>();
         while (!all.isEmpty()) {
@@ -104,7 +108,7 @@ public class ProductExtractorService {
 
     private void extractUrls(Document doc, Set<String> all, Set<String> selected, IProductExtractor extractor) {
         Elements links = doc.select(HREF_CSS_QUERY);
-        links.stream().map(e -> e.absUrl(HREF_CSS_ATTRIBUTE)).filter(e -> !all.contains(e) && !selected.contains(e) && e.contains(extractor.getUrl())).forEach(all::add);
+        links.stream().map(e -> e.absUrl(HREF_CSS_ATTRIBUTE)).filter(e -> !selected.contains(e) && e.contains(extractor.getUrl())).forEach(all::add);
     }
 
     public ExtractorError saveProductsIfNotExistsByCodeAndSaveErrors(IProductExtractor extractor, List<String> urls, double[] compressions) {
@@ -143,6 +147,9 @@ public class ProductExtractorService {
 
     public void saveProductIfNotExistsByCode(IProductExtractor extractor, String url, double[] compressions) throws Exception {
         Document doc = jsoupDocService.getJsoupDoc(url);
+        if (!extractor.isContainProduct(doc)) {
+            return;
+        }
         Product product = extractor.getProduct(doc);
         if (productService.existsByCode(product)) {
             return;
@@ -152,7 +159,8 @@ public class ProductExtractorService {
 
     private void saveProduct(IProductExtractor extractor, Document doc, String url, double[] compressions) throws Exception {
         List<Category> categories = extractor.getCategories(doc);
-        categoryPathAdjusterService.adjustPaths(categories);
+        String language = extractor.getLocale().getLanguage();
+        categoryPathAdjusterService.adjustPaths(categories, language,serverLanguageConfig.getLanguage());
         List<String> imagesUrl = extractor.getImagesUrl(doc);
         List<Property> properties = extractor.getProperties(doc);
         List<String> values = extractor.getPropertiesValue(doc);
@@ -161,7 +169,10 @@ public class ProductExtractorService {
         List<Picture> pictures = downloadPictures(imagesUrl, compressions);
         Category category = categoryService.saveShaneOfCategory(categories);
         pictures = pictureService.saveAll(pictures);
-        String description = getAndRemoveDescription(properties, values);
+        String description = product.getDescription();
+        if (description == null) {
+            description = getAndRemoveDescription(properties, values);
+        }
         properties = propertyService.saveAll(properties, category);
         String path = productPathExtractor.getPath(product);
 

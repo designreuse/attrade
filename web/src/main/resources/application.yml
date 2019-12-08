@@ -42,6 +42,7 @@ spring:
 
 # server path
 server:
+  language: en
   path:
     absolute: d:\java\projects\attrade-core
     upload: \upload
@@ -79,31 +80,6 @@ logging:
         service: DEBUG
 
 
-jsoup:
-  userAgent: Mozilla
-#   Chrome/4.0.249.0 Safari/532.5
-  referrer: http://www.google.com
-  timeout: 5000
-  s3:
-    ru:
-      product:
-        url: http://www.s3.ru
-        defaultPictureFileName: no-photo.png
-        nameParent: .catalog-element
-        nameChild: .header
-        codeParent: table#catalog_element
-        codeChild: .gray
-        codeIndexElement: 0
-        supplierCodeParent: table#catalog_element
-        supplierCodeChild: .gray
-        supplierCodeIndexElement: 1
-        categoriesParent: .breadcrumb-navigation
-        categoriesChild: li
-        categoriesStartWithIndex: 2
-        filtersParent: .table-hover
-        filtersChild: td
-        imageParent: .big_image
-        imageChild: img
 
 #TODO
 product:
@@ -191,14 +167,11 @@ messages-source:
 picture:
   media:
     init: false
-    removeMarkers: true
     removeNotSynchronized: true
     compressMain: false
     compressMainQuality: 100
-    copyMediaPictures: false
-    replaceExistingMedia: false
+    createMediaPictures: true
     createMarkerPictures: true
-    replaceExistingMarker: true
     unknownAutoImageType: jpeg
     defaultPictureFileName: default.png
 
@@ -215,9 +188,10 @@ picture:
       - /576
     medias:
       - '(max-width: 576px)'
-    compressionWidthPercents:
+    compressionPercents:
       - 50
-
+    compressionWidths:
+      - 250
 
 scheduled:
   CategoryHierarchyService:

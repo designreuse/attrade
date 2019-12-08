@@ -1,0 +1,108 @@
+jsoup:
+  userAgent: Mozilla
+#   Chrome/4.0.249.0 Safari/532.5
+  referrer: http://www.google.com
+  timeout: 5000
+  s3:
+    ru:
+      product:
+        url: http://www.s3.ru/ru
+        locale: ru
+        defaultPictureFileName: no-photo.png
+        nameParent: .catalog-element
+        nameChild: .header
+        codeParent: table#catalog_element
+        codeChild: .gray
+        codeIndexElement: 0
+        categoriesParent: .breadcrumb-navigation
+        categoriesChild: li
+        categoriesStartWithIndex: 2
+        propertiesParent: .table-hover
+        propertiesChild: td
+        imageParent: .big_image
+        imageChild: img
+
+  texenergo:
+      ru:
+        product:
+          url: http://www.texenergo.ru
+          locale: ru
+          defaultPictureFileName: no-image.jpg
+          nameParent: detail__head-title
+          nameChild: h1.headline_product-category
+          nameIndexElement: 0
+          codeParent: detail__head-params
+          codeChild: div.detail__head-param-value
+          codeIndexElement: 0
+          vendorCodeParent: detail__head-params
+          vendorCodeChild: div.detail__head-param-value
+          vendorCodeIndexElement: 1
+          categoriesParent: b-crumbs row
+          categoriesChild: li
+          categoriesStartWithIndex: 2
+
+          propertiesParent: detail__menu-block-inner
+          propertiesChild: div.detail__menu-title
+          propertiesDivContains: 'Характеристики:'
+          propertiesClass: div.detail__menu-name
+          propertiesValueClass: div.detail__menu-value
+
+          countInPackParent: detail__menu-block
+          countInPackChild: div.detail__menu-block-inner
+          countInPackDivContains: Индивидуальная упаковка
+          countInPackDivContains1: Количество в упаковке
+          countInPackClass: div.detail__menu-name
+          countInPackIndex: 0
+          countInPackValueClass: div.detail__menu-value
+          countInPackValueIndex: 0
+
+          dimensionParent: detail__menu-block
+          dimensionChild: div.detail__menu-block-inner
+          dimensionDivContains: Индивидуальная упаковка
+          dimensionDivContains1: Габариты (мм)
+          dimensionValueClass: div.detail__menu-value
+          dimensionValueIndex: 0
+
+          weightParent: detail__menu-block
+          weightChild: div.detail__menu-block-inner
+          weightDivContains: Индивидуальная упаковка
+          weightDivContains1: Вес
+          weightValueClass: div.detail__menu-value
+          weightValueIndex: 0
+
+          carryCountInPackParent: detail__menu-block
+          carryCountInPackChild: div.detail__menu-block-inner
+          carryCountInPackDivContains: Транспортная упаковка
+          carryCountInPackDivContains1: Количество в упаковке
+          carryCountInPackClass: div.detail__menu-name
+          carryCountInPackIndex: 0
+          carryCountInPackValueClass: div.detail__menu-value
+          carryCountInPackValueIndex: 0
+
+          carryDimensionParent: detail__menu-block
+          carryDimensionChild: div.detail__menu-block-inner
+          carryDimensionDivContains: Транспортная упаковка
+          carryDimensionDivContains1: Габариты
+          carryDimensionValueClass: div.detail__menu-value
+          carryDimensionValueIndex: 0
+
+          carryWeightParent: detail__menu-block
+          carryWeightChild: div.detail__menu-block-inner
+          carryWeightDivContains: Транспортная упаковка
+          carryWeightDivContains1: Вес
+          carryWeightValueClass: div.detail__menu-value
+          carryWeightValueIndex: 0
+
+          barcodeParent: detail__menu-block
+          barcodeChild: div.detail__menu-item
+          barcodeDivContains: Штрих-код
+          barcodeValueClass: div.detail__menu-value
+          barcodeValueIndex: 0
+
+
+          descriptionClass: detail__description detail__tab
+
+          imageParent: div.detail__slider-item
+          imageChild: a
+          imageAttribute: 'abs:href'
+

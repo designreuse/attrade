@@ -1,13 +1,13 @@
 <template>
     <div>
-        <a class="dropdown-item" :href="link">
+        <button class="btn btn-white dropdown-item" :href="link">
             <div class="row my-1 align-items-center">
                 &emsp;
                 <i class="fas fa-angle-right text-muted"></i>
                 &emsp;
                 {{ category.name }}&emsp;&emsp;<small class="text-muted">товаров:&nbsp;<span class="badge badge-white">{{category.productCount}}</span></small>
             </div>
-        </a>
+        </button>
     </div>
 </template>
 
@@ -23,5 +23,11 @@
     }
 </script>
 
-<style>
+<style scoped>
+    .btn{
+        background-color: white;
+    }
+    .btn:hover{
+        background-color: #eaeaea;
+    }
 </style>

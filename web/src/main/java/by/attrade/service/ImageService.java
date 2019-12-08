@@ -39,7 +39,10 @@ public class ImageService {
         return target;
     }
     public boolean isImage(String pathName) throws IOException {
-        return ImageIO.read(new File(pathName)) != null;
+        BufferedImage bufferedImage = ImageIO.read(new File(pathName));
+        boolean isImage = bufferedImage != null;
+        bufferedImage.flush();
+        return isImage;
     }
     public boolean isEmpty(BufferedImage inputImage) {
         try {
@@ -76,13 +79,16 @@ public class ImageService {
     public int getWidth(String inputImagePath) throws IOException {
         File inputFile = new File(inputImagePath);
         BufferedImage inputImage = getBufferedImage(inputFile);
-        return inputImage.getWidth();
+        int width = inputImage.getWidth();
+        inputImage.flush();
+        return width;
     }
     public Pair<Integer, Integer> getWidthHeight(String inputImagePath) throws IOException {
         File inputFile = new File(inputImagePath);
         BufferedImage inputImage = getBufferedImage(inputFile);
         int width = inputImage.getWidth();
         int height = inputImage.getHeight();
+        inputImage.flush();
         return new Pair<>(width, height);
     }
     public int[][] getRgbData(String inputImagePath) throws IOException {

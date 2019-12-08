@@ -11,4 +11,13 @@ public class PictureMediaDTO {
     private String path;
     private String media;
     private Double compressionPercent;
+    private Integer compressionWidth;
+
+    public boolean isWidthPreferredThanPercent(int actualWidth) {
+        return actualWidth * compressionPercent / 100.0 < compressionWidth;
+    }
+
+    public boolean isWidthNotExpand(int width) {
+        return compressionWidth < width;
+    }
 }

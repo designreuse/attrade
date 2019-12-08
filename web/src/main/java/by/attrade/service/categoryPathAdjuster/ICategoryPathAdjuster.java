@@ -7,7 +7,7 @@ import java.util.List;
 public interface ICategoryPathAdjuster {
     void adjustPaths(List<Category> categories) throws Exception;
 
-    default void chainAdjustPaths(List<Category> categories, ICategoryPathAdjuster... adjusters) throws Exception {
+    static void chainAdjustPaths(List<Category> categories, ICategoryPathAdjuster... adjusters) throws Exception {
         for (ICategoryPathAdjuster adjuster : adjusters) {
             adjuster.adjustPaths(categories);
         }

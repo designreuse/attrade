@@ -2,6 +2,7 @@ package by.attrade.service;
 
 import by.attrade.domain.Category;
 import by.attrade.repos.CategoryRepo;
+import by.attrade.service.categoryPathAdjuster.CategoryPathByNameAdjusterService;
 import by.attrade.service.categoryPathAdjuster.ICategoryPathAdjuster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,9 @@ import java.util.Optional;
 public class CategoryService {
     @Autowired
     private CategoryRepo categoryRepo;
+
+    @Autowired
+    private CategoryPathByNameAdjusterService adjuster;
 
     public Category save(Category category) {
         return categoryRepo.save(category);
@@ -42,7 +46,7 @@ public class CategoryService {
         return last;
     }
 
-    public void updatePaths(ICategoryPathAdjuster adjuster, int sizeBunch) throws Exception {
+    public void updatePaths(String langFrom, String langTo, int sizeBunch) throws Exception {
         long count = categoryRepo.count();
         long remainder = count % sizeBunch;
         int countPages;
@@ -54,7 +58,7 @@ public class CategoryService {
         for (int i = 0; i < countPages; i++) {
             Page<Category> products = getCategories(i, sizeBunch);
             List<Category> content = products.getContent();
-            adjuster.adjustPaths(content);
+            adjuster.adjustPaths(content, langFrom, langTo);
             saveAll(content);
         }
     }

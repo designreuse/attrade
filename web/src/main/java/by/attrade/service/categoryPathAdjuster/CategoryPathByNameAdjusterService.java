@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CategoryPathByNameAdjusterService implements ICategoryPathAdjuster {
+public class CategoryPathByNameAdjusterService {
     @Autowired
     private TranslatorCategoryPathByNameAdjusterService translatorCategoryPathByNameAdjusterService;
     @Autowired
@@ -18,10 +18,9 @@ public class CategoryPathByNameAdjusterService implements ICategoryPathAdjuster 
     private LowerCaseCategoryPathAdjusterService lowerCaseCategoryPathAdjusterService;
 
 
-    @Override
-    public void adjustPaths(List<Category> categories) throws Exception {
-        chainAdjustPaths(categories,
-                translatorCategoryPathByNameAdjusterService,
+    public void adjustPaths(List<Category> categories, String langFrom, String langTo) throws Exception {
+        translatorCategoryPathByNameAdjusterService.adjustPaths(categories, langFrom, langTo);
+        ICategoryPathAdjuster.chainAdjustPaths(categories,
                 replacePunctuationMarksCategoryPathAdjusterService,
                 spaceToHyphenCategoryPathAdjusterService,
                 lowerCaseCategoryPathAdjusterService);

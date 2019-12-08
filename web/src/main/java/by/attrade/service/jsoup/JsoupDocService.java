@@ -20,7 +20,7 @@ public class JsoupDocService {
             return Jsoup.connect(url)
                     .userAgent(jsoupConfig.getUserAgent())
                     .referrer(jsoupConfig.getReferrer())
-                    .timeout(jsoupConfig.getTimeout())
+//                    .timeout(jsoupConfig.getTimeout())
                     .get();
         } catch (Exception e) {
             log.error(e.getMessage() + ": "+ url);

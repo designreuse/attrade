@@ -17,7 +17,7 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ProductJsoupS3ruExtractorServiceIT {
+public class ProductJsoupS3RuExtractorServiceIT {
     @Autowired
     private ProductJsoupS3RuExtractor service;
     @Autowired

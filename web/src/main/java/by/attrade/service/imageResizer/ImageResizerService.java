@@ -2,6 +2,7 @@ package by.attrade.service.imageResizer;
 
 
 import by.attrade.service.ImageService;
+import by.attrade.service.exception.ImageExpandNotSupportedException;
 import by.attrade.service.exception.ImageWithoutContentException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -104,6 +105,21 @@ public class ImageResizerService implements IImageResizer {
         float ratio = getRatio(compressionPercent);
         int scaledWidth = (int) (inputImage.getWidth() * ratio);
         int scaledHeight = (int) (inputImage.getHeight() * ratio);
+        resize(inputImagePath, outputImagePath, scaledWidth, scaledHeight);
+    }
+
+    @Override
+    public void resizeProportional(String inputImagePath, String outputImagePath, int scaledWidth)
+            throws IOException, ImageWithoutContentException, ImageExpandNotSupportedException {
+        File inputFile = new File(inputImagePath);
+        BufferedImage inputImage = imageService.getBufferedImage(inputFile);
+        if (imageService.isEmpty(inputImage)) {
+            throw new ImageWithoutContentException("There is no content in image with path: " + inputImagePath);
+        }
+        if (scaledWidth > inputImage.getWidth()){
+            throw new ImageExpandNotSupportedException("Cannot expand image, only squeeze:" + inputImagePath);
+        }
+        int scaledHeight = (int) (scaledWidth / (double)inputImage.getWidth() * inputImage.getHeight());
         resize(inputImagePath, outputImagePath, scaledWidth, scaledHeight);
     }
 

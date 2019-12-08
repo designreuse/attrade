@@ -36,6 +36,8 @@ import org.hibernate.search.annotations.TokenFilterDef;
 import org.hibernate.search.annotations.TokenizerDef;
 import org.hibernate.validator.constraints.Length;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -131,13 +133,14 @@ public class Product implements Serializable {
 
     @JsonView(Views.Code.class)
     private String code;
+    private String vendorCode;
 
     @Column(length = 13, unique = true)
     @Length(max = 13)
     private String barcode;
 
-    @Column(length = 2000)
-    @Length(max = 2000)
+    @Column(length = 4000)
+    @Length(max = 4000)
     private String description;
 
     @JsonView(Views.QuantityInStock.class)
@@ -162,7 +165,18 @@ public class Product implements Serializable {
     @Embedded
     private Dimension dimension;
 
-    private Double weight; // gram
+    @AttributeOverrides(
+            {
+                    @AttributeOverride(name = "height", column = @Column(name = "HEIGHT_CARRY")),
+                    @AttributeOverride(name = "width", column = @Column(name = "WIDTH_CARRY")),
+                    @AttributeOverride(name = "depth", column = @Column(name = "DEPTH_CARRY")),
+            }
+    )
+    @Embedded
+    private Dimension dimensionCarry;
+
+    private Double weight; // kg
+    private Double weightCarry; // kg
     @Column(length = 20)
     @Length(max = 20)
     @Basic(fetch = FetchType.LAZY)
@@ -181,6 +195,12 @@ public class Product implements Serializable {
     @Enumerated(EnumType.STRING)
     @JsonView(Views.Unit.class)
     private Unit unit = Unit.ITEM;
+
+    @Enumerated(EnumType.STRING)
+    private Unit unitCarry = Unit.ITEM;
+
+    private Integer countInPack;
+    private Integer countInPackCarry;
 
     @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
     @SortableField

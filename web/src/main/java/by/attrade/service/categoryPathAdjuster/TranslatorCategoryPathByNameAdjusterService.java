@@ -7,16 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 @Slf4j
-public class TranslatorCategoryPathByNameAdjusterService implements ICategoryPathAdjuster {
-    private static final String SPLITOR = ".!?";
+public class TranslatorCategoryPathByNameAdjusterService {
+    private static final String SPLITOR = "||";
     @Autowired
     private TranslatorGoogleUsingScriptService translatorService;
 
-    @Override
-    public void adjustPaths(List<Category> categories) throws Exception {
+    public void adjustPaths(List<Category> categories, String langFrom, String langTo) throws Exception {
         if (categories == null || categories.isEmpty()) {
             return;
         }
@@ -25,10 +25,10 @@ public class TranslatorCategoryPathByNameAdjusterService implements ICategoryPat
             sb.append(category.getName());
             sb.append(SPLITOR);
         }
-        String text = translatorService.translate("ru", "en", sb.toString());
-        String[] paths = text.split(SPLITOR);
+        String text = translatorService.translate(langFrom, langTo, sb.toString());
+        String[] paths = text.split(Pattern.quote(SPLITOR));
         for (int i = 0; i < categories.size(); i++) {
-            categories.get(i).setPath(paths[i].toLowerCase());
+            categories.get(i).setPath(paths[i].trim().toLowerCase());
         }
     }
 }

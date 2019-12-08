@@ -1,13 +1,15 @@
- <template>
+<template>
     <div>
-        <div class="row mx-0 border-top border-muted border-2">
+        <div class="row mx-2 border-top border-muted border-3 bg-white shadow">
             <div class="col-9 px-0">
-                <div class="card border-0">
+                <!--<div class="card border-0">-->
+                <div class="container-fluid px-0">
                     <div class="row no-gutters">
-                        <div class="col-4 py-3 pr-1">
-                            <a :href="link" class="btn bg-transparent border-0 rounded-0 btn-block px-0 py-0"
+                        <div class="col-4 pr-1">
+                            <a :href="link" class="btn bg-transparent border-0 rounded-0 btn-block px-0 py-3"
                                style="height: 100%">
-                                <picture-upload :pathPic="picture" :marker="marker" :alt="alt" :pictureClass="pictureClass" :pictureStyle="pictureStyle"/>
+                                <picture-upload :pathPic="picture" :marker="marker" :alt="alt"
+                                                :pictureClass="pictureClass" :pictureStyle="pictureStyle"/>
                                 <div class="text-left pl-2">
                                     <small>код:&nbsp;{{product.code}}</small>
                                 </div>
@@ -15,7 +17,7 @@
                         </div>
 
                         <div class="col-8">
-                            <a :href="link" class="btn btn-light border-0 rounded-0 btn-block px-0 py-0"
+                            <a :href="link" class="btn btn-white border-0 rounded-0 btn-block px-0 py-0"
                                style="height: 100%">
                                 <div class="container-fluid">
                                     <div class="card mb-3 bg-transparent border-0 text-left"
@@ -63,7 +65,8 @@
                 <div class="row">
                     <div class="col text-center">
                         <div class="btn-group btn-group-sm" role="group">
-                            <button type="button" class="btn btn-sm btn-light border shadow-none" @click.stop="decrement()">
+                            <button type="button" class="btn btn-sm btn-light border shadow-none"
+                                    @click.stop="decrement()">
                                 <i class="fa fa-minus fa-xs" aria-hidden="true"></i>
                             </button>
                             <input v-model="count"
@@ -73,7 +76,8 @@
                                    onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : event.charCode >= 48 && event.charCode <= 57"
                                    @blur="defaultCount"
                             >
-                            <button type="button" class="btn btn-sm btn-light border shadow-none" @click.stop="increment()">
+                            <button type="button" class="btn btn-sm btn-light border shadow-none"
+                                    @click.stop="increment()">
                                 <i class="fa fa-plus fa-xs" aria-hidden="true"></i>
                             </button>
                         </div>
@@ -94,7 +98,7 @@
                         <a href="#" class="btn btn-sm btn-warning shadow-sm mb-3">
                             <i class="far fa-star " aria-hidden="true" style="color: yellow;"></i>
                             <small>
-                            &nbsp;В&nbsp;избранное
+                                &nbsp;В&nbsp;избранное
                             </small>
                         </a>
                     </div>
@@ -138,16 +142,16 @@
         },
         props: ['product'],
         methods: {
-            increment: function(){
+            increment: function () {
                 this.count = this.count + 1
             },
-            decrement: function(){
+            decrement: function () {
                 if (this.count > 1) {
                     this.count = this.count - 1
                 }
             },
             defaultCount: function () {
-                if (!this.count || this.count == 0){
+                if (!this.count || this.count == 0) {
                     this.count = 1
                 }
             },
@@ -156,7 +160,7 @@
 </script>
 
 <style>
-    .border-2 {
-        border-width: 2px !important;
+    .border-3 {
+        border-width: 3px !important;
     }
 </style>

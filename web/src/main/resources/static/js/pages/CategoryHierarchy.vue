@@ -11,8 +11,8 @@
                                 :id="buttonId(index)"
                                 aria-selected="false"
                                 @click="f_levelId(index)">
-                            <div class="container-fluid px-1 border border-secondary">
-                                <div class="d-flex justify-content-center" style="width: 130px; min-height: 40px;">
+                            <div class="container-fluid border border-secondary">
+                                <div class="d-flex justify-content-center px-2" style="width: 130px; min-height: 40px;">
                                     <small>{{item.name}}</small>
                                 </div>
                             </div>
@@ -45,7 +45,7 @@
                                                     <div class="nav nav-pills d-flex flex-row flex-wrap justify-content-left align-self-stretch">
                                                         <div class="row no-gutters">
                                                             <a v-for="(item2, index2) in childMap(item1)"
-                                                                 class="btn col-6 col-md-3 border-right border-bottom border-1 border-muted btn rounded-0 shadow-none text-left py-1 px-1 level2"
+                                                                 class="btn col-6 col-md-2 border-right border-bottom border-1 border-muted btn rounded-0 shadow-none text-left py-1 px-1 level2"
                                                                  role="button" :href="item2.path">
                                                                 <div class="row no-gutters">
                                                                     <picture-upload :pathPic="picture(item2)"
@@ -88,7 +88,7 @@
         data() {
             return {
                 levelId: undefined,
-                marker: "-small",
+                marker: "-icon",
                 pictureClass: "img-fluid",
                 pictureStyle: "max-width: 100%; height: auto;"
             }

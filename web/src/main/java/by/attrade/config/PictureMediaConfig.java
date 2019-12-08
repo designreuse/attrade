@@ -19,35 +19,34 @@ import java.util.Map;
 public class PictureMediaConfig {
     private boolean init;
     private String unknownAutoImageType;
-    private boolean removeMarkers;
     private boolean removeNotSynchronized;
     private boolean compressMain;
     private double compressMainQuality;
-    private boolean copyMediaPictures;
-    private boolean replaceExistingMedia;
+    private boolean createMediaPictures;
     private boolean createMarkerPictures;
-    private boolean replaceExistingMarker;
     private String defaultPictureFileName;
     private List<String> markerNames = new ArrayList<>();
     private Map<String, Integer> markerWidths = new HashMap<>();
     private List<String> paths = new ArrayList<>();
     private List<String> medias = new ArrayList<>();
-    private List<Double> compressionWidthPercents = new ArrayList<>();
+    private List<Double> compressionPercents = new ArrayList<>();
+    private List<Integer> compressionWidths = new ArrayList<>();
 
     public List<PictureMediaDTO> getPictureMedias() {
         List<PictureMediaDTO> list = new ArrayList<>();
         int size = paths.size();
         for (int i = 0; i < size; i++) {
-            list.add(new PictureMediaDTO(paths.get(i), medias.get(i), compressionWidthPercents.get(i)));
+            list.add(new PictureMediaDTO(paths.get(i), medias.get(i), compressionPercents.get(i), compressionWidths.get(i)));
         }
         return list;
     }
-    public int getIndexMarker(Path path){
+
+    public int getIndexMarker(Path path) {
         String filename = path.getFileName().toString();
         int size = markerNames.size();
         for (int i = 0; i < size; i++) {
             String m = markerNames.get(i);
-            if (filename.contains(m)){
+            if (filename.contains(m)) {
                 return i;
             }
 
