@@ -123,6 +123,11 @@ public class ProductJsoupS3RuExtractor implements IProductExtractor {
     }
 
     @Override
+    public List<String> getDescriptionImagesUrl(Document doc) {
+        return null;
+    }
+
+    @Override
     public String getUrl() {
         return config.getUrl();
     }

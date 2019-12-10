@@ -50,4 +50,7 @@ public class ProductService {
     public List<String> getUrls(){
         return productRepo.getUrls();
     }
+    public List<String> getUrlsStartWith(String text){
+        return productRepo.getUrlsStartWith(text);
+    }
 }

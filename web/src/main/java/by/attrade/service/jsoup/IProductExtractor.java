@@ -20,6 +20,8 @@ public interface IProductExtractor {
 
     List<String> getImagesUrl(Document doc) throws IOException;
 
+    List<String> getDescriptionImagesUrl(Document doc);
+
     String getUrl();
 
     Locale getLocale();

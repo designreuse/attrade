@@ -37,14 +37,14 @@ public class JsoupTexenergoRuProductConfig {
     private String propertiesClass;
     private String propertiesValueClass;
 
-    private String countInPackParent;
-    private String countInPackChild;
-    private String countInPackDivContains;
-    private String countInPackDivContains1;
-    private String countInPackClass;
-    private Integer countInPackIndex;
-    private String countInPackValueClass;
-    private Integer countInPackValueIndex;
+    private String countParent;
+    private String countChild;
+    private String countDivContains;
+    private String countDivContains1;
+    private String countClass;
+    private Integer countIndex;
+    private String countValueClass;
+    private Integer countValueIndex;
 
     private String dimensionParent;
     private String dimensionChild;
@@ -59,6 +59,29 @@ public class JsoupTexenergoRuProductConfig {
     private String weightDivContains1;
     private String weightValueClass;
     private Integer weightValueIndex;
+
+    private String countInPackParent;
+    private String countInPackChild;
+    private String countInPackDivContains;
+    private String countInPackDivContains1;
+    private String countInPackClass;
+    private Integer countInPackIndex;
+    private String countInPackValueClass;
+    private Integer countInPackValueIndex;
+
+    private String dimensionPackParent;
+    private String dimensionPackChild;
+    private String dimensionPackDivContains;
+    private String dimensionPackDivContains1;
+    private String dimensionPackValueClass;
+    private Integer dimensionPackValueIndex;
+
+    private String weightPackParent;
+    private String weightPackChild;
+    private String weightPackDivContains;
+    private String weightPackDivContains1;
+    private String weightPackValueClass;
+    private Integer weightPackValueIndex;
 
     private String carryCountInPackParent;
     private String carryCountInPackChild;
@@ -89,9 +112,17 @@ public class JsoupTexenergoRuProductConfig {
     private String barcodeValueClass;
     private Integer barcodeValueIndex;
 
-    private String descriptionClass;
+    private String descriptionGetElementsByClass;
+    private String descriptionImageSelectForWrap;
+    private String descriptionImageSelectForRemove;
+    private String descriptionImageWrap;
+    private String descriptionImageSelectForUnwrap;
+    private String descriptionImageSelectContainsForRemove;
+    private String descriptionImageSelectNotContains;
+    private String descriptionImageSelect;
+    private String descriptionImageUrl;
 
     private String imageParent;
-    private String imageChild;
-    private String imageAttribute;
+    private String imageSelect;
+    private String imageUrl;
 }

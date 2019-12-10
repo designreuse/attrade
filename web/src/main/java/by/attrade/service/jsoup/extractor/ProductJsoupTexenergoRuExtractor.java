@@ -44,9 +44,13 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         String vendorCode = getVendorCode(doc);
         String name = getName(doc);
         Unit unit = getUnit(doc);
-        Integer countInPack = getCountInPack(doc);
+        Integer count = getCount(doc);
         Dimension dimension = getDimension(doc);
         Double weight = getWeight(doc);
+        Unit unitPack = getUnitInPack(doc);
+        Integer countInPack = getCountInPack(doc);
+        Dimension dimensionPack = getDimensionPack(doc);
+        Double weightPack = getWeightPack(doc);
         Unit unitCarry = getUnitCarry(doc);
         Integer countInPackCarry = getCountInPackCarry(doc);
         Dimension dimensionCarry = getDimensionCarry(doc);
@@ -59,9 +63,13 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         product.setVendorCode(vendorCode);
         product.setName(name);
         product.setUnit(unit);
-        product.setCountInPack(countInPack);
+        product.setCount(count);
         product.setDimension(dimension);
         product.setWeight(weight);
+        product.setUnitPack(unitPack);
+        product.setCountInPack(countInPack);
+        product.setDimensionPack(dimensionPack);
+        product.setWeightPack(weightPack);
         product.setUnitCarry(unitCarry);
         product.setCountInPackCarry(countInPackCarry);
         product.setDimensionCarry(dimensionCarry);
@@ -71,195 +79,29 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         return product;
     }
 
-    private Double getWeightCarry(Document doc) {
+    private String getCode(Document doc) {
         try {
-            String weightCarryString = doc
-                    .getElementsByClass(config.getCarryWeightParent())
-                    .select(config.getCarryWeightChild())
-                    .select("div:containsOwn(" + config.getCarryWeightDivContains() + ")").first().parent()
-                    .select("div:containsOwn(" + config.getCarryWeightDivContains1() + ")").first().parent()
-                    .select(config.getCarryWeightValueClass()).get(config.getCarryWeightValueIndex())
+            String code = doc
+                    .getElementsByClass(config.getCodeParent())
+                    .select(config.getCodeChild())
+                    .get(config.getCodeIndexElement())
                     .text();
-            weightCarryString = StringUtil.trimIfNotNull(weightCarryString);
-            Double weightCarry = null;
-            try {
-                weightCarry = Double.parseDouble(weightCarryString);
-            } catch (NumberFormatException e) {
-                log.error("WeightCarry is not a double: " + doc.location(), e);
-            }
-            return weightCarry;
+            code = StringUtil.removeSpaces(code);
+            return code;
         } catch (Exception e) {
             return null;
         }
     }
 
-    private Double getWeight(Document doc) {
+    private String getVendorCode(Document doc) {
         try {
-            String weightString = doc
-                    .getElementsByClass(config.getWeightParent())
-                    .select(config.getWeightChild())
-                    .select("div:containsOwn(" + config.getWeightDivContains() + ")").first().parent()
-                    .select("div:containsOwn(" + config.getWeightDivContains1() + ")").first().parent()
-                    .select(config.getWeightValueClass()).get(config.getWeightValueIndex())
+            String vendorCode = doc
+                    .getElementsByClass(config.getVendorCodeParent())
+                    .select(config.getVendorCodeChild())
+                    .get(config.getVendorCodeIndexElement())
                     .text();
-            weightString = StringUtil.trimIfNotNull(weightString);
-            Double weight = null;
-            try {
-                weight = Double.parseDouble(weightString);
-            } catch (NumberFormatException e) {
-                log.error("Weight is not a double: " + doc.location(), e);
-            }
-            return weight;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private String getDescription(Document doc) {
-        try {
-            String description = doc
-                    .getElementsByClass(config.getDescriptionClass())
-                    .text();
-            description = StringUtil.trimIfNotNull(description);
-            return description;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private String getBarcode(Document doc) {
-        try {
-            String barcode = doc
-                    .getElementsByClass(config.getBarcodeParent())
-                    .select(config.getBarcodeChild())
-                    .select("div:containsOwn(" + config.getBarcodeDivContains() + ")").first().parent()
-                    .select(config.getBarcodeValueClass()).get(config.getBarcodeValueIndex())
-                    .text();
-            barcode = StringUtil.trimIfNotNull(barcode);
-            return barcode;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-
-    private Dimension getDimensionCarry(Document doc) {
-        try {
-            String dimensionCarryString = doc
-                    .getElementsByClass(config.getCarryDimensionParent())
-                    .select(config.getCarryDimensionChild())
-                    .select("div:containsOwn(" + config.getCarryDimensionDivContains() + ")").first().parent()
-                    .select("div:containsOwn(" + config.getCarryDimensionDivContains1() + ")").first().parent()
-                    .select(config.getCarryDimensionValueClass()).get(config.getCarryDimensionValueIndex())
-                    .text();
-            try {
-                Dimension dimensionCarry = dimensionParserService.parseXspliterMmToMm(dimensionCarryString);
-                return dimensionCarry;
-            } catch (NumberFormatException e) {
-                log.error("Dimension is not a double: " + doc.location(), e);
-                return null;
-            }
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private Integer getCountInPackCarry(Document doc) {
-        try {
-            String countCarryInPackString = doc
-                    .getElementsByClass(config.getCarryCountInPackParent())
-                    .select(config.getCarryCountInPackChild())
-                    .select("div:containsOwn(" + config.getCarryCountInPackDivContains() + ")").first().parent()
-                    .select("div:containsOwn(" + config.getCarryCountInPackDivContains1() + ")").first().parent()
-                    .select(config.getCarryCountInPackValueClass()).get(config.getCarryCountInPackValueIndex())
-                    .text();
-            try {
-                countCarryInPackString = StringUtil.trimIfNotNull(countCarryInPackString);
-                Integer countCarryInPack = Integer.valueOf(countCarryInPackString);
-                return countCarryInPack;
-            } catch (NumberFormatException e) {
-                log.error("CountInPack is not an integer: " + doc.location(), e);
-                return null;
-            }
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private Unit getUnitCarry(Document doc) {
-        Unit unitCarry;
-        try {
-            String unitCarryString = doc
-                    .getElementsByClass(config.getCarryCountInPackParent())
-                    .select(config.getCarryCountInPackChild())
-                    .select("div:containsOwn(" + config.getCarryCountInPackDivContains() + ")").first().parent()
-                    .select("div:containsOwn(" + config.getCarryCountInPackDivContains1() + ")").first().parent()
-                    .select(config.getCarryCountInPackClass()).get(config.getCarryCountInPackIndex())
-                    .text();
-            unitCarryString = StringUtil.trimIfNotNull(unitCarryString);
-            unitCarry = unitMessageInSequenceParserService.findUnitThroughMessagesSurroundedBraces(unitCarryString, getLocale());
-        } catch (Exception e) {
-            return null;
-        }
-        return unitCarry;
-    }
-
-    private Dimension getDimension(Document doc) {
-        try {
-            String dimensionString = doc
-                    .getElementsByClass(config.getDimensionParent())
-                    .select(config.getDimensionChild())
-                    .select("div:containsOwn(" + config.getDimensionDivContains() + ")").first().parent()
-                    .select("div:containsOwn(" + config.getDimensionDivContains1() + ")").first().parent()
-                    .select(config.getDimensionValueClass()).get(config.getDimensionValueIndex())
-                    .text();
-            try {
-                dimensionString = StringUtil.trimIfNotNull(dimensionString);
-                Dimension dimension = dimensionParserService.parseXspliterMmToMm(dimensionString);
-                return dimension;
-            } catch (Exception e) {
-                log.error("Dimension are not numbers: " + doc.location(), e);
-                return null;
-            }
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private Integer getCountInPack(Document doc) {
-        try {
-            String countInPackString = doc
-                    .getElementsByClass(config.getCountInPackParent())
-                    .select(config.getCountInPackChild())
-                    .select("div:containsOwn(" + config.getCountInPackDivContains() + ")").first().parent()
-                    .select("div:containsOwn(" + config.getCountInPackDivContains1() + ")").first().parent()
-                    .select(config.getCountInPackValueClass()).get(config.getCountInPackValueIndex())
-                    .text();
-            try {
-                countInPackString = StringUtil.trimIfNotNull(countInPackString);
-                Integer countInPack = Integer.valueOf(countInPackString);
-                return countInPack;
-            } catch (NumberFormatException e) {
-                log.error("Count in pack is not an integer: " + doc.location(), e);
-                return null;
-            }
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private Unit getUnit(Document doc) {
-        try {
-            String unitString = doc
-                    .getElementsByClass(config.getCountInPackParent())
-                    .select(config.getCountInPackChild())
-                    .select("div:containsOwn(" + config.getCountInPackDivContains() + ")").first().parent()
-                    .select("div:containsOwn(" + config.getCountInPackDivContains1() + ")").first().parent()
-                    .select(config.getCountInPackClass()).get(config.getCountInPackIndex())
-                    .text();
-            unitString = StringUtil.trimIfNotNull(unitString);
-            Unit unit = unitMessageInSequenceParserService.findUnitThroughMessagesSurroundedBraces(unitString, getLocale());
-            return unit;
+            vendorCode = StringUtil.removeSpaces(vendorCode);
+            return vendorCode;
         } catch (Exception e) {
             return null;
         }
@@ -279,29 +121,283 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         }
     }
 
-    private String getCode(Document doc) {
+    private Unit getUnit(Document doc) {
         try {
-            String code = doc
-                    .getElementsByClass(config.getCodeParent())
-                    .select(config.getCodeChild())
-                    .get(config.getCodeIndexElement())
+            String unitString = doc
+                    .getElementsByClass(config.getCountParent())
+                    .select(config.getCountChild())
+                    .select("div:containsOwn(" + config.getCountDivContains() + ")").first().parent()
+                    .select("div:containsOwn(" + config.getCountDivContains1() + ")").first().parent()
+                    .select(config.getCountClass()).get(config.getCountIndex())
                     .text();
-            code = StringUtil.trimIfNotNull(code);
-            return code;
+            unitString = StringUtil.removeSpaces(unitString);
+            Unit unit = unitMessageInSequenceParserService.findUnitThroughMessagesSurroundedBraces(unitString, getLocale());
+            return unit;
         } catch (Exception e) {
             return null;
         }
     }
 
-    private String getVendorCode(Document doc) {
+    private Integer getCount(Document doc) {
         try {
-            String vendorCode = doc
-                    .getElementsByClass(config.getVendorCodeParent())
-                    .select(config.getVendorCodeChild())
-                    .get(config.getVendorCodeIndexElement())
+            String countString = doc
+                    .getElementsByClass(config.getCountParent())
+                    .select(config.getCountChild())
+                    .select("div:containsOwn(" + config.getCountDivContains() + ")").first().parent()
+                    .select("div:containsOwn(" + config.getCountDivContains1() + ")").first().parent()
+                    .select(config.getCountValueClass()).get(config.getCountValueIndex())
                     .text();
-            vendorCode = StringUtil.trimIfNotNull(vendorCode);
-            return vendorCode;
+            try {
+                countString = StringUtil.removeSpaces(countString);
+                Integer countPack = Integer.valueOf(countString);
+                return countPack;
+            } catch (NumberFormatException e) {
+                log.error("CountInPack is not an integer: " + doc.location(), e);
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Dimension getDimension(Document doc) {
+        try {
+            String dimensionString = doc
+                    .getElementsByClass(config.getDimensionParent())
+                    .select(config.getDimensionChild())
+                    .select("div:containsOwn(" + config.getDimensionDivContains() + ")").first().parent()
+                    .select("div:containsOwn(" + config.getDimensionDivContains1() + ")").first().parent()
+                    .select(config.getDimensionValueClass()).get(config.getDimensionValueIndex())
+                    .text();
+            try {
+                dimensionString = StringUtil.removeSpaces(dimensionString);
+                Dimension dimension = dimensionParserService.parseXspliterMmToMm(dimensionString);
+                return dimension;
+            } catch (NumberFormatException e) {
+                log.error("Dimension is not a double: " + doc.location(), e);
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Double getWeight(Document doc) {
+        try {
+            String weightString = doc
+                    .getElementsByClass(config.getWeightParent())
+                    .select(config.getWeightChild())
+                    .select("div:containsOwn(" + config.getWeightDivContains() + ")").first().parent()
+                    .select("div:containsOwn(" + config.getWeightDivContains1() + ")").first().parent()
+                    .select(config.getWeightValueClass()).get(config.getWeightValueIndex())
+                    .text();
+            weightString = StringUtil.removeSpaces(weightString);
+            Double weight = null;
+            try {
+                weight = Double.parseDouble(weightString);
+            } catch (NumberFormatException e) {
+                log.error("Weight is not a double: " + doc.location(), e);
+            }
+            return weight;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Unit getUnitInPack(Document doc) {
+        try {
+            String unitPackString = doc
+                    .getElementsByClass(config.getCountInPackParent())
+                    .select(config.getCountInPackChild())
+                    .select("div:containsOwn(" + config.getCountInPackDivContains() + ")").first().parent()
+                    .select("div:containsOwn(" + config.getCountInPackDivContains1() + ")").first().parent()
+                    .select(config.getCountInPackClass()).get(config.getCountInPackIndex())
+                    .text();
+            unitPackString = StringUtil.removeSpaces(unitPackString);
+            Unit unitPack = unitMessageInSequenceParserService.findUnitThroughMessagesSurroundedBraces(unitPackString, getLocale());
+            return unitPack;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+    private Integer getCountInPack(Document doc) {
+        try {
+            String countInPackString = doc
+                    .getElementsByClass(config.getCountInPackParent())
+                    .select(config.getCountInPackChild())
+                    .select("div:containsOwn(" + config.getCountInPackDivContains() + ")").first().parent()
+                    .select("div:containsOwn(" + config.getCountInPackDivContains1() + ")").first().parent()
+                    .select(config.getCountInPackValueClass()).get(config.getCountInPackValueIndex())
+                    .text();
+            try {
+                countInPackString = StringUtil.removeSpaces(countInPackString);
+                Integer countInPack = Integer.valueOf(countInPackString);
+                return countInPack;
+            } catch (NumberFormatException e) {
+                log.error("Count in pack is not an integer: " + doc.location(), e);
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Dimension getDimensionPack(Document doc) {
+        try {
+            String dimensionPackString = doc
+                    .getElementsByClass(config.getDimensionPackParent())
+                    .select(config.getDimensionPackChild())
+                    .select("div:containsOwn(" + config.getDimensionPackDivContains() + ")").first().parent()
+                    .select("div:containsOwn(" + config.getDimensionPackDivContains1() + ")").first().parent()
+                    .select(config.getDimensionPackValueClass()).get(config.getDimensionPackValueIndex())
+                    .text();
+            try {
+                dimensionPackString = StringUtil.removeSpaces(dimensionPackString);
+                Dimension dimensionPack = dimensionParserService.parseXspliterMmToMm(dimensionPackString);
+                return dimensionPack;
+            } catch (Exception e) {
+                log.error("Dimension are not numbers: " + doc.location(), e);
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Double getWeightPack(Document doc) {
+        try {
+            String weightPackString = doc
+                    .getElementsByClass(config.getWeightPackParent())
+                    .select(config.getWeightPackChild())
+                    .select("div:containsOwn(" + config.getWeightPackDivContains() + ")").first().parent()
+                    .select("div:containsOwn(" + config.getWeightPackDivContains1() + ")").first().parent()
+                    .select(config.getWeightPackValueClass()).get(config.getWeightPackValueIndex())
+                    .text();
+            weightPackString = StringUtil.removeSpaces(weightPackString);
+            Double weightPack = null;
+            try {
+                weightPack = Double.parseDouble(weightPackString);
+            } catch (NumberFormatException e) {
+                log.error("Weight is not a double: " + doc.location(), e);
+            }
+            return weightPack;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Unit getUnitCarry(Document doc) {
+        try {
+            String unitCarryString = doc
+                    .getElementsByClass(config.getCarryCountInPackParent())
+                    .select(config.getCarryCountInPackChild())
+                    .select("div:containsOwn(" + config.getCarryCountInPackDivContains() + ")").first().parent()
+                    .select("div:containsOwn(" + config.getCarryCountInPackDivContains1() + ")").first().parent()
+                    .select(config.getCarryCountInPackClass()).get(config.getCarryCountInPackIndex())
+                    .text();
+            unitCarryString = StringUtil.removeSpaces(unitCarryString);
+            Unit unitCarry = unitMessageInSequenceParserService.findUnitThroughMessagesSurroundedBraces(unitCarryString, getLocale());
+            return unitCarry;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Integer getCountInPackCarry(Document doc) {
+        try {
+            String countCarryInPackString = doc
+                    .getElementsByClass(config.getCarryCountInPackParent())
+                    .select(config.getCarryCountInPackChild())
+                    .select("div:containsOwn(" + config.getCarryCountInPackDivContains() + ")").first().parent()
+                    .select("div:containsOwn(" + config.getCarryCountInPackDivContains1() + ")").first().parent()
+                    .select(config.getCarryCountInPackValueClass()).get(config.getCarryCountInPackValueIndex())
+                    .text();
+            try {
+                countCarryInPackString = StringUtil.removeSpaces(countCarryInPackString);
+                Integer countCarryInPack = Integer.valueOf(countCarryInPackString);
+                return countCarryInPack;
+            } catch (NumberFormatException e) {
+                log.error("CountInPack is not an integer: " + doc.location(), e);
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Dimension getDimensionCarry(Document doc) {
+        try {
+            String dimensionCarryString = doc
+                    .getElementsByClass(config.getCarryDimensionParent())
+                    .select(config.getCarryDimensionChild())
+                    .select("div:containsOwn(" + config.getCarryDimensionDivContains() + ")").first().parent()
+                    .select("div:containsOwn(" + config.getCarryDimensionDivContains1() + ")").first().parent()
+                    .select(config.getCarryDimensionValueClass()).get(config.getCarryDimensionValueIndex())
+                    .text();
+            try {
+                dimensionCarryString = StringUtil.removeSpaces(dimensionCarryString);
+                Dimension dimensionCarry = dimensionParserService.parseXspliterMmToMm(dimensionCarryString);
+                return dimensionCarry;
+            } catch (NumberFormatException e) {
+                log.error("Dimension is not a double: " + doc.location(), e);
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Double getWeightCarry(Document doc) {
+        try {
+            String weightCarryString = doc
+                    .getElementsByClass(config.getCarryWeightParent())
+                    .select(config.getCarryWeightChild())
+                    .select("div:containsOwn(" + config.getCarryWeightDivContains() + ")").first().parent()
+                    .select("div:containsOwn(" + config.getCarryWeightDivContains1() + ")").first().parent()
+                    .select(config.getCarryWeightValueClass()).get(config.getCarryWeightValueIndex())
+                    .text();
+            weightCarryString = StringUtil.removeSpaces(weightCarryString);
+            Double weightCarry = null;
+            try {
+                weightCarry = Double.parseDouble(weightCarryString);
+            } catch (NumberFormatException e) {
+                log.error("WeightCarry is not a double: " + doc.location(), e);
+            }
+            return weightCarry;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String getBarcode(Document doc) {
+        try {
+            String barcode = doc
+                    .getElementsByClass(config.getBarcodeParent())
+                    .select(config.getBarcodeChild())
+                    .select("div:containsOwn(" + config.getBarcodeDivContains() + ")").first().parent()
+                    .select(config.getBarcodeValueClass()).get(config.getBarcodeValueIndex())
+                    .text();
+            barcode = StringUtil.removeSpaces(barcode);
+            return barcode;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String getDescription(Document doc) {
+        doc = doc.clone();
+        try {
+            doc.select(config.getDescriptionImageSelectForWrap()).wrap(config.getDescriptionImageWrap());
+            doc.select(config.getDescriptionImageSelectForUnwrap()).unwrap();
+            doc.select(config.getDescriptionImageSelectForRemove()).remove();
+            doc.select(config.getDescriptionImageSelectContainsForRemove()).remove();
+            Elements elems = doc
+                    .getElementsByClass(config.getDescriptionGetElementsByClass());
+
+            String description = elems.html();
+            return description;
         } catch (Exception e) {
             return null;
         }
@@ -361,10 +457,26 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
     public List<String> getImagesUrl(Document doc) {
         List<String> urls = new ArrayList<>();
         Elements elems = doc
-                .select(config.getImageParent())
-                .select(config.getImageChild());
+                .getElementsByClass(config.getImageParent())
+                .select(config.getImageSelect());
         for (Element e : elems) {
-            String url = e.attr(config.getImageAttribute());
+            String url = e.absUrl(config.getImageUrl());
+            url = StringUtil.trimIfNotNull(url);
+            url = StringUtil.renameToNullIfContains(url, config.getDefaultPictureFileName());
+            urls.add(url);
+        }
+        return urls;
+    }
+    @Override
+    public List<String> getDescriptionImagesUrl(Document doc){
+        doc = doc.clone();
+        List<String> urls = new ArrayList<>();
+        Elements elems = doc
+                .getElementsByClass(config.getDescriptionGetElementsByClass())
+//                .select(config.getDescriptionImageSelectNotContains())
+                .select(config.getDescriptionImageSelect());
+        for (Element e : elems) {
+            String url = e.absUrl(config.getDescriptionImageUrl());
             url = StringUtil.trimIfNotNull(url);
             url = StringUtil.renameToNullIfContains(url, config.getDefaultPictureFileName());
             urls.add(url);

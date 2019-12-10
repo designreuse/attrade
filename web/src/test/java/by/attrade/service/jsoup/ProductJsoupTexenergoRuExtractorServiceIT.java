@@ -23,7 +23,7 @@ public class ProductJsoupTexenergoRuExtractorServiceIT {
     private ProductJsoupTexenergoRuExtractor service;
     @Autowired
     private JsoupDocService jsoupDocService;
-    private String url = "https://www.texenergo.ru/catalog/item.html/te00242213";
+    private String url = "https://www.texenergo.ru/catalog/item.html/te00378913";
     private Document doc;
 
     @Before
@@ -54,6 +54,10 @@ public class ProductJsoupTexenergoRuExtractorServiceIT {
     @Test
     public void getImagesUrl() throws Exception {
         List<String> urls = service.getImagesUrl(doc);
+    }
+    @Test
+    public void getDescriptionImageUrl() throws Exception {
+        List<String> urls = service.getDescriptionImagesUrl(doc);
     }
 
 }

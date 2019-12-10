@@ -7,9 +7,18 @@ public class StringUtil {
         }
         return text;
     }
+
     public static String renameToNullIfContains(String text, String matcher) {
         if (text.contains(matcher)) {
             return null;
+        } else {
+            return text;
+        }
+    }
+
+    public static String removeSpaces(String text) {
+        if (text != null) {
+            return text.replaceAll("\\s+", "");
         } else {
             return text;
         }

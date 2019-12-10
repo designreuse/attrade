@@ -17,7 +17,6 @@ import by.attrade.service.productPathExtractor.Utf8OfNameProductPathExtractorSer
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +26,12 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
 public class ProductExtractorService {
     private static final String DESCRIPTION = "описание";
-    private static final String HREF_CSS_QUERY = "a[href]";
-    private static final String HREF_CSS_ATTRIBUTE = "href";
 
     @Autowired
     private CategoryService categoryService;
@@ -73,14 +71,25 @@ public class ProductExtractorService {
 
     public ExtractorError saveProductsIfNotExistsByCodeAndSaveErrors(IProductExtractor extractor, double[] compressions) {
         List<ExtractorErrorUrl> errorUrls = saveProductsIfNotExistsByCode(extractor, compressions);
+        adjustCategoriesPaths(extractor);
         return saveErrorUrls(errorUrls);
     }
 
-    public List<ExtractorErrorUrl> saveProductsIfNotExistsByCode(IProductExtractor extractor, double[] compressions) {
+    private void adjustCategoriesPaths(IProductExtractor extractor) {
+        try {
+            String language = extractor.getLocale().getLanguage();
+            List<Category> categories = categoryService.findAll();
+            categoryPathAdjusterService.adjustPaths(categories, language, serverLanguageConfig.getLanguage());
+        } catch (Exception e) {
+            log.error("Cannot adjust categories paths.", e);
+        }
+    }
+
+    private List<ExtractorErrorUrl> saveProductsIfNotExistsByCode(IProductExtractor extractor, double[] compressions) {
         Set<String> all = new HashSet<>();
         Set<String> selected = new HashSet<>();
         all.add(extractor.getUrl());
-        selected.addAll(productService.getUrls());
+        selected.addAll(productService.getUrlsStartWith(extractor.getUrl()));
         List<ExtractorErrorUrl> errorUrls = new LinkedList<>();
         while (!all.isEmpty()) {
             String url = all.iterator().next();
@@ -107,12 +116,13 @@ public class ProductExtractorService {
     }
 
     private void extractUrls(Document doc, Set<String> all, Set<String> selected, IProductExtractor extractor) {
-        Elements links = doc.select(HREF_CSS_QUERY);
-        links.stream().map(e -> e.absUrl(HREF_CSS_ATTRIBUTE)).filter(e -> !selected.contains(e) && e.contains(extractor.getUrl())).forEach(all::add);
+        Stream<String> allHrefNotPdfNotImage = jsoupDocService.getAllHrefNotPdfNotImage(doc);
+        allHrefNotPdfNotImage.filter(e -> !selected.contains(e) && e.contains(extractor.getUrl())).forEach(all::add);
     }
 
     public ExtractorError saveProductsIfNotExistsByCodeAndSaveErrors(IProductExtractor extractor, List<String> urls, double[] compressions) {
         List<ExtractorErrorUrl> errorUrls = saveProductsIfNotExistsByCode(extractor, urls, compressions);
+        adjustCategoriesPaths(extractor);
         return saveErrorUrls(errorUrls);
     }
 
@@ -127,6 +137,7 @@ public class ProductExtractorService {
                 log.info(e.getMessage(), url);
             }
         }
+
         return errorUrls;
     }
 
@@ -159,16 +170,17 @@ public class ProductExtractorService {
 
     private void saveProduct(IProductExtractor extractor, Document doc, String url, double[] compressions) throws Exception {
         List<Category> categories = extractor.getCategories(doc);
-        String language = extractor.getLocale().getLanguage();
-        categoryPathAdjusterService.adjustPaths(categories, language,serverLanguageConfig.getLanguage());
         List<String> imagesUrl = extractor.getImagesUrl(doc);
+        List<String> descriptionImagesUrl = extractor.getDescriptionImagesUrl(doc);
         List<Property> properties = extractor.getProperties(doc);
         List<String> values = extractor.getPropertiesValue(doc);
         Product product = extractor.getProduct(doc);
 
         List<Picture> pictures = downloadPictures(imagesUrl, compressions);
+        List<Picture> descriptionPictures = downloadPictures(descriptionImagesUrl, compressions);
         Category category = categoryService.saveShaneOfCategory(categories);
         pictures = pictureService.saveAll(pictures);
+        descriptionPictures = pictureService.saveAll(descriptionPictures);
         String description = product.getDescription();
         if (description == null) {
             description = getAndRemoveDescription(properties, values);
@@ -182,6 +194,7 @@ public class ProductExtractorService {
         product.setDescription(description);
         product.setPictures(pictures);
         product.setPicture(pictures.get(0).getPath());
+        product.setDescriptionPictures(descriptionPictures);
         productService.save(product);
 
         int size = properties.size();

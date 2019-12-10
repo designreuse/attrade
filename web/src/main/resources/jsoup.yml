@@ -2,7 +2,7 @@ jsoup:
   userAgent: Mozilla
 #   Chrome/4.0.249.0 Safari/532.5
   referrer: http://www.google.com
-  timeout: 5000
+  timeout: 30000
   s3:
     ru:
       product:
@@ -25,7 +25,7 @@ jsoup:
   texenergo:
       ru:
         product:
-          url: http://www.texenergo.ru
+          url: https://www.texenergo.ru/catalog
           locale: ru
           defaultPictureFileName: no-image.jpg
           nameParent: detail__head-title
@@ -47,6 +47,29 @@ jsoup:
           propertiesClass: div.detail__menu-name
           propertiesValueClass: div.detail__menu-value
 
+          countParent: detail__menu-block
+          countChild: div.detail__menu-block-inner
+          countDivContains: Индивидуальные характеристики товара
+          countDivContains1: Количество
+          countClass: div.detail__menu-name
+          countIndex: 0
+          countValueClass: div.detail__menu-value
+          countValueIndex: 0
+
+          dimensionParent: detail__menu-block
+          dimensionChild: div.detail__menu-block-inner
+          dimensionDivContains: Индивидуальные характеристики товара
+          dimensionDivContains1: Габариты (мм)
+          dimensionValueClass: div.detail__menu-value
+          dimensionValueIndex: 0
+
+          weightParent: detail__menu-block
+          weightChild: div.detail__menu-block-inner
+          weightDivContains: Индивидуальные характеристики товара
+          weightDivContains1: Вес
+          weightValueClass: div.detail__menu-value
+          weightValueIndex: 0
+
           countInPackParent: detail__menu-block
           countInPackChild: div.detail__menu-block-inner
           countInPackDivContains: Индивидуальная упаковка
@@ -56,19 +79,19 @@ jsoup:
           countInPackValueClass: div.detail__menu-value
           countInPackValueIndex: 0
 
-          dimensionParent: detail__menu-block
-          dimensionChild: div.detail__menu-block-inner
-          dimensionDivContains: Индивидуальная упаковка
-          dimensionDivContains1: Габариты (мм)
-          dimensionValueClass: div.detail__menu-value
-          dimensionValueIndex: 0
+          dimensionPackParent: detail__menu-block
+          dimensionPackChild: div.detail__menu-block-inner
+          dimensionPackDivContains: Индивидуальная упаковка
+          dimensionPackDivContains1: Габариты (мм)
+          dimensionPackValueClass: div.detail__menu-value
+          dimensionPackValueIndex: 0
 
-          weightParent: detail__menu-block
-          weightChild: div.detail__menu-block-inner
-          weightDivContains: Индивидуальная упаковка
-          weightDivContains1: Вес
-          weightValueClass: div.detail__menu-value
-          weightValueIndex: 0
+          weightPackParent: detail__menu-block
+          weightPackChild: div.detail__menu-block-inner
+          weightPackDivContains: Индивидуальная упаковка
+          weightPackDivContains1: Вес
+          weightPackValueClass: div.detail__menu-value
+          weightPackValueIndex: 0
 
           carryCountInPackParent: detail__menu-block
           carryCountInPackChild: div.detail__menu-block-inner
@@ -100,9 +123,18 @@ jsoup:
           barcodeValueIndex: 0
 
 
-          descriptionClass: detail__description detail__tab
+          descriptionGetElementsByClass: detail__description detail__tab
+          descriptionImageSelectForWrap: img
+          descriptionImageWrap: '<picture></picture>'
+          descriptionImageSelectForUnwrap: 'a[href]'
+          descriptionImageSelectForRemove: img
+          descriptionImageSelectContainsForRemove: '*:containsOwn(Скачать)'
+          descriptionImageSelectNotContains: 'a:not(:contains(Скачать))'
+          descriptionImageSelect: 'img[src~=(?i)\.(png|jpe?g|svg|gif|bmp)]'
+          descriptionImageUrl: src
 
-          imageParent: div.detail__slider-item
-          imageChild: a
-          imageAttribute: 'abs:href'
+
+          imageParent: detail__slider-inner
+          imageSelect: 'a[href~=(?i)\.(png|jpe?g|svg|gif|bmp)]'
+          imageUrl: href
 

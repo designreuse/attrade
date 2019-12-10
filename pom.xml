@@ -202,6 +202,13 @@
             <version>2.0.0.RELEASE</version>
         </dependency>
 
+        <!-- Language detector-->
+        <dependency>
+            <groupId>com.optimaize.languagedetector</groupId>
+            <artifactId>language-detector</artifactId>
+            <version>0.6</version>
+        </dependency>
+
     </dependencies>
 
     <build>

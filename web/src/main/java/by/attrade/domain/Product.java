@@ -104,7 +104,7 @@ public class Product implements Serializable {
     @Convert(converter = LocalDateTimeToTimestampConverter.class)
     private LocalDateTime creationLDT;
 
-    @Column(length = 300, unique = true)
+    @Column(length = 300)
     @Length(max = 300)
     @NotBlank
     @Fields({
@@ -167,6 +167,16 @@ public class Product implements Serializable {
 
     @AttributeOverrides(
             {
+                    @AttributeOverride(name = "height", column = @Column(name = "HEIGHT_PACK")),
+                    @AttributeOverride(name = "width", column = @Column(name = "WIDTH_PACK")),
+                    @AttributeOverride(name = "depth", column = @Column(name = "DEPTH_PACK")),
+            }
+    )
+    @Embedded
+    private Dimension dimensionPack;
+
+    @AttributeOverrides(
+            {
                     @AttributeOverride(name = "height", column = @Column(name = "HEIGHT_CARRY")),
                     @AttributeOverride(name = "width", column = @Column(name = "WIDTH_CARRY")),
                     @AttributeOverride(name = "depth", column = @Column(name = "DEPTH_CARRY")),
@@ -176,6 +186,7 @@ public class Product implements Serializable {
     private Dimension dimensionCarry;
 
     private Double weight; // kg
+    private Double weightPack; // kg
     private Double weightCarry; // kg
     @Column(length = 20)
     @Length(max = 20)
@@ -197,8 +208,13 @@ public class Product implements Serializable {
     private Unit unit = Unit.ITEM;
 
     @Enumerated(EnumType.STRING)
+    @JsonView(Views.Unit.class)
+    private Unit unitPack = Unit.ITEM;
+
+    @Enumerated(EnumType.STRING)
     private Unit unitCarry = Unit.ITEM;
 
+    private Integer count;
     private Integer countInPack;
     private Integer countInPackCarry;
 
@@ -235,6 +251,9 @@ public class Product implements Serializable {
 
     @OneToMany(mappedBy = "productPicture")
     List<Picture> pictures = new ArrayList<>();
+
+    @OneToMany(mappedBy = "productDescriptionPicture")
+    List<Picture> descriptionPictures = new ArrayList<>();
 
     @OneToMany(mappedBy = "product")
     private Set<ProductDetail> productDetails = new HashSet<>();
