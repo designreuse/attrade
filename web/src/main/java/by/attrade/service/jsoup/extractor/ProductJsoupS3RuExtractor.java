@@ -94,7 +94,7 @@ public class ProductJsoupS3RuExtractor implements IProductExtractor {
     }
 
     @Override
-    public List<String> getPropertiesValue(Document doc) {
+    public List<String> getPropertyValues(Document doc) {
         List<String> filtersValue = new ArrayList<>();
         Elements elems = doc.select(config.getPropertiesParent()).select(config.getPropertiesChild());
         boolean rotate = false;

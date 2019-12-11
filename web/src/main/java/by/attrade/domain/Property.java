@@ -1,5 +1,6 @@
 package by.attrade.domain;
 
+import by.attrade.type.PropertyType;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -10,6 +11,8 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -47,6 +50,11 @@ public class Property implements Serializable {
     @Column(length = 255)
     @Length(max = 255)
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private PropertyType propertyType = PropertyType.STRING;
+
+    private Integer priority;
 
     private boolean invisible;
     private boolean supplement;

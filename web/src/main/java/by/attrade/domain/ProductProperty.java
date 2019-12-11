@@ -9,6 +9,7 @@ import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -43,17 +44,12 @@ public class ProductProperty implements Serializable {
     @JoinColumn(name = "property_id")
     private Property property;
 
-    @Column(length = 500)
-    @Length(max = 500)
-    private String data;
-
-    private Double doubleData;
-    private Integer integerData;
-    private boolean booleanData;
+    @Embedded
+    private PropertyData propertyData;
 
     private Integer priority;
 
     private boolean invisible;
-    private boolean supplement;
+    private boolean supplement; // TODO - delete (from DB too)
 }
 

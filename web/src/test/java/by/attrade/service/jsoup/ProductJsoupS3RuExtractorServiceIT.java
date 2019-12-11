@@ -47,7 +47,7 @@ public class ProductJsoupS3RuExtractorServiceIT {
 
     @Test
     public void getFiltersValue() throws Exception {
-        List<String> values = service.getPropertiesValue(doc);
+        List<String> values = service.getPropertyValues(doc);
     }
 
     @Test

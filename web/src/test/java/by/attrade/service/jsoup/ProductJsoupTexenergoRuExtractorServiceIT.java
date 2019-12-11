@@ -3,7 +3,6 @@ package by.attrade.service.jsoup;
 import by.attrade.domain.Category;
 import by.attrade.domain.Product;
 import by.attrade.domain.Property;
-import by.attrade.service.jsoup.extractor.ProductJsoupS3RuExtractor;
 import by.attrade.service.jsoup.extractor.ProductJsoupTexenergoRuExtractor;
 import org.jsoup.nodes.Document;
 import org.junit.Before;
@@ -48,7 +47,7 @@ public class ProductJsoupTexenergoRuExtractorServiceIT {
 
     @Test
     public void getPropertiesValue() throws Exception {
-        List<String> values = service.getPropertiesValue(doc);
+        List<String> values = service.getPropertyValues(doc);
     }
 
     @Test

@@ -24,7 +24,7 @@ public class JsoupDocService {
             return Jsoup.connect(url)
                     .userAgent(jsoupConfig.getUserAgent())
                     .referrer(jsoupConfig.getReferrer())
-                    .timeout(jsoupConfig.getTimeout())
+//                    .timeout(jsoupConfig.getTimeout())
                     .get();
         } catch (Exception e) {
             log.error(e.getMessage() + ": " + url);
@@ -34,6 +34,6 @@ public class JsoupDocService {
 
     public Stream<String> getAllHrefNotPdfNotImage(Document doc) {
         Elements links = doc.select(HREF_NOT_PDF_NOT_IMAGE_NOT_EXCEL_CSS_QUERY);
-        return links.stream().map(e -> e.absUrl(HREF_CSS_ATTRIBUTE));
+        return links.stream().map(e -> e.absUrl(HREF_CSS_ATTRIBUTE).trim());
     }
 }

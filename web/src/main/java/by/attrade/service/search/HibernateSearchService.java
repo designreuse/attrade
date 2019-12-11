@@ -27,7 +27,7 @@ public class HibernateSearchService {
         return fullTextEntityManager.getSearchFactory();
     }
 
-    @PostConstruct
+//    @PostConstruct
     public void initializeHibernateSearch() {
         try {
             fullTextEntityManager = Search.getFullTextEntityManager(entityManager);

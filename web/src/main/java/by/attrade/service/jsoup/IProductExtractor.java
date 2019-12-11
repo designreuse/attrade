@@ -16,7 +16,7 @@ public interface IProductExtractor {
 
     List<Property> getProperties(Document doc) throws IOException;
 
-    List<String> getPropertiesValue(Document doc) throws IOException;
+    List<String> getPropertyValues(Document doc) throws IOException;
 
     List<String> getImagesUrl(Document doc) throws IOException;
 

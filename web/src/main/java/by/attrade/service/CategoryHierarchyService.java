@@ -28,6 +28,8 @@ public class CategoryHierarchyService implements ICategoryHierarchy {
     @Autowired
     private ICategoryHierarchy categoryHierarchy;
 
+    private List<Category> all;
+
     @Override
     public void build(List<Category> categories, Comparator<Category> comparator, List<Predicate<Category>> filters) {
         categoryHierarchy.build(categories, comparator, filters);
@@ -50,11 +52,14 @@ public class CategoryHierarchyService implements ICategoryHierarchy {
     public Map<Long, List<Category>> getChildMap() {
         return categoryHierarchy.getChildMap();
     }
+    public Category getCategoryByPath(String path){
+        return all.stream().filter(x->x.getPath().equals(path)).findFirst().orElse(null);
+    }
 
     @PostConstruct
     @Scheduled(fixedDelayString = "${scheduled.CategoryHierarchyService.build.fixedDelayInMilliseconds}", initialDelayString = "${scheduled.CategoryHierarchyService.build.initialDelayInMilliseconds}")
     public void init() {
-        List<Category> all = categoryService.findAll();
+        all = categoryService.findAll();
         build(all, comparator, filters);
     }
 }

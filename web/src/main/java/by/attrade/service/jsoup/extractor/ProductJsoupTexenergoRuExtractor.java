@@ -80,313 +80,378 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
     }
 
     private String getCode(Document doc) {
+        String code = null;
         try {
-            String code = doc
+            code = doc
                     .getElementsByClass(config.getCodeParent())
                     .select(config.getCodeChild())
                     .get(config.getCodeIndexElement())
                     .text();
-            code = StringUtil.removeSpaces(code);
-            return code;
         } catch (Exception e) {
-            return null;
+            log.info("Cannot find code: " + doc.location(), e.getMessage());
         }
+        if (code != null) {
+            code = StringUtil.removeSpaces(code);
+        }
+        return code;
     }
 
     private String getVendorCode(Document doc) {
+        String vendorCode = null;
         try {
-            String vendorCode = doc
+            vendorCode = doc
                     .getElementsByClass(config.getVendorCodeParent())
                     .select(config.getVendorCodeChild())
                     .get(config.getVendorCodeIndexElement())
                     .text();
-            vendorCode = StringUtil.removeSpaces(vendorCode);
-            return vendorCode;
         } catch (Exception e) {
-            return null;
+            log.info("Cannot find vendor code: " + doc.location(), e.getMessage());
         }
+        if (vendorCode != null) {
+            vendorCode = StringUtil.removeSpaces(vendorCode);
+        }
+        return vendorCode;
     }
 
     private String getName(Document doc) {
+        String name = null;
         try {
-            String name = doc
+            name = doc
                     .getElementsByClass(config.getNameParent())
                     .select(config.getNameChild())
                     .get(config.getNameIndexElement())
                     .text();
-            name = StringUtil.trimIfNotNull(name);
-            return name;
         } catch (Exception e) {
-            return null;
+            log.info("Cannot read name: " + doc.location(), e.getMessage());
         }
+        if (name != null) {
+            name = StringUtil.trimIfNotNull(name);
+        }
+        return name;
+
     }
 
     private Unit getUnit(Document doc) {
+        String unitString = null;
+        Unit unit = null;
         try {
-            String unitString = doc
+            unitString = doc
                     .getElementsByClass(config.getCountParent())
                     .select(config.getCountChild())
                     .select("div:containsOwn(" + config.getCountDivContains() + ")").first().parent()
                     .select("div:containsOwn(" + config.getCountDivContains1() + ")").first().parent()
                     .select(config.getCountClass()).get(config.getCountIndex())
                     .text();
-            unitString = StringUtil.removeSpaces(unitString);
-            Unit unit = unitMessageInSequenceParserService.findUnitThroughMessagesSurroundedBraces(unitString, getLocale());
-            return unit;
         } catch (Exception e) {
-            return null;
+            log.info("Cannot find unit: " + doc.location(), e.getMessage());
         }
+        if (unitString != null) {
+            unitString = StringUtil.removeSpaces(unitString);
+            unit = unitMessageInSequenceParserService.findUnitThroughMessagesSurroundedBraces(unitString, getLocale());
+        }
+        return unit;
     }
 
     private Integer getCount(Document doc) {
+        String countString = null;
+        Integer countPack = null;
         try {
-            String countString = doc
+            countString = doc
                     .getElementsByClass(config.getCountParent())
                     .select(config.getCountChild())
                     .select("div:containsOwn(" + config.getCountDivContains() + ")").first().parent()
                     .select("div:containsOwn(" + config.getCountDivContains1() + ")").first().parent()
                     .select(config.getCountValueClass()).get(config.getCountValueIndex())
                     .text();
+        } catch (Exception e) {
+            log.info("Cannot find count: " + doc.location(), e.getMessage());
+        }
+        if (countString != null) {
             try {
                 countString = StringUtil.removeSpaces(countString);
-                Integer countPack = Integer.valueOf(countString);
-                return countPack;
+                countPack = Integer.valueOf(countString);
             } catch (NumberFormatException e) {
-                log.error("CountInPack is not an integer: " + doc.location(), e);
+                log.error("CountInPack is not an integer: " + doc.location(), e.getMessage());
                 return null;
             }
-        } catch (Exception e) {
-            return null;
         }
+        return countPack;
     }
 
     private Dimension getDimension(Document doc) {
+        String dimensionString = null;
+        Dimension dimension = null;
         try {
-            String dimensionString = doc
+            dimensionString = doc
                     .getElementsByClass(config.getDimensionParent())
                     .select(config.getDimensionChild())
                     .select("div:containsOwn(" + config.getDimensionDivContains() + ")").first().parent()
                     .select("div:containsOwn(" + config.getDimensionDivContains1() + ")").first().parent()
                     .select(config.getDimensionValueClass()).get(config.getDimensionValueIndex())
                     .text();
+        } catch (Exception e) {
+            log.info("Cannot find dimension: " + doc.location(), e.getMessage());
+        }
+        if (dimensionString != null) {
             try {
                 dimensionString = StringUtil.removeSpaces(dimensionString);
-                Dimension dimension = dimensionParserService.parseXspliterMmToMm(dimensionString);
-                return dimension;
+                dimension = dimensionParserService.parseXspliterMmToMm(dimensionString);
             } catch (NumberFormatException e) {
-                log.error("Dimension is not a double: " + doc.location(), e);
+                log.error("Dimension is not a double: " + doc.location(), e.getMessage());
                 return null;
             }
-        } catch (Exception e) {
-            return null;
         }
+        return dimension;
     }
 
     private Double getWeight(Document doc) {
+        String weightString = null;
+        Double weight = null;
         try {
-            String weightString = doc
+            weightString = doc
                     .getElementsByClass(config.getWeightParent())
                     .select(config.getWeightChild())
                     .select("div:containsOwn(" + config.getWeightDivContains() + ")").first().parent()
                     .select("div:containsOwn(" + config.getWeightDivContains1() + ")").first().parent()
                     .select(config.getWeightValueClass()).get(config.getWeightValueIndex())
                     .text();
+        } catch (Exception e) {
+            log.info("Cannot find weight: " + doc.location(), e.getMessage());
+        }
+        if (weightString != null) {
             weightString = StringUtil.removeSpaces(weightString);
-            Double weight = null;
             try {
                 weight = Double.parseDouble(weightString);
             } catch (NumberFormatException e) {
-                log.error("Weight is not a double: " + doc.location(), e);
+                log.error("Weight is not a double: " + doc.location(), e.getMessage());
+                return null;
             }
-            return weight;
-        } catch (Exception e) {
-            return null;
         }
+        return weight;
     }
 
     private Unit getUnitInPack(Document doc) {
+        String unitPackString = null;
+        Unit unitPack = null;
         try {
-            String unitPackString = doc
+            unitPackString = doc
                     .getElementsByClass(config.getCountInPackParent())
                     .select(config.getCountInPackChild())
                     .select("div:containsOwn(" + config.getCountInPackDivContains() + ")").first().parent()
                     .select("div:containsOwn(" + config.getCountInPackDivContains1() + ")").first().parent()
                     .select(config.getCountInPackClass()).get(config.getCountInPackIndex())
                     .text();
-            unitPackString = StringUtil.removeSpaces(unitPackString);
-            Unit unitPack = unitMessageInSequenceParserService.findUnitThroughMessagesSurroundedBraces(unitPackString, getLocale());
-            return unitPack;
         } catch (Exception e) {
-            return null;
+            log.info("Cannot find unit pack: " + doc.location(), e.getMessage());
         }
+        if (unitPackString != null) {
+            unitPackString = StringUtil.removeSpaces(unitPackString);
+            unitPack = unitMessageInSequenceParserService.findUnitThroughMessagesSurroundedBraces(unitPackString, getLocale());
+        }
+        return unitPack;
     }
 
 
     private Integer getCountInPack(Document doc) {
+        String countInPackString = null;
+        Integer countInPack = null;
         try {
-            String countInPackString = doc
+            countInPackString = doc
                     .getElementsByClass(config.getCountInPackParent())
                     .select(config.getCountInPackChild())
                     .select("div:containsOwn(" + config.getCountInPackDivContains() + ")").first().parent()
                     .select("div:containsOwn(" + config.getCountInPackDivContains1() + ")").first().parent()
                     .select(config.getCountInPackValueClass()).get(config.getCountInPackValueIndex())
                     .text();
+        } catch (Exception e) {
+            log.info("Cannot find count in pack: " + doc.location(), e.getMessage());
+        }
+        if (countInPackString != null) {
             try {
                 countInPackString = StringUtil.removeSpaces(countInPackString);
-                Integer countInPack = Integer.valueOf(countInPackString);
-                return countInPack;
+                countInPack = Integer.valueOf(countInPackString);
             } catch (NumberFormatException e) {
-                log.error("Count in pack is not an integer: " + doc.location(), e);
+                log.error("Count in pack is not an integer: " + doc.location(), e.getMessage());
                 return null;
             }
-        } catch (Exception e) {
-            return null;
         }
+        return countInPack;
     }
 
     private Dimension getDimensionPack(Document doc) {
+        String dimensionPackString = null;
+        Dimension dimensionPack = null;
         try {
-            String dimensionPackString = doc
+            dimensionPackString = doc
                     .getElementsByClass(config.getDimensionPackParent())
                     .select(config.getDimensionPackChild())
                     .select("div:containsOwn(" + config.getDimensionPackDivContains() + ")").first().parent()
                     .select("div:containsOwn(" + config.getDimensionPackDivContains1() + ")").first().parent()
                     .select(config.getDimensionPackValueClass()).get(config.getDimensionPackValueIndex())
                     .text();
+        } catch (Exception e) {
+            log.info("Cannot find dimension pack: " + doc.location(), e.getMessage());
+        }
+        if (dimensionPackString != null) {
             try {
                 dimensionPackString = StringUtil.removeSpaces(dimensionPackString);
-                Dimension dimensionPack = dimensionParserService.parseXspliterMmToMm(dimensionPackString);
-                return dimensionPack;
+                dimensionPack = dimensionParserService.parseXspliterMmToMm(dimensionPackString);
+
             } catch (Exception e) {
-                log.error("Dimension are not numbers: " + doc.location(), e);
+                log.error("Dimension are not numbers: " + doc.location(), e.getMessage());
                 return null;
             }
-        } catch (Exception e) {
-            return null;
         }
+        return dimensionPack;
     }
 
     private Double getWeightPack(Document doc) {
+        String weightPackString = null;
+        Double weightPack = null;
         try {
-            String weightPackString = doc
+            weightPackString = doc
                     .getElementsByClass(config.getWeightPackParent())
                     .select(config.getWeightPackChild())
                     .select("div:containsOwn(" + config.getWeightPackDivContains() + ")").first().parent()
                     .select("div:containsOwn(" + config.getWeightPackDivContains1() + ")").first().parent()
                     .select(config.getWeightPackValueClass()).get(config.getWeightPackValueIndex())
                     .text();
+        } catch (Exception e) {
+            log.info("Cannot find weight pack: " + doc.location(), e.getMessage());
+        }
+        if (weightPackString != null) {
             weightPackString = StringUtil.removeSpaces(weightPackString);
-            Double weightPack = null;
             try {
                 weightPack = Double.parseDouble(weightPackString);
             } catch (NumberFormatException e) {
-                log.error("Weight is not a double: " + doc.location(), e);
+                log.error("Weight is not a double: " + doc.location(), e.getMessage());
+                return null;
             }
-            return weightPack;
-        } catch (Exception e) {
-            return null;
         }
+        return weightPack;
+
     }
 
     private Unit getUnitCarry(Document doc) {
+        String unitCarryString = null;
+        Unit unitCarry = null;
         try {
-            String unitCarryString = doc
+            unitCarryString = doc
                     .getElementsByClass(config.getCarryCountInPackParent())
                     .select(config.getCarryCountInPackChild())
                     .select("div:containsOwn(" + config.getCarryCountInPackDivContains() + ")").first().parent()
                     .select("div:containsOwn(" + config.getCarryCountInPackDivContains1() + ")").first().parent()
                     .select(config.getCarryCountInPackClass()).get(config.getCarryCountInPackIndex())
                     .text();
-            unitCarryString = StringUtil.removeSpaces(unitCarryString);
-            Unit unitCarry = unitMessageInSequenceParserService.findUnitThroughMessagesSurroundedBraces(unitCarryString, getLocale());
-            return unitCarry;
         } catch (Exception e) {
-            return null;
+            log.info("Cannot find unit carry: " + doc.location(), e.getMessage());
         }
+        if (unitCarryString != null) {
+            unitCarryString = StringUtil.removeSpaces(unitCarryString);
+            unitCarry = unitMessageInSequenceParserService.findUnitThroughMessagesSurroundedBraces(unitCarryString, getLocale());
+        }
+        return unitCarry;
+
     }
 
     private Integer getCountInPackCarry(Document doc) {
+        String countCarryInPackString = null;
+        Integer countCarryInPack = null;
         try {
-            String countCarryInPackString = doc
+            countCarryInPackString = doc
                     .getElementsByClass(config.getCarryCountInPackParent())
                     .select(config.getCarryCountInPackChild())
                     .select("div:containsOwn(" + config.getCarryCountInPackDivContains() + ")").first().parent()
                     .select("div:containsOwn(" + config.getCarryCountInPackDivContains1() + ")").first().parent()
                     .select(config.getCarryCountInPackValueClass()).get(config.getCarryCountInPackValueIndex())
                     .text();
+        } catch (Exception e) {
+            log.info("Cannot find count in pack carry: " + doc.location(), e.getMessage());
+        }
+        if (countCarryInPackString != null) {
             try {
                 countCarryInPackString = StringUtil.removeSpaces(countCarryInPackString);
-                Integer countCarryInPack = Integer.valueOf(countCarryInPackString);
-                return countCarryInPack;
+                countCarryInPack = Integer.valueOf(countCarryInPackString);
             } catch (NumberFormatException e) {
-                log.error("CountInPack is not an integer: " + doc.location(), e);
+                log.error("CountInPack is not an integer: " + doc.location(), e.getMessage());
                 return null;
             }
-        } catch (Exception e) {
-            return null;
         }
+        return countCarryInPack;
     }
 
     private Dimension getDimensionCarry(Document doc) {
+        String dimensionCarryString = null;
+        Dimension dimensionCarry = null;
         try {
-            String dimensionCarryString = doc
+            dimensionCarryString = doc
                     .getElementsByClass(config.getCarryDimensionParent())
                     .select(config.getCarryDimensionChild())
                     .select("div:containsOwn(" + config.getCarryDimensionDivContains() + ")").first().parent()
                     .select("div:containsOwn(" + config.getCarryDimensionDivContains1() + ")").first().parent()
                     .select(config.getCarryDimensionValueClass()).get(config.getCarryDimensionValueIndex())
                     .text();
+        } catch (Exception e) {
+            log.info("Cannot find dimension carry: " + doc.location(), e.getMessage());
+        }
+        if (dimensionCarryString != null) {
             try {
                 dimensionCarryString = StringUtil.removeSpaces(dimensionCarryString);
-                Dimension dimensionCarry = dimensionParserService.parseXspliterMmToMm(dimensionCarryString);
-                return dimensionCarry;
+                dimensionCarry = dimensionParserService.parseXspliterMmToMm(dimensionCarryString);
             } catch (NumberFormatException e) {
-                log.error("Dimension is not a double: " + doc.location(), e);
+                log.error("Dimension is not a double: " + doc.location(), e.getMessage());
                 return null;
             }
-        } catch (Exception e) {
-            return null;
         }
+        return dimensionCarry;
     }
 
     private Double getWeightCarry(Document doc) {
+        String weightCarryString = null;
+        Double weightCarry = null;
         try {
-            String weightCarryString = doc
+            weightCarryString = doc
                     .getElementsByClass(config.getCarryWeightParent())
                     .select(config.getCarryWeightChild())
                     .select("div:containsOwn(" + config.getCarryWeightDivContains() + ")").first().parent()
                     .select("div:containsOwn(" + config.getCarryWeightDivContains1() + ")").first().parent()
                     .select(config.getCarryWeightValueClass()).get(config.getCarryWeightValueIndex())
                     .text();
+        } catch (Exception e) {
+            log.info("Cannot find weight carry: " + doc.location(), e.getMessage());
+        }
+        if (weightCarryString != null) {
             weightCarryString = StringUtil.removeSpaces(weightCarryString);
-            Double weightCarry = null;
             try {
                 weightCarry = Double.parseDouble(weightCarryString);
             } catch (NumberFormatException e) {
-                log.error("WeightCarry is not a double: " + doc.location(), e);
+                log.error("WeightCarry is not a double: " + doc.location(), e.getMessage());
             }
-            return weightCarry;
-        } catch (Exception e) {
-            return null;
         }
+        return weightCarry;
+
     }
 
     private String getBarcode(Document doc) {
+        String barcode = null;
         try {
-            String barcode = doc
+            barcode = doc
                     .getElementsByClass(config.getBarcodeParent())
                     .select(config.getBarcodeChild())
                     .select("div:containsOwn(" + config.getBarcodeDivContains() + ")").first().parent()
                     .select(config.getBarcodeValueClass()).get(config.getBarcodeValueIndex())
                     .text();
-            barcode = StringUtil.removeSpaces(barcode);
-            return barcode;
         } catch (Exception e) {
-            return null;
+            log.info("Cannot find barcode: " + doc.location(), e.getMessage());
         }
+        if (barcode != null) {
+            barcode = StringUtil.removeSpaces(barcode);
+        }
+        return barcode;
     }
 
     private String getDescription(Document doc) {
+        String description = null;
         doc = doc.clone();
         try {
             doc.select(config.getDescriptionImageSelectForWrap()).wrap(config.getDescriptionImageWrap());
@@ -396,90 +461,127 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
             Elements elems = doc
                     .getElementsByClass(config.getDescriptionGetElementsByClass());
 
-            String description = elems.html();
-            return description;
+            description = elems.html();
         } catch (Exception e) {
-            return null;
+            log.info("Cannot find description: " + doc.location(), e.getMessage());
         }
+        return description;
     }
 
 
     @Override
     public List<Category> getCategories(Document doc) throws Exception {
         List<Category> categories = new ArrayList<>();
-        Elements elems = doc.getElementsByClass(config.getCategoriesParent()).select(config.getCategoriesChild());
-        for (Element e : elems) {
-            String categoryName = e.text();
-            categoryName = StringUtil.trimIfNotNull(categoryName);
-            Category category = new Category(categoryName);
-            categories.add(category);
+        Elements elems = null;
+        try {
+            elems = doc
+                    .getElementsByClass(config.getCategoriesParent())
+                    .select(config.getCategoriesChild());
+        } catch (Exception e) {
+            log.info("Cannot find categories: " + doc.location(), e.getMessage());
         }
-        int exlLast = 1;
-        categories = categories.subList(config.getCategoriesStartWithIndex(), categories.size() - exlLast);
+        if (elems != null) {
+            for (Element e : elems) {
+                String categoryName = e.text();
+                categoryName = StringUtil.trimIfNotNull(categoryName);
+                Category category = new Category(categoryName);
+                categories.add(category);
+            }
+            int exlLast = 1;
+            categories = categories.subList(config.getCategoriesStartWithIndex(), categories.size() - exlLast);
+        }
         return categories;
     }
 
     @Override
     public List<Property> getProperties(Document doc) {
         List<Property> properties = new ArrayList<>();
-        Elements elems = doc
-                .getElementsByClass(config.getPropertiesParent())
-                .select(config.getPropertiesChild())
-                .select("div:containsOwn(" + config.getPropertiesDivContains() + ")").first().parent()
-                .select(config.getPropertiesClass());
-        for (Element e : elems) {
-            String name = e.text();
-            name = StringUtil.trimIfNotNull(name);
-            Property p = new Property();
-            p.setName(name);
-            properties.add(p);
+        Elements elems = null;
+        try {
+            elems = doc
+                    .getElementsByClass(config.getPropertiesParent())
+                    .select(config.getPropertiesChild())
+                    .select("div:containsOwn(" + config.getPropertiesDivContains() + ")").first().parent()
+                    .select(config.getPropertiesClass());
+        } catch (Exception e) {
+            log.info("Cannot find properties: " + doc.location(), e.getMessage());
+        }
+        if (elems != null) {
+            for (Element e : elems) {
+                String name = e.text();
+                name = StringUtil.trimIfNotNull(name);
+                Property p = new Property();
+                p.setName(name);
+                properties.add(p);
+            }
         }
         return properties;
     }
 
     @Override
-    public List<String> getPropertiesValue(Document doc) {
-        List<String> filtersValue = new ArrayList<>();
-        Elements elems = doc
-                .getElementsByClass(config.getPropertiesParent())
-                .select(config.getPropertiesChild())
-                .select("div:containsOwn(" + config.getPropertiesDivContains() + ")").first().parent()
-                .select(config.getPropertiesValueClass());
-        for (Element e : elems) {
-            String value = e.text();
-            value = StringUtil.trimIfNotNull(value);
-            filtersValue.add(value);
+    public List<String> getPropertyValues(Document doc) {
+        List<String> propertyValues = new ArrayList<>();
+        Elements elems = null;
+        try {
+            elems = doc
+                    .getElementsByClass(config.getPropertiesParent())
+                    .select(config.getPropertiesChild())
+                    .select("div:containsOwn(" + config.getPropertiesDivContains() + ")").first().parent()
+                    .select(config.getPropertiesValueClass());
+        } catch (Exception e) {
+            log.info("Cannot find property values: " + doc.location(), e.getMessage());
         }
-        return filtersValue;
+        if (elems != null) {
+            for (Element e : elems) {
+                String value = e.text();
+                value = StringUtil.trimIfNotNull(value);
+                propertyValues.add(value);
+            }
+        }
+        return propertyValues;
     }
 
     @Override
     public List<String> getImagesUrl(Document doc) {
         List<String> urls = new ArrayList<>();
-        Elements elems = doc
-                .getElementsByClass(config.getImageParent())
-                .select(config.getImageSelect());
-        for (Element e : elems) {
-            String url = e.absUrl(config.getImageUrl());
-            url = StringUtil.trimIfNotNull(url);
-            url = StringUtil.renameToNullIfContains(url, config.getDefaultPictureFileName());
-            urls.add(url);
+        Elements elems = null;
+        try {
+            elems = doc
+                    .getElementsByClass(config.getImageParent())
+                    .select(config.getImageSelect());
+        } catch (Exception e) {
+            log.info("Cannot find images url: " + doc.location(), e.getMessage());
+        }
+        if (elems != null) {
+            for (Element e : elems) {
+                String url = e.absUrl(config.getImageUrl());
+                url = StringUtil.trimIfNotNull(url);
+                url = StringUtil.renameToNullIfContains(url, config.getDefaultPictureFileName());
+                urls.add(url);
+            }
         }
         return urls;
     }
+
     @Override
-    public List<String> getDescriptionImagesUrl(Document doc){
+    public List<String> getDescriptionImagesUrl(Document doc) {
         doc = doc.clone();
         List<String> urls = new ArrayList<>();
-        Elements elems = doc
-                .getElementsByClass(config.getDescriptionGetElementsByClass())
-//                .select(config.getDescriptionImageSelectNotContains())
-                .select(config.getDescriptionImageSelect());
-        for (Element e : elems) {
-            String url = e.absUrl(config.getDescriptionImageUrl());
-            url = StringUtil.trimIfNotNull(url);
-            url = StringUtil.renameToNullIfContains(url, config.getDefaultPictureFileName());
-            urls.add(url);
+        Elements elems = null;
+        try {
+            elems = doc
+                    .getElementsByClass(config.getDescriptionGetElementsByClass())
+                    .select(config.getDescriptionImageSelect());
+        } catch (Exception e) {
+            log.info("Cannot find description images url: " + doc.location(), e.getMessage());
+        }
+        if (elems != null) {
+            for (Element e : elems) {
+                String url = e.absUrl(config.getDescriptionImageUrl());
+                url = StringUtil.trimIfNotNull(url);
+                url = StringUtil.renameToNullIfContains(url, config.getDefaultPictureFileName());
+                urls.add(url);
+            }
         }
         return urls;
     }

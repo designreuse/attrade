@@ -8,6 +8,7 @@ import by.attrade.domain.Picture;
 import by.attrade.domain.Product;
 import by.attrade.domain.ProductProperty;
 import by.attrade.domain.Property;
+import by.attrade.domain.PropertyData;
 import by.attrade.service.categoryPathAdjuster.CategoryPathByNameAdjusterService;
 import by.attrade.service.jsoup.IProductExtractor;
 import by.attrade.service.jsoup.JsoupDocService;
@@ -93,6 +94,9 @@ public class ProductExtractorService {
         List<ExtractorErrorUrl> errorUrls = new LinkedList<>();
         while (!all.isEmpty()) {
             String url = all.iterator().next();
+            if (all.size()%10000==0){
+                System.out.println("All: "+all.size());
+            }
             all.remove(url);
             selected.add(url);
             Document doc;
@@ -108,7 +112,9 @@ public class ProductExtractorService {
                 saveProductIfNotExistsByCode(extractor, doc, url, compressions);
             } catch (HttpStatusException e) {
                 errorUrls.add(new ExtractorErrorUrl(url));
+                log.info("Cannot save extracted product because cannot fetch: "+url, e);
             } catch (Exception e) {
+                log.error("Cannot save extracted product: "+ url, e);
             }
             extractUrls(doc, all, selected, extractor);
         }
@@ -173,7 +179,7 @@ public class ProductExtractorService {
         List<String> imagesUrl = extractor.getImagesUrl(doc);
         List<String> descriptionImagesUrl = extractor.getDescriptionImagesUrl(doc);
         List<Property> properties = extractor.getProperties(doc);
-        List<String> values = extractor.getPropertiesValue(doc);
+        List<String> values = extractor.getPropertyValues(doc);
         Product product = extractor.getProduct(doc);
 
         List<Picture> pictures = downloadPictures(imagesUrl, compressions);
@@ -193,7 +199,9 @@ public class ProductExtractorService {
         product.setPath(path);
         product.setDescription(description);
         product.setPictures(pictures);
-        product.setPicture(pictures.get(0).getPath());
+        if (!pictures.isEmpty()){
+            product.setPicture(pictures.get(0).getPath());
+        }
         product.setDescriptionPictures(descriptionPictures);
         productService.save(product);
 
@@ -202,7 +210,7 @@ public class ProductExtractorService {
             ProductProperty productProperty = new ProductProperty();
             productProperty.setProduct(product);
             productProperty.setProperty(properties.get(i));
-            productProperty.setData(values.get(i));
+            productProperty.setPropertyData(new PropertyData(values.get(i)));
             try {
                 productPropertyService.save(productProperty);
             } catch (Exception e) {

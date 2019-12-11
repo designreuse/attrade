@@ -19,7 +19,7 @@ import java.util.List;
 public class ProductExtractorServiceIT {
     private String domain = "http://www.s3.ru/ru";
     private String s3Url = "http://www.s3.ru/ru/catalogue/fotohimiya/6802102-kodak-c-41-40-l-proyavitel-6800932-60_49.html";
-    private String texenergoUrl = "https://www.texenergo.ru/catalog/item.html/te00242213";
+    private String texenergoUrl = "https://www.texenergo.ru/catalog/item.html/te00309740";
     private int iRowStart = 0;
     private int iRowEnd = 11353;
     //    private int iRowEnd = 1000;

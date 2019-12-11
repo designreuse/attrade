@@ -78,6 +78,7 @@ logging:
         controller: DEBUG
         config: DEBUG
         service: DEBUG
+    root: ON
 
 
 

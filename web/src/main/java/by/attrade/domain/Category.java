@@ -38,6 +38,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -47,12 +48,17 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 @ToString(of = {"name", "parent"})
 @EqualsAndHashCode(of = {"id"})
@@ -104,9 +110,9 @@ public class Category implements Serializable {
 
     @OneToMany(mappedBy = "category")
     @IndexedEmbedded(includePaths = { "name", "code"})
-    private Set<Product> products = new HashSet<>();
-    @OneToMany(mappedBy = "category")
-    private Set<Property> properties = new HashSet<>();
+    private List<Product> products = new ArrayList<>();
+    @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
+    private List<Property> properties = new ArrayList<>();
 
     public Category(@Length(max = 30) @NotBlank String name) {
         this.name = name;
