@@ -26,16 +26,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 @Slf4j
 public class ProductExtractorService {
     private static final String DESCRIPTION = "описание";
+    private static final int COUNT_IN_BATCH = 100;
+
 
     @Autowired
     private CategoryService categoryService;
@@ -137,34 +140,38 @@ public class ProductExtractorService {
     }
 
     private List<ExtractorErrorUrl> saveProductsIfNotExistsByCode(IProductExtractor extractor) {
-        Set<String> all = new HashSet<>();
-        Set<String> selected = new HashSet<>();
+        Set<String> all = new ConcurrentSkipListSet<>();
+        Set<String> selected = new ConcurrentSkipListSet<>();
         all.add(extractor.getUrl());
         selected.addAll(productService.getUrlsStartWith(extractor.getUrl()));
         List<ExtractorErrorUrl> errorUrls = new LinkedList<>();
         while (!all.isEmpty()) {
-            String url = all.iterator().next();
-            log.info("ALL: " + all.size() + " TRY EXTRACT: " + url);
-            all.remove(url);
-            selected.add(url);
-            Document doc;
-            try {
-                doc = jsoupDocService.getJsoupDoc(url);
-                extractUrls(doc, all, selected, extractor);
-            } catch (Exception e) {
-                errorUrls.add(new ExtractorErrorUrl(url, e.getMessage()));
-                log.info("Cannot parse jsoup doc: " + url, e);
-                continue;
-            }
-            try {
-                saveProductIfNotExistsByCode(extractor, doc);
-            } catch (Exception e) {
-                errorUrls.add(new ExtractorErrorUrl(url, e.getMessage()));
-                log.info("Cannot save extracted product because cannot fetch: " + url, e);
-                continue;
-            }
+            List<String> batchUrls = all.stream().limit(COUNT_IN_BATCH).collect(Collectors.toList());
+            log.info("ALL: " + all.size() + " TRY EXTRACT: " + batchUrls);
+            selected.addAll(batchUrls);
+            all.removeAll(batchUrls);
+            batchUrls.stream().parallel().forEach(url ->tryExtractAndSave(extractor, all, selected, errorUrls, url));
         }
         return errorUrls;
+    }
+
+    private void tryExtractAndSave(IProductExtractor extractor, Set<String> all, Set<String> selected, List<ExtractorErrorUrl> errorUrls, String url) {
+        Document doc;
+        try {
+            doc = jsoupDocService.getJsoupDoc(url);
+            extractUrls(doc, all, selected, extractor);
+        } catch (Exception e) {
+            errorUrls.add(new ExtractorErrorUrl(url, e.getMessage()));
+            log.info("Cannot parse jsoup doc: " + url, e);
+            return;
+        }
+        try {
+            saveProductIfNotExistsByCode(extractor, doc);
+        } catch (Exception e) {
+            errorUrls.add(new ExtractorErrorUrl(url, e.getMessage()));
+            log.info("Cannot save extracted product because cannot fetch: " + url, e);
+            return;
+        }
     }
 
     private void extractUrls(Document doc, Set<String> all, Set<String> selected, IProductExtractor extractor) {
