@@ -17,9 +17,8 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ProductExtractorServiceIT {
-    private String domain = "http://www.s3.ru/ru";
     private String s3Url = "http://www.s3.ru/ru/catalogue/fotohimiya/6802102-kodak-c-41-40-l-proyavitel-6800932-60_49.html";
-    private String texenergoUrl = "https://www.texenergo.ru/catalog/item.html/te00309740";
+    private String texenergoUrl = "https://www.texenergo.ru/catalog/item.html/te00433560";
     private int iRowStart = 0;
     private int iRowEnd = 11353;
     //    private int iRowEnd = 1000;
@@ -43,26 +42,24 @@ public class ProductExtractorServiceIT {
 
     @Test
     public void saveProducts() throws Exception {
-        ExtractorError extractorError = service.saveProductsIfNotExistsByCodeAndSaveErrors(s3RuExtractor, urls, null);
+        ExtractorError extractorError = service.saveProductsIfNotExistsByCodeAndSaveErrors(s3RuExtractor, urls.stream());
         extractorError.getUrls().forEach(System.out::println);
     }
-    @Test
-    public void saveS3DomainProducts() throws Exception {
-        ExtractorError extractorError = service.saveProductsIfNotExistsByCodeAndSaveErrors(s3RuExtractor, null);
-        extractorError.getUrls().forEach(System.out::println);
-    }
-
     @Test
     public void saveS3Product() throws Exception {
-        service.saveProductIfNotExistsByCode(s3RuExtractor, s3Url, null);
+        service.saveProductIfNotExistsByCode(s3RuExtractor, s3Url);
     }
     @Test
     public void saveTexenergoProduct() throws Exception {
-        service.saveProductIfNotExistsByCode(texenergoRuExtractor, texenergoUrl, null);
+        service.saveProductIfNotExistsByCode(texenergoRuExtractor, texenergoUrl);
     }
     @Test
     public void saveTexenergoDomainProducts() throws Exception {
-        ExtractorError extractorError = service.saveProductsIfNotExistsByCodeAndSaveErrors(texenergoRuExtractor, null);
-        extractorError.getUrls().forEach(System.out::println);
+        service.saveProductsIfNotExistsByCodeAndSaveErrors(texenergoRuExtractor);
+    }
+
+    @Test
+    public void saveS3DomainProducts() throws Exception {
+        service.saveProductsIfNotExistsByCodeAndSaveErrors(s3RuExtractor);
     }
 }

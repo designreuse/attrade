@@ -1,7 +1,6 @@
 package by.attrade.service.jsoup;
 
 import by.attrade.domain.Category;
-import by.attrade.domain.Product;
 import by.attrade.domain.Property;
 import by.attrade.service.jsoup.extractor.ProductJsoupS3RuExtractor;
 import org.jsoup.nodes.Document;
@@ -28,11 +27,6 @@ public class ProductJsoupS3RuExtractorServiceIT {
     @Before
     public void init() throws IOException {
         doc = jsoupDocService.getJsoupDoc(url);
-    }
-
-    @Test
-    public void getProduct() throws Exception {
-        Product product = service.getProduct(doc);
     }
 
     @Test

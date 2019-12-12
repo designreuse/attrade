@@ -32,11 +32,15 @@ public class ExtractorErrorUrl implements Serializable {
     @NonNull
     private String url;
 
+    @Column(length = 500)
+    @NonNull
+    private String message;
+
     @ManyToOne
     @JoinColumn(name = "extractor_error_id")
     private ExtractorError extractorError;
 
-    public ExtractorErrorUrl(String url) {
+    public ExtractorErrorUrl(String url, String message) {
         this.url = url;
     }
 }

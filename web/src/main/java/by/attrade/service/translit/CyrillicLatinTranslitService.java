@@ -81,6 +81,10 @@ public class CyrillicLatinTranslitService implements ITranslitService {
     }
     @Override
     public String toTranslit(String text) {
-        return toTranslit(letters, text);
+        if (text!=null){
+            return toTranslit(letters, text);
+        }else {
+            return null;
+        }
     }
 }

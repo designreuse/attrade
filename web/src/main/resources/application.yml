@@ -8,7 +8,7 @@ spring:
   jpa:
     generate-ddl: false
     show-sql: false
-    hibernate.ddl-auto: validate
+    hibernate.ddl-auto: create
 
   freemarker:
     expose-request-attributes: true
@@ -44,7 +44,7 @@ spring:
 server:
   language: en
   path:
-    absolute: d:\java\projects\attrade-core
+    absolute: d:\java\projects\attrade-upload
     upload: \upload
     picture: \upload\picture
 
@@ -167,12 +167,12 @@ messages-source:
 
 picture:
   media:
-    init: false
-    removeNotSynchronized: true
+    init: true
+    removeNotSynchronized: false
     compressMain: false
     compressMainQuality: 100
-    createMediaPictures: true
-    createMarkerPictures: true
+    createMediaPictures: false
+    createMarkerPictures: false
     unknownAutoImageType: jpeg
     defaultPictureFileName: default.png
 
@@ -199,3 +199,14 @@ scheduled:
     build:
       fixedDelayInMilliseconds: 60000
       initialDelayInMilliseconds: 60000
+
+
+hibernate:
+  search:
+    init: true
+    purgeAllOnStart: true
+    optimizeOnFinish: true
+    batchSizeToLoadObjects: 100
+    threadsToLoadObjects: 10
+    regexAnyChar: '**'
+    minGramSize: 3

@@ -3,7 +3,6 @@ package by.attrade.service.jsoup.extractor;
 import by.attrade.config.JsoupTexenergoRuProductConfig;
 import by.attrade.domain.Category;
 import by.attrade.domain.Dimension;
-import by.attrade.domain.Product;
 import by.attrade.domain.Property;
 import by.attrade.service.DimensionParserService;
 import by.attrade.service.UnitMessageInSequenceParserService;
@@ -32,54 +31,7 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
     private DimensionParserService dimensionParserService;
 
     @Override
-    public boolean isContainProduct(Document doc) {
-        String code = getCode(doc);
-        String name = getName(doc);
-        return code != null && name != null;
-    }
-
-    @Override
-    public Product getProduct(Document doc) {
-        String code = getCode(doc);
-        String vendorCode = getVendorCode(doc);
-        String name = getName(doc);
-        Unit unit = getUnit(doc);
-        Integer count = getCount(doc);
-        Dimension dimension = getDimension(doc);
-        Double weight = getWeight(doc);
-        Unit unitPack = getUnitInPack(doc);
-        Integer countInPack = getCountInPack(doc);
-        Dimension dimensionPack = getDimensionPack(doc);
-        Double weightPack = getWeightPack(doc);
-        Unit unitCarry = getUnitCarry(doc);
-        Integer countInPackCarry = getCountInPackCarry(doc);
-        Dimension dimensionCarry = getDimensionCarry(doc);
-        Double weightCarry = getWeightCarry(doc);
-        String barcode = getBarcode(doc);
-        String description = getDescription(doc);
-
-        Product product = new Product();
-        product.setCode(code);
-        product.setVendorCode(vendorCode);
-        product.setName(name);
-        product.setUnit(unit);
-        product.setCount(count);
-        product.setDimension(dimension);
-        product.setWeight(weight);
-        product.setUnitPack(unitPack);
-        product.setCountInPack(countInPack);
-        product.setDimensionPack(dimensionPack);
-        product.setWeightPack(weightPack);
-        product.setUnitCarry(unitCarry);
-        product.setCountInPackCarry(countInPackCarry);
-        product.setDimensionCarry(dimensionCarry);
-        product.setWeightCarry(weightCarry);
-        product.setBarcode(barcode);
-        product.setDescription(description);
-        return product;
-    }
-
-    private String getCode(Document doc) {
+    public String getCode(Document doc) {
         String code = null;
         try {
             code = doc
@@ -96,7 +48,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         return code;
     }
 
-    private String getVendorCode(Document doc) {
+    @Override
+    public String getVendorCode(Document doc) {
         String vendorCode = null;
         try {
             vendorCode = doc
@@ -113,7 +66,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         return vendorCode;
     }
 
-    private String getName(Document doc) {
+    @Override
+    public String getName(Document doc) {
         String name = null;
         try {
             name = doc
@@ -131,7 +85,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
 
     }
 
-    private Unit getUnit(Document doc) {
+    @Override
+    public Unit getUnit(Document doc) {
         String unitString = null;
         Unit unit = null;
         try {
@@ -152,7 +107,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         return unit;
     }
 
-    private Integer getCount(Document doc) {
+    @Override
+    public Integer getCount(Document doc) {
         String countString = null;
         Integer countPack = null;
         try {
@@ -178,7 +134,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         return countPack;
     }
 
-    private Dimension getDimension(Document doc) {
+    @Override
+    public Dimension getDimension(Document doc) {
         String dimensionString = null;
         Dimension dimension = null;
         try {
@@ -204,7 +161,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         return dimension;
     }
 
-    private Double getWeight(Document doc) {
+    @Override
+    public Double getWeight(Document doc) {
         String weightString = null;
         Double weight = null;
         try {
@@ -230,7 +188,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         return weight;
     }
 
-    private Unit getUnitInPack(Document doc) {
+    @Override
+    public Unit getUnitInPack(Document doc) {
         String unitPackString = null;
         Unit unitPack = null;
         try {
@@ -251,8 +210,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         return unitPack;
     }
 
-
-    private Integer getCountInPack(Document doc) {
+    @Override
+    public Integer getCountInPack(Document doc) {
         String countInPackString = null;
         Integer countInPack = null;
         try {
@@ -278,7 +237,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         return countInPack;
     }
 
-    private Dimension getDimensionPack(Document doc) {
+    @Override
+    public Dimension getDimensionPack(Document doc) {
         String dimensionPackString = null;
         Dimension dimensionPack = null;
         try {
@@ -305,7 +265,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         return dimensionPack;
     }
 
-    private Double getWeightPack(Document doc) {
+    @Override
+    public Double getWeightPack(Document doc) {
         String weightPackString = null;
         Double weightPack = null;
         try {
@@ -332,7 +293,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
 
     }
 
-    private Unit getUnitCarry(Document doc) {
+    @Override
+    public Unit getUnitCarry(Document doc) {
         String unitCarryString = null;
         Unit unitCarry = null;
         try {
@@ -354,7 +316,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
 
     }
 
-    private Integer getCountInPackCarry(Document doc) {
+    @Override
+    public Integer getCountInPackCarry(Document doc) {
         String countCarryInPackString = null;
         Integer countCarryInPack = null;
         try {
@@ -380,7 +343,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         return countCarryInPack;
     }
 
-    private Dimension getDimensionCarry(Document doc) {
+    @Override
+    public Dimension getDimensionCarry(Document doc) {
         String dimensionCarryString = null;
         Dimension dimensionCarry = null;
         try {
@@ -406,7 +370,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         return dimensionCarry;
     }
 
-    private Double getWeightCarry(Document doc) {
+    @Override
+    public Double getWeightCarry(Document doc) {
         String weightCarryString = null;
         Double weightCarry = null;
         try {
@@ -432,7 +397,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
 
     }
 
-    private String getBarcode(Document doc) {
+    @Override
+    public String getBarcode(Document doc) {
         String barcode = null;
         try {
             barcode = doc
@@ -450,7 +416,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         return barcode;
     }
 
-    private String getDescription(Document doc) {
+    @Override
+    public String getDescription(Document doc) {
         String description = null;
         doc = doc.clone();
         try {
@@ -470,7 +437,7 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
 
 
     @Override
-    public List<Category> getCategories(Document doc) throws Exception {
+    public List<Category> getCategories(Document doc) {
         List<Category> categories = new ArrayList<>();
         Elements elems = null;
         try {
@@ -596,4 +563,8 @@ public class ProductJsoupTexenergoRuExtractor implements IProductExtractor {
         return config.getLocale();
     }
 
+    @Override
+    public boolean isHrefExtractsByFileLoading() {
+        return config.isExtractByFileLoading();
+    }
 }

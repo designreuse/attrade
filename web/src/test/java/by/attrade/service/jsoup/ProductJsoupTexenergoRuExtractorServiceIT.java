@@ -1,7 +1,6 @@
 package by.attrade.service.jsoup;
 
 import by.attrade.domain.Category;
-import by.attrade.domain.Product;
 import by.attrade.domain.Property;
 import by.attrade.service.jsoup.extractor.ProductJsoupTexenergoRuExtractor;
 import org.jsoup.nodes.Document;
@@ -22,17 +21,12 @@ public class ProductJsoupTexenergoRuExtractorServiceIT {
     private ProductJsoupTexenergoRuExtractor service;
     @Autowired
     private JsoupDocService jsoupDocService;
-    private String url = "https://www.texenergo.ru/catalog/item.html/te00378913";
+    private String url = "https://www.texenergo.ru/catalog/list.html/433310";
     private Document doc;
 
     @Before
     public void init() throws IOException {
         doc = jsoupDocService.getJsoupDoc(url);
-    }
-
-    @Test
-    public void getProduct() throws Exception {
-        Product product = service.getProduct(doc);
     }
 
     @Test
@@ -54,6 +48,7 @@ public class ProductJsoupTexenergoRuExtractorServiceIT {
     public void getImagesUrl() throws Exception {
         List<String> urls = service.getImagesUrl(doc);
     }
+
     @Test
     public void getDescriptionImageUrl() throws Exception {
         List<String> urls = service.getDescriptionImagesUrl(doc);

@@ -14,7 +14,7 @@ public class PictureMediaServiceIT {
     private PictureMediaService pictureMediaService;
     @Test
     public void saveDefaultPicture() throws Exception {
-        pictureMediaService.saveDefaultPicture(defaultImageUrl, null);
+        pictureMediaService.saveDefaultPicture(defaultImageUrl);
     }
 
 }

@@ -1,5 +1,6 @@
 package by.attrade.service.search;
 
+import by.attrade.config.HibernateSearchConfig;
 import org.apache.lucene.search.Query;
 import org.hibernate.search.SearchFactory;
 import org.hibernate.search.jpa.FullTextEntityManager;
@@ -14,36 +15,39 @@ import javax.persistence.EntityManagerFactory;
 
 @Service
 public class HibernateSearchService {
-    static final int MIN_GRAM_SIZE = 3;
-    static final  String ANY_CHAR = "**";
     private final EntityManager entityManager;
     private FullTextEntityManager fullTextEntityManager;
+    private final HibernateSearchConfig config;
 
     @Autowired
-    public HibernateSearchService(EntityManagerFactory entityManagerFactory) {
+    public HibernateSearchService(EntityManagerFactory entityManagerFactory, HibernateSearchConfig hibernateSearchConfig) {
         this.entityManager = entityManagerFactory.createEntityManager();
+        this.config = hibernateSearchConfig;
     }
-    public SearchFactory getSearchFactory(){
+
+    public SearchFactory getSearchFactory() {
         return fullTextEntityManager.getSearchFactory();
     }
 
-//    @PostConstruct
-    public void initializeHibernateSearch() {
-        try {
-            fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
-            fullTextEntityManager
-                    .createIndexer()
-                    .purgeAllOnStart(true)
-                    .optimizeOnFinish(true)
-                    .batchSizeToLoadObjects(100)
-                    .threadsToLoadObjects(10)
-                    .startAndWait();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    @PostConstruct
+    public void init() {
+        if (config.isInit()) {
+            try {
+                fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+                fullTextEntityManager
+                        .createIndexer()
+                        .purgeAllOnStart(config.isPurgeAllOnStart())
+                        .optimizeOnFinish(config.isOptimizeOnFinish())
+                        .batchSizeToLoadObjects(config.getBatchSizeToLoadObjects())
+                        .threadsToLoadObjects(config.getThreadsToLoadObjects())
+                        .startAndWait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public FullTextQuery createFullTextQuery(Query query, Class<?> productClass) {
-        return fullTextEntityManager.createFullTextQuery(query,productClass);
+        return fullTextEntityManager.createFullTextQuery(query, productClass);
     }
 }

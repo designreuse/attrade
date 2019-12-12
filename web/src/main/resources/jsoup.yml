@@ -8,6 +8,7 @@ jsoup:
       product:
         url: http://www.s3.ru/ru
         locale: ru
+        extractByFileLoading: false
         defaultPictureFileName: no-photo.png
         nameParent: .catalog-element
         nameChild: .header
@@ -27,6 +28,7 @@ jsoup:
         product:
           url: https://www.texenergo.ru/catalog
           locale: ru
+          extractByFileLoading: true
           defaultPictureFileName: no-image.jpg
           nameParent: detail__head-title
           nameChild: h1.headline_product-category

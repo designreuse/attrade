@@ -1,17 +1,21 @@
 package by.attrade.service;
 
+import by.attrade.domain.Category;
 import by.attrade.domain.Product;
 import by.attrade.repos.ProductRepo;
 import by.attrade.service.productPathExtractor.IProductPathExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class ProductService {
+    @Autowired
+    private CategoryHierarchyService categoryHierarchyService;
     @Autowired
     private ProductRepo productRepo;
 
@@ -52,5 +56,13 @@ public class ProductService {
     }
     public List<String> getUrlsStartWith(String text){
         return productRepo.getUrlsStartWith(text);
+    }
+    public Page<Product> getProductsByCategoryPath(String categoryPath, Pageable pageable){
+        Category category = categoryHierarchyService.getCategoryByPath(categoryPath);
+        return productRepo.getProductsByCategory(category, pageable);
+    }
+
+    public boolean existsByCode(String code) {
+        return productRepo.existsByCode(code);
     }
 }

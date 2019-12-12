@@ -15,7 +15,7 @@ public class UrlOfNameProductPathExtractorService implements IProductPathExtract
 
 
     @Override
-    public String getPath(Product product) throws Exception {
+    public String getPath(Product product) {
         String s = cyrillicLatinTranslitService.toTranslit(product.getName());
         s = spaceHyphenTranslitService.toTranslit(s);
         return s.toLowerCase();

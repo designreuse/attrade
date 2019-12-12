@@ -18,4 +18,5 @@ public class ProductPropertyService {
     public List<ProductProperty> saveAll(List<ProductProperty> properties){
         return productPropertyRepo.saveAll(properties);
     }
+
 }

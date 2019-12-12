@@ -17,6 +17,7 @@ import java.util.Locale;
 public class JsoupTexenergoRuProductConfig {
     private String url;
     private Locale locale;
+    private boolean extractByFileLoading;
     private String defaultPictureFileName;
     private String nameParent;
     private String nameChild;

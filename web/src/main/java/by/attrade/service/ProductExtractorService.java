@@ -2,6 +2,7 @@ package by.attrade.service;
 
 import by.attrade.config.ServerLanguageConfig;
 import by.attrade.domain.Category;
+import by.attrade.domain.Dimension;
 import by.attrade.domain.ExtractorError;
 import by.attrade.domain.ExtractorErrorUrl;
 import by.attrade.domain.Picture;
@@ -10,18 +11,20 @@ import by.attrade.domain.ProductProperty;
 import by.attrade.domain.Property;
 import by.attrade.domain.PropertyData;
 import by.attrade.service.categoryPathAdjuster.CategoryPathByNameAdjusterService;
+import by.attrade.service.exception.NoPotentialProductException;
 import by.attrade.service.jsoup.IProductExtractor;
 import by.attrade.service.jsoup.JsoupDocService;
 import by.attrade.service.jsoup.extractor.ExtractorErrorService;
 import by.attrade.service.jsoup.extractor.ExtractorErrorUrlService;
-import by.attrade.service.productPathExtractor.Utf8OfNameProductPathExtractorService;
+import by.attrade.service.productPathExtractor.UrlOfNameProductPathExtractorService;
+import by.attrade.type.Unit;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -59,7 +62,7 @@ public class ProductExtractorService {
     private ExtractorErrorUrlService urlService;
 
     @Autowired
-    private Utf8OfNameProductPathExtractorService productPathExtractor;
+    private UrlOfNameProductPathExtractorService productPathExtractor;
 
     @Autowired
     private PictureMediaService pictureMediaService;
@@ -70,9 +73,56 @@ public class ProductExtractorService {
     @Autowired
     private ServerLanguageConfig serverLanguageConfig;
 
-    public ExtractorError saveProductsIfNotExistsByCodeAndSaveErrors(IProductExtractor extractor, double[] compressions) {
-        List<ExtractorErrorUrl> errorUrls = saveProductsIfNotExistsByCode(extractor, compressions);
-        adjustCategoriesPaths(extractor);
+    public boolean isPotentialProduct(Object... nullEvaluated) {
+        return ObjectUtils.allNotNull(nullEvaluated);
+    }
+
+    public Product getProduct(IProductExtractor extractor, Document doc) throws NoPotentialProductException {
+        String code = extractor.getCode(doc);
+        String name = extractor.getName(doc);
+        if (!isPotentialProduct(code, name)) {
+            throw new NoPotentialProductException("One of necessary product fields evaluate as null.");
+        }
+        String vendorCode = extractor.getVendorCode(doc);
+        Unit unit = extractor.getUnit(doc);
+        Integer count = extractor.getCount(doc);
+        Dimension dimension = extractor.getDimension(doc);
+        Double weight = extractor.getWeight(doc);
+        Unit unitPack = extractor.getUnitInPack(doc);
+        Integer countInPack = extractor.getCountInPack(doc);
+        Dimension dimensionPack = extractor.getDimensionPack(doc);
+        Double weightPack = extractor.getWeightPack(doc);
+        Unit unitCarry = extractor.getUnitCarry(doc);
+        Integer countInPackCarry = extractor.getCountInPackCarry(doc);
+        Dimension dimensionCarry = extractor.getDimensionCarry(doc);
+        Double weightCarry = extractor.getWeightCarry(doc);
+        String barcode = extractor.getBarcode(doc);
+        String description = extractor.getDescription(doc);
+
+        Product product = new Product();
+        product.setCode(code);
+        product.setVendorCode(vendorCode);
+        product.setName(name);
+        product.setUnit(unit);
+        product.setCount(count);
+        product.setDimension(dimension);
+        product.setWeight(weight);
+        product.setUnitPack(unitPack);
+        product.setCountInPack(countInPack);
+        product.setDimensionPack(dimensionPack);
+        product.setWeightPack(weightPack);
+        product.setUnitCarry(unitCarry);
+        product.setCountInPackCarry(countInPackCarry);
+        product.setDimensionCarry(dimensionCarry);
+        product.setWeightCarry(weightCarry);
+        product.setBarcode(barcode);
+        product.setDescription(description);
+        return product;
+    }
+
+    public ExtractorError saveProductsIfNotExistsByCodeAndSaveErrors(IProductExtractor extractor) {
+        List<ExtractorErrorUrl> errorUrls = saveProductsIfNotExistsByCode(extractor);
+//        adjustCategoriesPaths(extractor); //TODO -throw
         return saveErrorUrls(errorUrls);
     }
 
@@ -86,7 +136,7 @@ public class ProductExtractorService {
         }
     }
 
-    private List<ExtractorErrorUrl> saveProductsIfNotExistsByCode(IProductExtractor extractor, double[] compressions) {
+    private List<ExtractorErrorUrl> saveProductsIfNotExistsByCode(IProductExtractor extractor) {
         Set<String> all = new HashSet<>();
         Set<String> selected = new HashSet<>();
         all.add(extractor.getUrl());
@@ -94,57 +144,68 @@ public class ProductExtractorService {
         List<ExtractorErrorUrl> errorUrls = new LinkedList<>();
         while (!all.isEmpty()) {
             String url = all.iterator().next();
-            if (all.size()%10000==0){
-                System.out.println("All: "+all.size());
-            }
+            log.info("ALL: " + all.size() + " TRY EXTRACT: " + url);
             all.remove(url);
             selected.add(url);
             Document doc;
             try {
                 doc = jsoupDocService.getJsoupDoc(url);
-            } catch (HttpStatusException e) {
-                errorUrls.add(new ExtractorErrorUrl(url));
-                continue;
+                extractUrls(doc, all, selected, extractor);
             } catch (Exception e) {
+                errorUrls.add(new ExtractorErrorUrl(url, e.getMessage()));
+                log.info("Cannot parse jsoup doc: " + url, e);
                 continue;
             }
             try {
-                saveProductIfNotExistsByCode(extractor, doc, url, compressions);
-            } catch (HttpStatusException e) {
-                errorUrls.add(new ExtractorErrorUrl(url));
-                log.info("Cannot save extracted product because cannot fetch: "+url, e);
+                saveProductIfNotExistsByCode(extractor, doc);
             } catch (Exception e) {
-                log.error("Cannot save extracted product: "+ url, e);
+                errorUrls.add(new ExtractorErrorUrl(url, e.getMessage()));
+                log.info("Cannot save extracted product because cannot fetch: " + url, e);
+                continue;
             }
-            extractUrls(doc, all, selected, extractor);
         }
         return errorUrls;
     }
 
     private void extractUrls(Document doc, Set<String> all, Set<String> selected, IProductExtractor extractor) {
-        Stream<String> allHrefNotPdfNotImage = jsoupDocService.getAllHrefNotPdfNotImage(doc);
+        Stream<String> allHrefNotPdfNotImage = jsoupDocService.getAllHrefNotPdfNotImage(doc, extractor.isHrefExtractsByFileLoading());
         allHrefNotPdfNotImage.filter(e -> !selected.contains(e) && e.contains(extractor.getUrl())).forEach(all::add);
     }
 
-    public ExtractorError saveProductsIfNotExistsByCodeAndSaveErrors(IProductExtractor extractor, List<String> urls, double[] compressions) {
-        List<ExtractorErrorUrl> errorUrls = saveProductsIfNotExistsByCode(extractor, urls, compressions);
-        adjustCategoriesPaths(extractor);
+    public ExtractorError saveProductsIfNotExistsByCodeAndSaveErrors(IProductExtractor extractor, Stream<String> urls) {
+        List<ExtractorErrorUrl> errorUrls = saveProductsIfNotExistsByCode(extractor, urls);
+//        adjustCategoriesPaths(extractor); //TODO -throw
         return saveErrorUrls(errorUrls);
     }
 
-    public List<ExtractorErrorUrl> saveProductsIfNotExistsByCode(IProductExtractor extractor, List<String> urls, double[] compressions) {
+    public List<ExtractorErrorUrl> saveProductsIfNotExistsByCode(IProductExtractor extractor, Stream<String> urls) {
         List<ExtractorErrorUrl> errorUrls = new LinkedList<>();
-        for (String url : urls) {
-            try {
-                saveProductIfNotExistsByCode(extractor, url, compressions);
-            } catch (HttpStatusException e) {
-                errorUrls.add(new ExtractorErrorUrl(url));
-            } catch (Exception e) {
-                log.info(e.getMessage(), url);
-            }
-        }
+        urls.forEach(url -> {
+                    try {
+                        saveProductIfNotExistsByCode(extractor, url);
+                    } catch (HttpStatusException e) {
+                        errorUrls.add(new ExtractorErrorUrl(url, e.getMessage()));
+                        log.info("Cannot save extracted product because cannot fetch: " + url, e);
+                    } catch (Exception e) {
+                        log.error("Cannot save extracted product: " + url, e);
+                    }
+                }
+        );
 
         return errorUrls;
+    }
+
+    public void saveProductIfNotExistsByCode(IProductExtractor extractor, String url) throws Exception {
+        Document doc = jsoupDocService.getJsoupDoc(url);
+        saveProductIfNotExistsByCode(extractor, doc);
+    }
+
+    public void saveProductIfNotExistsByCode(IProductExtractor extractor, Document doc) throws Exception {
+        String code = extractor.getCode(doc);
+        if (code == null || productService.existsByCode(code)) {
+            return;
+        }
+        saveProductOrRollback(extractor, doc);
     }
 
     private ExtractorError saveErrorUrls(List<ExtractorErrorUrl> errorUrls) {
@@ -154,36 +215,16 @@ public class ProductExtractorService {
         return errorService.save(extractorError);
     }
 
-    public void saveProductIfNotExistsByCode(IProductExtractor extractor, Document doc, String url, double[] compressions) throws Exception {
-        Product product = extractor.getProduct(doc);
-        if (productService.existsByCode(product)) {
-            return;
-        }
-        saveProduct(extractor, doc, url, compressions);
-    }
-
-    public void saveProductIfNotExistsByCode(IProductExtractor extractor, String url, double[] compressions) throws Exception {
-        Document doc = jsoupDocService.getJsoupDoc(url);
-        if (!extractor.isContainProduct(doc)) {
-            return;
-        }
-        Product product = extractor.getProduct(doc);
-        if (productService.existsByCode(product)) {
-            return;
-        }
-        saveProduct(extractor, doc, url, compressions);
-    }
-
-    private void saveProduct(IProductExtractor extractor, Document doc, String url, double[] compressions) throws Exception {
+    private void saveProductOrRollback(IProductExtractor extractor, Document doc) throws NoPotentialProductException {
+        Product product = getProduct(extractor, doc);
         List<Category> categories = extractor.getCategories(doc);
         List<String> imagesUrl = extractor.getImagesUrl(doc);
         List<String> descriptionImagesUrl = extractor.getDescriptionImagesUrl(doc);
         List<Property> properties = extractor.getProperties(doc);
         List<String> values = extractor.getPropertyValues(doc);
-        Product product = extractor.getProduct(doc);
 
-        List<Picture> pictures = downloadPictures(imagesUrl, compressions);
-        List<Picture> descriptionPictures = downloadPictures(descriptionImagesUrl, compressions);
+        List<Picture> pictures = downloadPictures(imagesUrl);
+        List<Picture> descriptionPictures = downloadPictures(descriptionImagesUrl);
         Category category = categoryService.saveShaneOfCategory(categories);
         pictures = pictureService.saveAll(pictures);
         descriptionPictures = pictureService.saveAll(descriptionPictures);
@@ -195,15 +236,23 @@ public class ProductExtractorService {
         String path = productPathExtractor.getPath(product);
 
         product.setCategory(category);
-        product.setUrl(url);
+        product.setUrl(doc.location());
         product.setPath(path);
         product.setDescription(description);
-        product.setPictures(pictures);
-        if (!pictures.isEmpty()){
+        if (!pictures.isEmpty()) {
             product.setPicture(pictures.get(0).getPath());
         }
-        product.setDescriptionPictures(descriptionPictures);
         productService.save(product);
+
+        for (Picture p : pictures) {
+            p.setProductPicture(product);
+        }
+        pictureService.saveAll(pictures);
+
+        for (Picture p : descriptionPictures) {
+            p.setProductDescriptionPicture(product);
+        }
+        pictureService.saveAll(descriptionPictures);
 
         int size = properties.size();
         for (int i = 0; i < size; i++) {
@@ -219,11 +268,11 @@ public class ProductExtractorService {
         }
     }
 
-    private List<Picture> downloadPictures(List<String> imagesUrl, double[] compressions) throws IOException {
+    private List<Picture> downloadPictures(List<String> imagesUrl) {
         List<Picture> pictures = new ArrayList<>();
         int priority = 0;
         for (String imageUrl : imagesUrl) {
-            String name = pictureMediaService.savePicture(imageUrl, compressions);
+            String name = pictureMediaService.savePictureOrRollback(imageUrl);
             if (name != null) {
                 pictures.add(new Picture(name, imageUrl, priority++));
             }

@@ -39,6 +39,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Embedded;
@@ -139,8 +140,8 @@ public class Product implements Serializable {
     @Length(max = 13)
     private String barcode;
 
-    @Column(length = 4000)
-    @Length(max = 4000)
+    @Column(length = 5000)
+    @Length(max = 5000)
     private String description;
 
     @JsonView(Views.QuantityInStock.class)

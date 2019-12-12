@@ -1,5 +1,6 @@
 package by.attrade.service.search;
 
+import by.attrade.config.HibernateSearchConfig;
 import by.attrade.domain.Product;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
@@ -13,11 +14,10 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 
-import static by.attrade.service.search.HibernateSearchService.ANY_CHAR;
-import static by.attrade.service.search.HibernateSearchService.MIN_GRAM_SIZE;
-
 @Service
 public class ProductSearchService {
+    @Autowired
+    private HibernateSearchConfig hibernateSearchConfig;
     @Autowired
     private HibernateSearchService searchService;
 
@@ -61,7 +61,7 @@ public class ProductSearchService {
                         "code",
                         "category.name"
                 )
-                .matching(text.trim() + ANY_CHAR)
+                .matching(text.trim() + hibernateSearchConfig.getRegexAnyChar())
                 .createQuery();
         FullTextQuery jpaQuery
                 = searchService.createFullTextQuery(query, Product.class);
@@ -77,7 +77,7 @@ public class ProductSearchService {
     public List<Product> searchProduct(String text, Pageable pageable) {
         text = text.trim();
         if (text.length() == 0) return Collections.emptyList();
-        if (text.length() > MIN_GRAM_SIZE) {
+        if (text.length() > hibernateSearchConfig.getMinGramSize()) {
             return searchProductExcessMinGramSize(text, pageable);
         } else {
             return searchProductInsideMinGramSize(text, pageable);

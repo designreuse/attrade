@@ -1,6 +1,7 @@
 package by.attrade.service;
 
 import by.attrade.util.Pair;
+import com.sun.image.codec.jpeg.ImageFormatException;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,16 +27,11 @@ public class ImageService {
         List<String> list = Arrays.asList(readerFileSuffixes);
         return !list.contains(suffix);
     }
-    public Path renameImageTypeTo(Path source, String imageType) {
+    public Path changeImageTypeTo(Path source, String imageType) {
         String str = source.toString();
         int i = str.lastIndexOf(".");
         str = str.substring(0, i + 1) + imageType;
         Path target = Paths.get(str);
-        try {
-            Files.move(source, target);
-        } catch (IOException e) {
-            log.error("Cannot move file: " + source + " to: " + target);
-        }
         return target;
     }
     public boolean isImage(String pathName) throws IOException {
@@ -58,7 +54,12 @@ public class ImageService {
         try {
             inputImage = ImageIO.read(inputFile);
         } catch (Exception e) {
-            inputImage = JPEGCodec.createJPEGDecoder(new FileInputStream(inputFile)).decodeAsBufferedImage();
+            try {
+                inputImage = JPEGCodec.createJPEGDecoder(new FileInputStream(inputFile)).decodeAsBufferedImage();
+            } catch (Exception e1) {
+                log.error(inputFile.toString(), e.getMessage());
+                throw e;
+            }
         }
         return inputImage;
     }

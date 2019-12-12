@@ -2,9 +2,10 @@ package by.attrade.service.jsoup.extractor;
 
 import by.attrade.config.JsoupS3RuProductConfig;
 import by.attrade.domain.Category;
-import by.attrade.domain.Product;
+import by.attrade.domain.Dimension;
 import by.attrade.domain.Property;
 import by.attrade.service.jsoup.IProductExtractor;
+import by.attrade.type.Unit;
 import by.attrade.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
@@ -25,23 +26,12 @@ public class ProductJsoupS3RuExtractor implements IProductExtractor {
     private JsoupS3RuProductConfig config;
 
     @Override
-    public boolean isContainProduct(Document doc) {
-        String code = getCode(doc);
-        String name = getName(doc);
-        return code != null && name != null;
+    public String getVendorCode(Document doc) {
+        return null;
     }
 
     @Override
-    public Product getProduct(Document doc) {
-        String code = getCode(doc);
-        String name = getName(doc);
-        Product product = new Product();
-        product.setCode(code);
-        product.setName(name);
-        return product;
-    }
-
-    private String getName(Document doc) {
+    public String getName(Document doc) {
         try {
             String name = doc.select(config.getNameParent()).select(config.getNameChild()).text();
             name = StringUtil.trimIfNotNull(name);
@@ -51,7 +41,8 @@ public class ProductJsoupS3RuExtractor implements IProductExtractor {
         }
     }
 
-    private String getCode(Document doc) {
+    @Override
+    public String getCode(Document doc) {
         try {
             String code = doc.select(config.getCodeParent()).select(config.getCodeChild()).get(config.getCodeIndexElement()).text();
             code = StringUtil.trimIfNotNull(code);
@@ -62,33 +53,121 @@ public class ProductJsoupS3RuExtractor implements IProductExtractor {
     }
 
     @Override
-    public List<Category> getCategories(Document doc) throws Exception {
+    public Unit getUnit(Document doc) {
+        return null;
+    }
+
+    @Override
+    public Integer getCount(Document doc) {
+        return null;
+    }
+
+    @Override
+    public Dimension getDimension(Document doc) {
+        return null;
+    }
+
+    @Override
+    public Double getWeight(Document doc) {
+        return null;
+    }
+
+    @Override
+    public Unit getUnitInPack(Document doc) {
+        return null;
+    }
+
+    @Override
+    public Integer getCountInPack(Document doc) {
+        return null;
+    }
+
+    @Override
+    public Dimension getDimensionPack(Document doc) {
+        return null;
+    }
+
+    @Override
+    public Double getWeightPack(Document doc) {
+        return null;
+    }
+
+    @Override
+    public Unit getUnitCarry(Document doc) {
+        return null;
+    }
+
+    @Override
+    public Integer getCountInPackCarry(Document doc) {
+        return null;
+    }
+
+    @Override
+    public Dimension getDimensionCarry(Document doc) {
+        return null;
+    }
+
+    @Override
+    public Double getWeightCarry(Document doc) {
+        return null;
+    }
+
+    @Override
+    public String getBarcode(Document doc) {
+        return null;
+    }
+
+    @Override
+    public String getDescription(Document doc) {
+        return null;
+    }
+
+    @Override
+    public List<Category> getCategories(Document doc) {
         List<Category> categories = new ArrayList<>();
-        Elements elems = doc.select(config.getCategoriesParent()).select(config.getCategoriesChild());
-        for (Element e : elems) {
-            String categoryName = e.text();
-            categoryName = StringUtil.trimIfNotNull(categoryName);
-            Category category = new Category(categoryName);
-            categories.add(category);
+        Elements elems = null;
+        try {
+            elems = doc
+                    .select(config.getCategoriesParent())
+                    .select(config.getCategoriesChild());
+        } catch (Exception e) {
+            log.info("Cannot find categories: " + doc.location(), e.getMessage());
         }
-        categories = categories.subList(config.getCategoriesStartWithIndex(), categories.size());
+        if (elems != null) {
+            for (Element e : elems) {
+                String categoryName = e.text();
+                categoryName = StringUtil.trimIfNotNull(categoryName);
+                Category category = new Category(categoryName);
+                categories.add(category);
+            }
+            categories = categories.subList(config.getCategoriesStartWithIndex(), categories.size());
+        }
         return categories;
     }
 
     @Override
     public List<Property> getProperties(Document doc) {
         List<Property> properties = new ArrayList<>();
-        Elements elems = doc.select(config.getPropertiesParent()).select(config.getPropertiesChild());
-        boolean rotate = true;
-        for (Element e : elems) {
-            if (rotate) {
-                String name = e.text();
-                name = StringUtil.trimIfNotNull(name);
-                Property p = new Property();
-                p.setName(name);
-                properties.add(p);
+        Elements elems = null;
+        try {
+            elems = doc
+                    .select(config.getPropertiesParent())
+                    .select(config.getPropertiesChild());
+        } catch (Exception e) {
+            log.info("Cannot find properties: " + doc.location(), e.getMessage());
+        }
+        if (elems != null) {
+            boolean rotate = true;
+            for (Element e : elems) {
+                if (rotate) {
+                    String name = e.text();
+                    name = StringUtil.trimIfNotNull(name);
+                    Property p = new Property();
+                    p.setName(name);
+                    properties.add(p);
+                }
+                rotate = !rotate;
             }
-            rotate = !rotate;
         }
         return properties;
     }
@@ -96,15 +175,24 @@ public class ProductJsoupS3RuExtractor implements IProductExtractor {
     @Override
     public List<String> getPropertyValues(Document doc) {
         List<String> filtersValue = new ArrayList<>();
-        Elements elems = doc.select(config.getPropertiesParent()).select(config.getPropertiesChild());
+        Elements elems = null;
+        try {
+            elems = doc
+                    .select(config.getPropertiesParent())
+                    .select(config.getPropertiesChild());
+        } catch (Exception e) {
+            log.info("Cannot find property values: " + doc.location(), e.getMessage());
+        }
         boolean rotate = false;
-        for (Element e : elems) {
-            if (rotate) {
-                String value = e.text();
-                value = StringUtil.trimIfNotNull(value);
-                filtersValue.add(value);
+        if (elems != null) {
+            for (Element e : elems) {
+                if (rotate) {
+                    String value = e.text();
+                    value = StringUtil.trimIfNotNull(value);
+                    filtersValue.add(value);
+                }
+                rotate = !rotate;
             }
-            rotate = !rotate;
         }
         return filtersValue;
     }
@@ -112,12 +200,21 @@ public class ProductJsoupS3RuExtractor implements IProductExtractor {
     @Override
     public List<String> getImagesUrl(Document doc) {
         List<String> urls = new ArrayList<>();
-        Elements elems = doc.select(config.getImageParent()).select(config.getImageChild());
-        for (Element e : elems) {
-            String url = e.absUrl("src");
-            url = StringUtil.trimIfNotNull(url);
-            url = StringUtil.renameToNullIfContains(url, config.getDefaultPictureFileName());
-            urls.add(url);
+        Elements elems = null;
+        try {
+            elems = doc
+                    .select(config.getImageParent())
+                    .select(config.getImageChild());
+        } catch (Exception e) {
+            log.info("Cannot find images url: " + doc.location(), e.getMessage());
+        }
+        if (elems != null) {
+            for (Element e : elems) {
+                String url = e.absUrl("src");
+                url = StringUtil.trimIfNotNull(url);
+                url = StringUtil.renameToNullIfContains(url, config.getDefaultPictureFileName());
+                urls.add(url);
+            }
         }
         return urls;
     }
@@ -131,6 +228,14 @@ public class ProductJsoupS3RuExtractor implements IProductExtractor {
     public String getUrl() {
         return config.getUrl();
     }
+
     @Override
-    public Locale getLocale(){return config.getLocale();}
+    public Locale getLocale() {
+        return config.getLocale();
+    }
+
+    @Override
+    public boolean isHrefExtractsByFileLoading() {
+        return config.isExtractByFileLoading();
+    }
 }

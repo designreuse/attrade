@@ -87,10 +87,7 @@ public class PictureMediaService {
 
     private void removeAllMediaPictures(Path source) {
         List<PictureMediaDTO> pictureMedias = pictureMediaConfig.getPictureMedias();
-        for (PictureMediaDTO p : pictureMedias) {
-            Path target = getMediaPath(source, p);
-            deletePath(target);
-        }
+        rollbackMediaPictures(source, pictureMedias);
     }
 
     private void compressMain(double compressQuality) throws IOException {
@@ -116,19 +113,16 @@ public class PictureMediaService {
         }
     }
 
-    public boolean saveAllMediaAndMarkers(Path source, double[] compressions) {
+    public boolean saveAllMediaAndMarkers(Path source) {
         boolean empty = removePictureIfEmpty(source);
         if (empty) {
             return false;
         }
         compress(source, MAX_COMPRESSION_QUALITY);
-        boolean resized = createAllMediaPictures(source, compressions, true);
-        if (resized) {
-            boolean createdMarker = createAllMarkerPictures(source);
-            if (!createdMarker) {
-                return false;
-            }
-        } else {
+        if(!createAllMediaPictures(source)){
+            return false;
+        }
+        if(!createAllMarkerPictures(source)) {
             return false;
         }
         return true;
@@ -140,7 +134,7 @@ public class PictureMediaService {
             Files
                     .walk(Paths.get(getMainPath()))
                     .filter(path -> Files.isRegularFile(path) && isMarkerPicture(path))
-                    .forEach(this::deletePath);
+                    .forEach(this::deletePathIfExists);
         } catch (IOException e) {
             log.error("Cannot walk to delete marker pictures.", e);
             throw e;
@@ -172,9 +166,9 @@ public class PictureMediaService {
             Files
                     .walk(Paths.get(getMainPath()))
                     .filter(path -> Files.isRegularFile(path) && imageService.isPictureUnknownType(path))
-                    .forEach(this::renameIfUnknownImageTypeToDefault);
+                    .forEach(this::renameIfUnknownImageTypeToDefaultType);
         } catch (IOException e) {
-            log.error("Cannot walk to renameIfUnknownImageTypeToDefault wrong type pictures.", e);
+            log.error("Cannot walk to renameIfUnknownImageTypeToDefaultType wrong type pictures.", e);
         }
     }
 
@@ -227,7 +221,7 @@ public class PictureMediaService {
             Files
                     .walk(childPath)
                     .filter(path -> !fileNames.contains(path.getFileName()) && Files.isRegularFile(path))
-                    .forEach(this::deletePath);
+                    .forEach(this::deletePathIfExists);
         } catch (IOException e) {
             log.error("Files operations with: " + mainPath + " / " + childPath, e);
         }
@@ -235,13 +229,13 @@ public class PictureMediaService {
 
     public boolean removePictureIfEmpty(Path p) {
         if (isEmptyFile(p)) {
-            deletePath(p);
+            deletePathIfExists(p);
             return true;
         }
         return false;
     }
 
-    private void deletePath(Path p) {
+    private void deletePathIfExists(Path p) {
         try {
             Files.deleteIfExists(p);
         } catch (IOException e) {
@@ -255,72 +249,89 @@ public class PictureMediaService {
             Files
                     .walk(Paths.get(getMainPath()), MAX_DEPTH_ONLY_MAIN)
                     .filter(Files::isRegularFile)
-                    .forEach(this::createPictureMedia);
+                    .forEach(this::createAllMediaPictures);
         } catch (IOException e) {
             log.error("Cannot walk to create media pictures.", e);
             throw e;
         }
     }
 
-    private void createPictureMedia(Path source) {
+    private boolean createAllMediaPictures(Path source) {
         List<PictureMediaDTO> pictureMedias = pictureMediaConfig.getPictureMedias();
+        try {
+            for (PictureMediaDTO p : pictureMedias) {
+                Path target = getMediaPath(source, p);
+                int width;
+                try {
+                    width = imageService.getWidth(source.toString());
+                } catch (IOException e) {
+                    throw new RuntimeException("Cannot receive width: " + target, e);
+                }
+
+                if (p.isWidthPreferredThanPercent(width) && p.isWidthNotExpand(width)) {
+                    resizePictureProportional(source, target, p.getCompressionWidth());
+                } else {
+                    resizePicture(source, target, p.getCompressionPercent());
+                }
+            }
+        } catch (Exception e) {
+            log.error("Cannot create all media pictures: "+ source, e);
+            rollbackMediaPictures(source, pictureMedias);
+            return false;
+        }
+        return true;
+    }
+
+    private void rollbackMediaPictures(Path source, List<PictureMediaDTO> pictureMedias) {
         for (PictureMediaDTO p : pictureMedias) {
             Path target = getMediaPath(source, p);
-            int width;
-            try {
-                width = imageService.getWidth(source.toString());
-            } catch (IOException e) {
-                throw new RuntimeException("Cannot receive width: " + target, e);
-            }
-
-            if (p.isWidthPreferredThanPercent(width) && p.isWidthNotExpand(width)) {
-                resizePictureProportional(source, target, p.getCompressionWidth());
-            } else {
-                resizePicture(source, target, p.getCompressionPercent());
-            }
+            deletePathIfExists(target);
         }
     }
 
 
-    public Path renameIfUnknownImageTypeToDefault(Path source) {
+    public Path renameIfUnknownImageTypeToDefaultType(Path source) {
         if (imageService.isPictureUnknownType(source)) {
-            return imageService.renameImageTypeTo(source, pictureMediaConfig.getUnknownAutoImageType());
+            return imageService.changeImageTypeTo(source, pictureMediaConfig.getUnknownAutoImageType());
         }
         return source;
     }
 
-    public String savePicture(String imageUrl, double[] compressions) {
-        if (imageUrl == null) {
-            return pictureMediaConfig.getDefaultPictureFileName();
+    public String savePictureOrRollback(String imageUrl) {
+            if (imageUrl == null) {
+                return pictureMediaConfig.getDefaultPictureFileName();
+            }
+            Path target = getPicturePath(imageUrl);
+        if (imageService.isPictureUnknownType(target)) {
+            target = renameIfUnknownImageTypeToDefaultType(target);
         }
-        Path target = getPicturePath(imageUrl);
-        if (!savePicture(imageUrl, target, compressions)) {
-            return null;
-        }
-        return target.getFileName().toString();
+            if (!savePicture(imageUrl, target)) {
+                deletePathIfExists(target);
+                return null;
+            }
+            return target.getFileName().toString();
     }
 
-    public String saveDefaultPicture(String imageUrl, double[] compressions) {
+    private void rollBackPicture(String imageUrl) {
+
+    }
+
+    public String saveDefaultPicture(String imageUrl) {
         String pictureFileName = getPictureFileName(pictureMediaConfig.getDefaultPictureFileName());
         Path target = Paths.get(pictureFileName);
-        if (!savePicture(imageUrl, target, compressions)) {
+        if (!savePicture(imageUrl, target)) {
             return null;
         }
         return target.getFileName().toString();
     }
 
-    private boolean savePicture(String imageUrl, Path target, double[] compressions) {
+    private boolean savePicture(String imageUrl, Path target) {
         try {
             imageDownloader.downloadByUrl(imageUrl, target.toString());
         } catch (IOException e) {
             return false;
         }
-        boolean noError = saveAllMediaAndMarkers(target, compressions);
-        if (!noError) {
-            deletePath(target);
-            return false;
-        }
-        return true;
+        return saveAllMediaAndMarkers(target);
     }
 
     private Path getPicturePath(String imageUrl) {
@@ -335,12 +346,12 @@ public class PictureMediaService {
     }
 
     private String changeImageFileNameIfWrongType(String name) {
-        Path path = renameIfUnknownImageTypeToDefault(Paths.get(name));
+        Path path = renameIfUnknownImageTypeToDefaultType(Paths.get(name));
         return path.toString();
     }
 
     private String getFileName(String imageUrl) {
-        String extension = FilenameUtils.getExtension(imageUrl);
+        String extension = FilenameUtils.getExtension(imageUrl).toLowerCase();
         String uuid = UUID.randomUUID().toString();
         return uuid + "." + extension;
     }
@@ -351,7 +362,7 @@ public class PictureMediaService {
             Path target = getMarkerPath(source, i);
             boolean exists = Files.exists(target);
             if (exists) {
-                deletePath(target);
+                deletePathIfExists(target);
             }
             Integer scaledWidth = getMarkerWidth(source, i);
             Pair<Integer, Integer> widthHeight = adjustAndGetWidthHeight(source, scaledWidth);
@@ -405,27 +416,31 @@ public class PictureMediaService {
             }
         } catch (IOException e) {
             log.error("Cannot create all marker picture: "+ source, e);
+            rollbackMarkerPictures(source);
             return false;
         }
         return true;
+    }
+
+    private void rollbackMarkerPictures(Path source) {
+        int size = pictureMediaConfig.getMarkerNames().size();
+        for (int i = 0; i < size; i++) {
+            Path target = getMarkerPath(source, i);
+            deletePathIfExists(target);
+        }
+        for (int i = 0; i < size; i++) {
+            Path markerPath = getMarkerPath(source, i);
+            for (PictureMediaDTO p : pictureMediaConfig.getPictureMedias()) {
+                Path target = getMediaPath(markerPath, p);
+                deletePathIfExists(target);
+            }
+        }
     }
 
     private Path getMediaPath(Path source, PictureMediaDTO p) {
         String targetPath = getMainPath() + p.getPath();
         String stringTarget = targetPath + File.separator + source.getFileName();
         return Paths.get(stringTarget);
-    }
-
-    public boolean createAllMediaPictures(Path source, double[] compressions, boolean replaceExisting) {
-        if (isEmptyFile(source)) {
-            deletePath(source);
-            return false;
-        }
-        if (imageService.isPictureUnknownType(source)) {
-            source = renameIfUnknownImageTypeToDefault(source);
-        }
-        createPictureMedia(source);
-        return true;
     }
 
     private void resizePicture(Path source, Path target, double compressionPercent) {
