@@ -119,10 +119,10 @@ public class PictureMediaService {
             return false;
         }
         compress(source, MAX_COMPRESSION_QUALITY);
-        if(!createAllMediaPictures(source)){
+        if (!createAllMediaPictures(source)) {
             return false;
         }
-        if(!createAllMarkerPictures(source)) {
+        if (!createAllMarkerPictures(source)) {
             return false;
         }
         return true;
@@ -275,7 +275,7 @@ public class PictureMediaService {
                 }
             }
         } catch (Exception e) {
-            log.error("Cannot create all media pictures: "+ source, e);
+            log.error("Cannot create all media pictures: " + source, e);
             rollbackMediaPictures(source, pictureMedias);
             return false;
         }
@@ -298,22 +298,18 @@ public class PictureMediaService {
     }
 
     public String savePictureOrRollback(String imageUrl) {
-            if (imageUrl == null) {
-                return pictureMediaConfig.getDefaultPictureFileName();
-            }
-            Path target = getPicturePath(imageUrl);
+        if (imageUrl == null) {
+            return pictureMediaConfig.getDefaultPictureFileName();
+        }
+        Path target = getPicturePath(imageUrl);
         if (imageService.isPictureUnknownType(target)) {
             target = renameIfUnknownImageTypeToDefaultType(target);
         }
-            if (!savePicture(imageUrl, target)) {
-                deletePathIfExists(target);
-                return null;
-            }
-            return target.getFileName().toString();
-    }
-
-    private void rollBackPicture(String imageUrl) {
-
+        if (!savePicture(imageUrl, target)) {
+            deletePathIfExists(target);
+            return null;
+        }
+        return target.getFileName().toString();
     }
 
     public String saveDefaultPicture(String imageUrl) {
@@ -414,8 +410,8 @@ public class PictureMediaService {
                 Path target = getMediaPath(source, p);
                 createMarkerPictures(target);
             }
-        } catch (IOException e) {
-            log.error("Cannot create all marker picture: "+ source, e);
+        } catch (Exception e) {
+            log.error("Cannot create all marker picture: " + source, e);
             rollbackMarkerPictures(source);
             return false;
         }
@@ -423,16 +419,16 @@ public class PictureMediaService {
     }
 
     private void rollbackMarkerPictures(Path source) {
-        int size = pictureMediaConfig.getMarkerNames().size();
-        for (int i = 0; i < size; i++) {
-            Path target = getMarkerPath(source, i);
-            deletePathIfExists(target);
+        int sizeMarker = pictureMediaConfig.getMarkerNames().size();
+        for (int i = 0; i < sizeMarker; i++) {
+            Path targetMarker = getMarkerPath(source, i);
+            deletePathIfExists(targetMarker);
         }
-        for (int i = 0; i < size; i++) {
-            Path markerPath = getMarkerPath(source, i);
-            for (PictureMediaDTO p : pictureMediaConfig.getPictureMedias()) {
-                Path target = getMediaPath(markerPath, p);
-                deletePathIfExists(target);
+        for (PictureMediaDTO p : pictureMediaConfig.getPictureMedias()) {
+            Path targetMedia = getMediaPath(source, p);
+            for (int i = 0; i < sizeMarker; i++) {
+                Path targetMarker = getMarkerPath(targetMedia, i);
+                deletePathIfExists(targetMarker);
             }
         }
     }
@@ -450,6 +446,7 @@ public class PictureMediaService {
             log.error("Resize: " + target, e);
         }
     }
+
     private void resizePictureProportional(Path source, Path target, int width) {
         try {
             imageResizerService.resizeProportional(source.toString(), target.toString(), width);
